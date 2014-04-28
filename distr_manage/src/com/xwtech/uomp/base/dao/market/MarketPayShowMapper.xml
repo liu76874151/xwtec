@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.market.MarketPayShowMapper" >
+  <resultMap id="marketPayShowBean" type="com.xwtech.uomp.base.pojo.market.MarketPayShowBean" >
+    <result column="PAY_ID" property="payId" jdbcType="DECIMAL" />
+    <result column="MARKET_SECOND_PKID" property="marketSecondPkid" jdbcType="DECIMAL" />
+    <result column="STATE" property="state" jdbcType="DECIMAL" />
+  </resultMap>
+  <insert id="batchUpdate" parameterType="java.util.List" >
+      insert into JSMSS_PAYSHOW (PAY_ID, MARKET_SECOND_PKID, STATE)
+      <foreach collection="list" item="item" index="index" separator="union all">
+    	select #{payId,jdbcType=DECIMAL}, #{marketSecondPkid,jdbcType=DECIMAL}, #{state,jdbcType=DECIMAL} from dual
+      </foreach>
+  	</insert>
+  	
+  	<insert id="insertMarketPayShow" parameterType="com.xwtech.uomp.base.pojo.market.MarketPayShowBean">
+  		insert into JSMSS_PAYSHOW (PAY_ID, MARKET_SECOND_PKID, STATE)
+  		values(
+  		#{payId,jdbcType=DECIMAL}, #{marketSecondPkid,jdbcType=DECIMAL}, #{state,jdbcType=DECIMAL}
+  		)
+  	</insert>
+  	
+  	<select id="selectPayShowBeansBySecondPkid" resultMap="marketPayShowBean" parameterType="java.util.Map">
+  		select pay_id, market_second_pkid, state from jsmss_payshow 
+  		where market_second_pkid=#{marketSecondPkid}
+  		<if test="state != null">
+  			and STATE =#{state}
+  		</if>
+  	</select>
+  	
+  	<delete id="deleteBySecondPkid" parameterType="java.lang.String">
+  		delete from jsmss_payshow 
+  		where market_second_pkid=#{marketSecondPkid}
+  	</delete>
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.pagemanage.PageStaticInfoMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.pagemanage.PageStaticInfo" id="pageStaticInfo">
+        <result property="pageNum" column="F_PAGE_NUM"/>
+        <result property="pageName" column="F_PAGE_NAME"/>
+        <result property="version" column="F_VERSION"/>
+        <result property="pageContent" column="F_PAGE_CONTENT"/>
+        <result property="desc" column="F_DESC"/>
+        <result property="updateTime" column="F_UPDATE_TIME"/>
+    </resultMap>
+
+    <!-- 添加信息 -->
+    <insert id="savePageStaticInfo" parameterType="com.xwtech.uomp.base.pojo.pagemanage.PageStaticInfo">
+        INSERT INTO T_PAGE_STATIC_INFO
+          (F_PAGE_NUM,F_PAGE_NAME,F_VERSION,F_PAGE_CONTENT,F_DESC,F_UPDATE_TIME)
+        VALUES
+          (#{pageNum}, #{pageName}, #{version}, #{pageContent},#{desc},#{updateTime})
+    </insert>
+
+    <!-- 删除信息 -->
+    <delete id="deletePageStaticInfo" parameterType="java.util.Map">
+      DELETE FROM T_PAGE_STATIC_INFO WHERE F_PAGE_NUM = #{pageNum} AND F_VERSION = #{version}
+    </delete>
+</mapper>

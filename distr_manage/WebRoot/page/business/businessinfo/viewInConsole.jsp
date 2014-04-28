@@ -1,0 +1,295 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@page import="org.apache.commons.lang.time.DateFormatUtils"%>
+<%@include file="../../taglibs.jsp"%>
+<%
+	Calendar theCa = Calendar.getInstance();
+	theCa.setTime(new Date());
+	String currenTime = DateFormatUtils.format(theCa.getTime(), "yyyy-MM-dd");
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>
+		<title>业务信息--查看</title>
+		<meta http-equiv="pragma" content="no-cache">
+		<meta http-equiv="cache-control" content="no-cache">
+		<meta http-equiv="expires" content="0">
+		<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+		<meta http-equiv="description" content="This is my page">
+		<link rel="stylesheet" type="text/css" href="${contextPath}/resource/css/frame.css"/>
+	    <link rel="stylesheet" type="text/css" href="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxGrid/codebase/dhtmlxgrid.css"></link>
+	    <link rel="stylesheet" type="text/css" href="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxGrid/codebase/skins/dhtmlxgrid_dhx_skyblue.css"></link>
+	    <link rel="stylesheet" type="text/css" href="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxToolbar/codebase/skins/dhtmlxtoolbar_dhx_skyblue.css"></link>
+	    <link rel="stylesheet" type="text/css" href="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxTabbar/codebase/dhtmlxtabbar.css"/>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxTabbar/codebase/dhtmlxcommon.js"></script>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxTabbar/codebase/dhtmlxtabbar.js"></script>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxTabbar/codebase/dhtmlxtabbar_start.js"></script>
+		<!-- ckeditor-->
+		<script type="text/javascript" src="${contextPath}/resource/scripts/CKEditor/ckeditor.js"></script>
+	    
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxGrid/codebase/dhtmlxcommon.js"></script>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxGrid/codebase/dhtmlxgrid.js"></script>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxGrid/codebase/dhtmlxgridcell.js"></script>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxToolbar/codebase/dhtmlxtoolbar.js"></script>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxGrid/codebase/dhtmlxGrid_ext_pgn.js"></script>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxGrid/codebase/ext/dhtmlxgrid_ssc.js"></script>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/jquery-1.7.1.min.js"></script>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/jquery.json-2.4.min.js"></script>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/jquery.validate.min.js"></script>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/main.js"></script>
+	    
+	    <link rel="stylesheet" type="text/css" href="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxCalendar/codebase/dhtmlxcalendar.css"></link>
+		<link rel="stylesheet" type="text/css" href="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxCalendar/codebase/skins/dhtmlxcalendar_dhx_skyblue.css"></link>
+	    <script type="text/javascript" src="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxCalendar/codebase/dhtmlxcalendar.js"></script>
+		<script type="text/javascript" src="${contextPath}/resource/scripts/uomp/buesiness/businessinfo/businessInfo_modify.js"></script>
+	</head>
+	<script type="text/javascript">
+  	var currenTime = "<%=currenTime%>";
+	function checkTime(startTime,endTime){//date validiate
+	      /*var startTime="2013-12-12 18:00:00";
+	      var endTime="2013-12-12 18:00:01";*/
+	      var date = new Date(currenTime.replace("-", "/").replace("-", "/"));  
+	      var start=new Date(startTime.replace("-", "/").replace("-", "/"));  
+	      var end=new Date(endTime.replace("-", "/").replace("-", "/"));  
+			if (start < date) {
+				return false;
+			}
+	      if(end<start){
+	          return false;  
+	      }  
+	      return true;  
+	  }  
+	</script>
+
+	<body style="overflow: auto;">
+	<input type="hidden" id="pkid" value="${param.funcId}">
+	<input type="hidden" id="busiExtraJson" name="busiExtraJson" >
+	<input type="hidden" id="busiTagJson" name="busiTagJson">
+	<input type="hidden" id="busiAreaJson" name="busiAreaJson">
+  <input type="hidden" id="businessTypeJson_01" name="businessTypeJson_01">
+  <input type="hidden" id="businessTypeJson_02" name="businessTypeJson_02">
+  <input type="hidden" id="relaBusiInfoJson01" name="relaBusiInfoJson01">
+  <input type="hidden" id="relaBusiInfoJson02" name="relaBusiInfoJson02">
+  <input type="hidden" id="busiAreaJson01" name="busiAreaJson01">
+  <input type="hidden" id="busiAreaJson02" name="busiAreaJson02">
+  
+  <input type="hidden" id="jbNum" value="">
+  <input type="hidden" id="jb" value="">
+    <div style="padding: 10px; overflow: auto;">
+		<div class="breadcrumb">
+			<span></span>业务基础信息:共性(掌、网)--查看
+		</div>
+		<form name="editForm" id="editForm" method="post"  enctype="multipart/form-data" action="${contextPath}/actionDispatcher.do?reqUrl=fileuploadHandler&reqMethod=filesUpload" target="upload_area">
+		<table class="tb">
+			<tr>
+ 	  			<th width="10%" align="right">业务名称：</th>
+				<td class="form_table_content"><input disabled="disabled" type="text" class="form_input" maxlength="100" name="busiName" value="" id="busiName" readonly="readonly"/>
+				<span class="errorMsg"></span></td>
+			</tr>
+			<tr>
+				<th width="10%" align="right">业务编码：</th>
+				<td class="form_table_content"><input disabled="disabled" disabled="disabled" type="text" class="form_input" maxlength="50" name="busiNum" value="" id="busiNum" readonly="readonly"/>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">名称拼音编码(简拼)：</th>
+				<td class="form_table_content"><input disabled="disabled" type="text" class="form_input" maxlength="200" name="busiNamePym2" value="" id="busiNamePym2"/>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th class="view_info_title" style="width: 10%">
+					开通生效方式 ：
+				</th>
+				<td class="view_info_content" >
+					<input disabled="disabled" type="checkbox" name="effectWay" id="effectWay0" value="0">&nbsp;即时生效
+					<input disabled="disabled" type="checkbox" name="effectWay" id="effectWay1" value="1">&nbsp;次日生效
+					<input disabled="disabled" type="checkbox" name="effectWay" id="effectWay2" value="2">&nbsp;次月生效
+					<input disabled="disabled" type="checkbox" name="effectWay" id="effectWay3" value="3">&nbsp;次次月生效
+				</td>
+			</tr>
+			<tr>
+				<th class="view_info_title" style="width: 10%">
+					关闭生效方式 ：
+				</th>
+				<td class="view_info_content" >
+					<input disabled="disabled" type="checkbox" name="neffectWay" id="neffectWay0" value="0">&nbsp;即时生效
+					<input disabled="disabled" type="checkbox" name="neffectWay" id="neffectWay1" value="1">&nbsp;次日生效
+					<input disabled="disabled" type="checkbox" name="neffectWay" id="neffectWay2" value="2">&nbsp;次月生效
+					<input disabled="disabled" type="checkbox" name="neffectWay" id="neffectWay3" value="3">&nbsp;次次月生效
+				</td>
+			</tr>
+			<tr>
+				<th width="10%" align="right">业务状态：</th>
+				<td class="form_table_content">
+				<select disabled="disabled" id="state" name="state" style="width: 150px;">
+					<option value="2" selected="selected">待审核</option>
+				</select>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">支付方式：</th>
+				<td class="form_table_content">
+				<select disabled="disabled" id="suppPayWay" name="suppPayWay" style="width: 150px;">
+					<option value="0">话费支付</option>				
+					<option value="1">积分或M值支付</option>
+					<option value="2">两种都支持</option>
+					<option value="3">其它</option>
+				</select>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">资费类别：</th>
+				<td class="form_table_content">
+				<select disabled="disabled" id="feeType" name="feeType"  style="width: 150px;">
+					<option value="0">免费</option>				
+					<option value="1">包月</option>
+					<option value="2">包年</option>
+					<option value="3">单次</option>
+					<option value="4">按数量计费</option>
+					<option value="5">其它</option>
+				</select>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">资费：</th>
+				<td class="form_table_content">
+				<input disabled="disabled" type="text" class="form_input" maxlength="10" name="fee" id="fee" /> 单位:分
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">扣费方式：</th>
+				<td class="form_table_content">
+				<select disabled="disabled" id="deductWay" name="deductWay" style="width: 150px;">
+				</select>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">积分所需数量：</th>
+				<td class="form_table_content"><input disabled="disabled" type="text" class="form_input" maxlength="10" name="feeScoreQ" value="" id="feeScoreQ" />
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">M值支付所需数量：</th>
+				<td class="form_table_content"><input disabled="disabled" type="text" class="form_input" maxlength="10" name="feeScoreM" value="" id="feeScoreM" />
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">办理类别：</th>
+				<td class="form_table_content">
+				<select disabled="disabled" id="processType" name="processType" style="width: 150px;">
+					<option value="0">查询</option>
+					<option value="1">开关</option>
+					<option value="2">其它</option>				
+				</select>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">是否末级：</th>
+				<td class="form_table_content">
+				<select disabled="disabled" id="mj" name="mj" style="width: 150px;">
+					<option value="0">否</option>
+					<option value="1">是</option>
+				</select>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">搜索关键词：</th>
+				<td class="form_table_content"><input disabled="disabled" type="text" class="form_input" maxlength="500" name="searchWords" id="searchWords" />
+				多个关键词以空格隔开
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">客户端下载地址：</th>
+				<td class="form_table_content"><input disabled="disabled" type="text" class="form_input" maxlength="1000" name="busiClientUrl" value="" id="busiClientUrl" />
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">业务宣传语：</th>
+				<td class="form_table_content"><input disabled="disabled" type="text" class="form_input" name="busiAdvl" value="" id="busiAdvl" />
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">特点：</th>
+				<td class="form_table_content">
+				<textarea disabled="disabled" rows="2" cols="30" id="busiFeature" name="busiFeature"></textarea>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">优惠活动：</th>
+				<td class="form_table_content">
+				<textarea disabled="disabled" rows="2" cols="30" id="busiPrivilege" name="busiPrivilege"></textarea>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">温馨提示：</th>
+				<td class="form_table_content">
+				<textarea disabled="disabled" id="prompt" name="prompt"></textarea>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">扩展属性：</th>
+				<td class="form_table_content">
+					<span id="businessExtraList"></span>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">业务标签：</th>
+				<td class="form_table_content">
+					<span id="businessTagList"></span>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">城市：</th>
+				<td class="form_table_content">
+				<span id="cityList"></span>
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">品牌：</th>
+				<td class="form_table_content" id="brandList">
+					
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+ 			<tr>
+				<th width="10%" align="right">渠道：</th>
+				<td class="form_table_content">
+					<input disabled="disabled" name="channel" type="checkbox" value="01" onclick="showTabs();">网厅&nbsp;&nbsp;
+					<input disabled="disabled" name="channel" type="checkbox" value="02" onclick="showTabs();">掌厅
+				<span class="errorMsg"></span> </td>
+ 			</tr>
+		</table>
+		<div class="breadcrumb">
+			<span></span>业务基础信息:个性
+		</div>
+		
+		<%--<div id="tab" class="dhtmlxTabBar"  style="width:100%; height:100%;" imgpath="${contextPath}/resource/scripts/Dhtmlx/dhtmlxSuite/dhtmlxTabbar/codebase/imgs/" oninit="doOnInit()">
+	        <div id="tab_01" name="网厅">
+	        <%@include file="businessInfo_modify_w.jsp" %>
+	    	</div>
+	        <div id="tab_02" name="掌厅">
+	        <%@include file="businessInfo_modify_z.jsp" %>
+	        </div>
+	        <div id="tab_other" name="">
+	        </div>
+	    </div>
+	    
+	    --%>
+	    
+	    <div id="tab" style="width:100%; height:105%;position: relative;overflow:hidden"></div>
+		<div id='tab_01' name="网厅">
+			<%@include file="viewInConsole_w.jsp" %>
+		</div>
+		<div id='tab_02'  name="掌厅">
+			<%@include file="viewInConsole_z.jsp" %>
+		</div>
+		<div id="tab_other" name="">
+	        </div>
+	        
+		<!-- 按钮操作区域开始 -->
+		
+   		<!-- 按钮操作区域结束 -->
+		</form>	
+	</div>
+	<iframe name="upload_area" frameBorder="0" height="0"></iframe>
+  </body>
+</html>

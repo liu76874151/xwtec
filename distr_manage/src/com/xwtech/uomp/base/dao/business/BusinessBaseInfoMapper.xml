@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.BusinessBaseInfoMapper" >
+  <resultMap id="businessBaseInfoBean" type="com.xwtech.uomp.base.pojo.business.BusinessBaseInfoBean" >
+    <id column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME" property="busiName" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_EN" property="busiNameEn" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_PYM1" property="busiNamePym1" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_PYM2" property="busiNamePym2" jdbcType="VARCHAR" />
+    <result column="F_STATE" property="state" jdbcType="DECIMAL" />
+    <result column="F_SUPP_PAY_WAY" property="suppPayWay" jdbcType="DECIMAL" />
+    <result column="F_FEE_TYPE" property="feeType" jdbcType="DECIMAL" />
+    <result column="F_DEDUCT_WAY" property="deductWay" jdbcType="VARCHAR" />
+    <result column="F_FEE_SCORE_Q" property="feeScoreQ" jdbcType="DECIMAL" />
+    <result column="F_FEE_SCORE_M" property="feeScoreM" jdbcType="DECIMAL" />
+    <result column="F_PROCESS_TYPE" property="processType" jdbcType="DECIMAL" />
+    <result column="F_BUSI_CLIENT_URL" property="busiClientUrl" jdbcType="VARCHAR" />
+    <result column="F_JB_NUM" property="jbNum" jdbcType="VARCHAR" />
+    <result column="F_MJ" property="mj" jdbcType="DECIMAL" />
+    <result column="F_JB" property="jb" jdbcType="DECIMAL" />
+    <result column="F_BUSI_ADVL" property="busiAdvl" jdbcType="CLOB" />
+    <result column="F_BUSI_FEATURE" property="busiFeature" jdbcType="CLOB" />
+    <result column="F_BUSI_PRIVILEGE" property="busiPrivilege" jdbcType="CLOB" />
+    <result column="F_PROMPT" property="prompt" jdbcType="CLOB" />
+    <result column="F_SEARCH_WORDS" property="searchWords" jdbcType="VARCHAR"/>
+    <result column="F_FEE" property="fee" jdbcType="DECIMAL" />
+    <collection property="businessEffectWayBeans" ofType="com.xwtech.uomp.base.pojo.business.BusinessEffectWayBean" column="F_BUSI_NUM" resultMap="businessEffectWayBean">
+    </collection>
+    <collection property="businessAreaDzBeans" ofType="com.xwtech.uomp.base.pojo.business.BusinessAreaDzBean" column="F_BUSI_NUM" resultMap="businessAreaMap">
+    </collection>
+    <collection property="businessBrandDzBeans" ofType="com.xwtech.uomp.base.pojo.business.BusinessBrandDzBean" column="F_BUSI_NUM" resultMap="businessBrandDzBean">
+    </collection>
+    <collection property="businessExattrDzBeans" ofType="com.xwtech.uomp.base.pojo.business.BusinessExattrBean" column="F_BUSI_NUM" resultMap="businessExattrMap">
+    </collection>
+    <collection property="businessInfoBeans" ofType="com.xwtech.uomp.base.pojo.business.BusinessInfoBean" column="F_BUSI_NUM" resultMap="businessInfoBean">
+    </collection>
+    <collection property="busiTagDzBeans" ofType="com.xwtech.uomp.base.pojo.business.BusiTagBean" column="F_BUSI_NUM" resultMap="businessTagMap">
+    </collection>
+  </resultMap>
+  
+  <resultMap type="com.xwtech.uomp.base.pojo.business.BusinessEffectWayBean" id="businessEffectWayBean">
+   	<result property="busiNum" column="F_BUSI_NUM"/>
+      	<result property="busiOprtType" column="F_BUSI_OPRT_TYPE"/>
+      	<result property="effectWay" column="F_EFFECT_WAY"/>
+   </resultMap>
+   
+   <resultMap id="businessAreaMap" type="java.util.Map" >
+    <result column="F_AREA_NUM" property="areaNum" jdbcType="VARCHAR" />
+    <result column="F_AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+   <resultMap id="businessBrandDzBean" type="com.xwtech.uomp.base.pojo.business.BusinessBrandDzBean" >
+    <result column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_BRAND_NUM" property="brandNum" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="businessExattrMap" type="java.util.Map" >
+    <result column="F_ATTR_KEY" property="attrKey" jdbcType="VARCHAR" />
+    <result column="F_ATTR_NAME" property="attrName" jdbcType="VARCHAR" />
+    <result column="F_ATTR_VALE" property="attrVale" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="businessTagMap" type="java.util.Map" >
+    <result column="F_TAG_ID" property="tagId" jdbcType="DECIMAL" />
+    <result column="F_TAG_NAME" property="tagName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="businessInfoBean" type="java.util.Map" >
+    <result column="F_BUSI_ICON" property="busiIcon" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NEST_FT" property="busiNestFt" jdbcType="CLOB" />
+    <result column="F_BZ" property="bz" jdbcType="VARCHAR" />
+    <result column="F_BUSI_PIC_URL" property="busiPicUrl" jdbcType="VARCHAR" />
+    <result column="F_START_TIME" property="startTime" jdbcType="DATE" />
+    <result column="F_END_TIME" property="endTime" jdbcType="DATE" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="CHSTATE" property="chState" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="busiBaseInfoTreeMap" type="java.util.Map">
+        <result property="id" column="ID"/>
+        <result property="text" column="TEXT"/>
+        <result property="pid" column="PID"/>
+        <result property="mj" column="MJ"/>
+        <result property="funcId" column="F_BUSI_NUM"/>
+        <result property="jb" column="F_JB"/>
+        <result property="jbNum" column="F_JB_NUM"/>
+        <result property="busiBaseInfo" column="TOKEN"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    F_BUSI_NUM, F_BUSI_NAME, F_BUSI_NAME_EN, F_BUSI_NAME_PYM1, F_BUSI_NAME_PYM2, F_STATE, 
+    F_SUPP_PAY_WAY, F_FEE_TYPE, F_DEDUCT_WAY, F_FEE_SCORE_Q, F_FEE_SCORE_M, F_PROCESS_TYPE, 
+    F_BUSI_CLIENT_URL, F_JB_NUM, F_MJ, F_JB, F_SEARCH_WORDS,F_FEE
+  </sql>
+  <sql id="Blob_Column_List" >
+    F_BUSI_ADVL, F_BUSI_FEATURE, F_BUSI_PRIVILEGE, F_PROMPT
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="businessBaseInfoBean" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from T_BUSI_BASEINFO
+    where F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="queryBusiBaseInfoTree" resultMap="busiBaseInfoTreeMap">
+		<![CDATA[
+		SELECT DISTINCT A.F_JB_NUM AS ID,
+                A.f_Busi_Name AS TEXT,
+                (CASE
+                  WHEN SUBSTR(A.F_JB_NUM, 0, 3 * (A.F_JB - 1)) IS NULL THEN
+                   '-1'
+                  ELSE
+                   SUBSTR(A.F_JB_NUM, 0, 3 * (A.F_JB - 1))
+                END) AS PID,
+                A.F_MJ AS MJ,
+                A.f_Busi_Num,
+                A.F_JB,
+                A.F_JB_NUM,
+                A.f_state,
+                'busiBaseInfo' as  TOKEN
+	      FROM T_BUSI_BASEINFO A
+	     ORDER BY A.F_JB_NUM ASC
+		 ]]>
+	</select>
+	
+	<select id="queryJbNumCount" resultType="int" parameterType="com.xwtech.uomp.base.pojo.business.BusinessBaseInfoBean">
+        <if test="jbNum != null">
+        SELECT COUNT(*) FROM t_busi_baseinfo WHERE 1=1
+            AND F_JB_NUM LIKE '${jbNum}___'
+        </if>
+        <if test="jbNum == null">
+        SELECT max(F_JB_NUM) FROM t_busi_baseinfo WHERE 1=1
+            AND F_JB_NUM LIKE '___'
+        </if>
+    </select>
+    <select id="queryNewJbNum" resultType="java.lang.String" parameterType="java.lang.String">
+	    SELECT #{jbNum} || F_NUM AS N_JB_NUM
+	          FROM (SELECT MAX(F_NUM) F_NUM
+	          FROM (SELECT SUBSTR(F_NUM, LENGTH(F_NUM) - 2, 3) F_NUM
+	                  FROM (SELECT '000' ||
+	                               TO_CHAR(TO_NUMBER(SUBSTR(MAX(F_JB_NUM),
+	                                                        LENGTH(#{jbNum}) + 1,
+	                                                        3)) + 1) F_NUM
+	                          FROM T_BUSI_BASEINFO
+	                         WHERE F_JB_NUM LIKE #{jbNum}||'%'
+	                           AND F_JB = LENGTH(#{jbNum}) / 3 + 1
+	                           )
+	                UNION
+	                SELECT '001' F_NUM FROM DUAL))
+	</select>
+	
+	<select id="queryBusiInfoBynum" resultMap="businessBaseInfoBean" parameterType="java.lang.String" >
+		SELECT 	INFO.F_BUSI_NAME,
+	         INFO.F_BUSI_NUM,
+	         INFO.F_BUSI_NAME_PYM2,
+	         INFO.F_STATE,
+	         INFO.F_SUPP_PAY_WAY,
+	         INFO.F_FEE_TYPE,
+	         INFO.F_DEDUCT_WAY,
+	         INFO.F_FEE_SCORE_Q,
+	         INFO.F_FEE_SCORE_M,
+	         INFO.F_PROCESS_TYPE,
+	         INFO.F_BUSI_CLIENT_URL,
+	         INFO.F_BUSI_ADVL,
+	         INFO.F_BUSI_FEATURE,
+	         INFO.F_BUSI_PRIVILEGE,
+	         INFO.F_MJ,
+	         INFO.F_PROMPT,
+	         INFO.F_JB_NUM,
+	         INFO.F_JB,
+	         INFO.F_SEARCH_WORDS,
+	         INFO.F_FEE,
+		     W.F_BUSI_OPRT_TYPE,
+		     W.F_EFFECT_WAY,
+		     P.F_ATTR_KEY,
+             P.F_ATTR_VALE,
+             (SELECT T.F_ATTR_NAME FROM T_BUSI_EXATTR_DA T WHERE T.F_ATTR_KEY=P.F_ATTR_KEY) AS F_ATTR_NAME,
+             T.F_TAG_ID,
+             (SELECT A.F_TAG_NAME FROM T_BUSI_TAG_DA A WHERE A.F_TAG_ID=T.F_TAG_ID) AS F_TAG_NAME,
+             A.F_AREA_NUM,
+             (SELECT F_AREA_NAME FROM T_AREA_DA WHERE F_AREA_NUM=A.F_AREA_NUM) AS F_AREA_NAME,
+             B.F_BRAND_NUM,
+             I.F_BUSI_ICON,
+             I.F_BUSI_NEST_FT,
+             I.F_BZ,
+             I.F_BUSI_PIC_URL,
+             I.F_START_TIME,
+             I.F_END_TIME,
+             I.F_CHANNEL_NUM,
+             I.F_STATE CHSTATE
+		  FROM T_BUSI_BASEINFO INFO 
+			LEFT OUTER JOIN T_BUSI_EFFECT_WAY_DZ W ON INFO.F_BUSI_NUM = W.F_BUSI_NUM
+			LEFT OUTER JOIN T_BUSI_AREA_DZ A ON A.F_BUSI_NUM=INFO.F_BUSI_NUM
+			LEFT OUTER JOIN T_BUSI_BRAND_DZ B ON B.F_BUSI_NUM=INFO.F_BUSI_NUM
+			LEFT OUTER JOIN T_BUSI_EXATTR_DZ P ON P.F_BUSI_NUM=INFO.F_BUSI_NUM
+	      	LEFT OUTER JOIN T_BUSI_INFO I ON I.F_BUSI_NUM=INFO.F_BUSI_NUM
+	      	LEFT OUTER JOIN T_BUSI_TAG_DZ T ON T.F_BUSI_NUM=INFO.F_BUSI_NUM
+          WHERE INFO.F_BUSI_NUM = #{pkid}
+	</select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_BUSI_BASEINFO
+    where F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.business.BusinessBaseInfoBean" >
+    insert into T_BUSI_BASEINFO (F_BUSI_NUM, F_BUSI_NAME, F_BUSI_NAME_EN, 
+      F_BUSI_NAME_PYM1, F_BUSI_NAME_PYM2, F_STATE, 
+      F_SUPP_PAY_WAY, F_FEE_TYPE, F_DEDUCT_WAY, 
+      F_FEE_SCORE_Q, F_FEE_SCORE_M, F_PROCESS_TYPE, 
+      F_BUSI_CLIENT_URL, F_JB_NUM, F_MJ, 
+      F_JB, F_BUSI_ADVL, F_BUSI_FEATURE, 
+      F_BUSI_PRIVILEGE,F_PROMPT,F_SEARCH_WORDS,F_FEE)
+    values (#{busiNum,jdbcType=VARCHAR}, #{busiName,jdbcType=VARCHAR}, #{busiNameEn,jdbcType=VARCHAR}, 
+      #{busiNamePym1,jdbcType=VARCHAR}, #{busiNamePym2,jdbcType=VARCHAR}, #{state,jdbcType=DECIMAL}, 
+      #{suppPayWay,jdbcType=DECIMAL}, #{feeType,jdbcType=DECIMAL}, #{deductWay,jdbcType=VARCHAR}, 
+      #{feeScoreQ,jdbcType=DECIMAL}, #{feeScoreM,jdbcType=DECIMAL}, #{processType,jdbcType=DECIMAL}, 
+      #{busiClientUrl,jdbcType=VARCHAR}, #{jbNum,jdbcType=VARCHAR}, #{mj,jdbcType=DECIMAL}, 
+      #{jb,jdbcType=DECIMAL}, #{busiAdvl,jdbcType=CLOB}, #{busiFeature,jdbcType=CLOB}, 
+      #{busiPrivilege,jdbcType=CLOB},#{prompt,jdbcType=CLOB},#{searchWords,jdbcType=VARCHAR},#{fee,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.business.BusinessBaseInfoBean" >
+    insert into T_BUSI_BASEINFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        F_BUSI_NUM,
+      </if>
+      <if test="busiName != null" >
+        F_BUSI_NAME,
+      </if>
+      <if test="busiNameEn != null" >
+        F_BUSI_NAME_EN,
+      </if>
+      <if test="busiNamePym1 != null" >
+        F_BUSI_NAME_PYM1,
+      </if>
+      <if test="busiNamePym2 != null" >
+        F_BUSI_NAME_PYM2,
+      </if>
+      <if test="state != null" >
+        F_STATE,
+      </if>
+      <if test="suppPayWay != null" >
+        F_SUPP_PAY_WAY,
+      </if>
+      <if test="feeType != null" >
+        F_FEE_TYPE,
+      </if>
+      <if test="deductWay != null" >
+        F_DEDUCT_WAY,
+      </if>
+      <if test="feeScoreQ != null" >
+        F_FEE_SCORE_Q,
+      </if>
+      <if test="feeScoreM != null" >
+        F_FEE_SCORE_M,
+      </if>
+      <if test="processType != null" >
+        F_PROCESS_TYPE,
+      </if>
+      <if test="busiClientUrl != null" >
+        F_BUSI_CLIENT_URL,
+      </if>
+      <if test="jbNum != null" >
+        F_JB_NUM,
+      </if>
+      <if test="mj != null" >
+        F_MJ,
+      </if>
+      <if test="jb != null" >
+        F_JB,
+      </if>
+      <if test="busiAdvl != null" >
+        F_BUSI_ADVL,
+      </if>
+      <if test="busiFeature != null" >
+        F_BUSI_FEATURE,
+      </if>
+      <if test="busiPrivilege != null" >
+        F_BUSI_PRIVILEGE,
+      </if>
+      <if test="prompt != null" >
+        F_PROMPT,
+      </if>
+      <if test="searchWords != null">
+      	F_SEARCH_WORDS,
+      </if>
+      <if test="fee != null">
+      	F_FEE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        #{busiNum,jdbcType=VARCHAR},
+      </if>
+      <if test="busiName != null" >
+        #{busiName,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNameEn != null" >
+        #{busiNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNamePym1 != null" >
+        #{busiNamePym1,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNamePym2 != null" >
+        #{busiNamePym2,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="suppPayWay != null" >
+        #{suppPayWay,jdbcType=DECIMAL},
+      </if>
+      <if test="feeType != null" >
+        #{feeType,jdbcType=DECIMAL},
+      </if>
+      <if test="deductWay != null" >
+        #{deductWay,jdbcType=VARCHAR},
+      </if>
+      <if test="feeScoreQ != null" >
+        #{feeScoreQ,jdbcType=DECIMAL},
+      </if>
+      <if test="feeScoreM != null" >
+        #{feeScoreM,jdbcType=DECIMAL},
+      </if>
+      <if test="processType != null" >
+        #{processType,jdbcType=DECIMAL},
+      </if>
+      <if test="busiClientUrl != null" >
+        #{busiClientUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jbNum != null" >
+        #{jbNum,jdbcType=VARCHAR},
+      </if>
+      <if test="mj != null" >
+        #{mj,jdbcType=DECIMAL},
+      </if>
+      <if test="jb != null" >
+        #{jb,jdbcType=DECIMAL},
+      </if>
+      <if test="busiAdvl != null" >
+        #{busiAdvl,jdbcType=CLOB},
+      </if>
+      <if test="busiFeature != null" >
+        #{busiFeature,jdbcType=CLOB},
+      </if>
+      <if test="busiPrivilege != null" >
+        #{busiPrivilege,jdbcType=CLOB},
+      </if>
+      <if test="prompt != null" >
+        #{prompt,jdbcType=CLOB},
+      </if>
+      <if test="searchWords != null">
+      	#{searchWords,jdbcType=VARCHAR},
+      </if>
+      <if test="fee != null">
+      	#{fee,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xwtech.uomp.base.pojo.business.BusinessBaseInfoBean" >
+    update T_BUSI_BASEINFO
+    <set >
+      <if test="busiName != null" >
+        F_BUSI_NAME = #{busiName,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNameEn != null" >
+        F_BUSI_NAME_EN = #{busiNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNamePym1 != null" >
+        F_BUSI_NAME_PYM1 = #{busiNamePym1,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNamePym2 != null" >
+        F_BUSI_NAME_PYM2 = #{busiNamePym2,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        F_STATE = #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="suppPayWay != null" >
+        F_SUPP_PAY_WAY = #{suppPayWay,jdbcType=DECIMAL},
+      </if>
+      <if test="feeType != null" >
+        F_FEE_TYPE = #{feeType,jdbcType=DECIMAL},
+      </if>
+      <if test="deductWay != null" >
+        F_DEDUCT_WAY = #{deductWay,jdbcType=VARCHAR},
+      </if>
+      <if test="feeScoreQ != null" >
+        F_FEE_SCORE_Q = #{feeScoreQ,jdbcType=DECIMAL},
+      </if>
+      <if test="feeScoreM != null" >
+        F_FEE_SCORE_M = #{feeScoreM,jdbcType=DECIMAL},
+      </if>
+      <if test="processType != null" >
+        F_PROCESS_TYPE = #{processType,jdbcType=DECIMAL},
+      </if>
+      <if test="busiClientUrl != null" >
+        F_BUSI_CLIENT_URL = #{busiClientUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="jbNum != null" >
+        F_JB_NUM = #{jbNum,jdbcType=VARCHAR},
+      </if>
+      <if test="mj != null" >
+        F_MJ = #{mj,jdbcType=DECIMAL},
+      </if>
+      <if test="jb != null" >
+        F_JB = #{jb,jdbcType=DECIMAL},
+      </if>
+      <if test="busiAdvl != null" >
+        F_BUSI_ADVL = #{busiAdvl,jdbcType=CLOB},
+      </if>
+      <if test="busiFeature != null" >
+        F_BUSI_FEATURE = #{busiFeature,jdbcType=CLOB},
+      </if>
+      <if test="busiPrivilege != null" >
+        F_BUSI_PRIVILEGE = #{busiPrivilege,jdbcType=CLOB},
+      </if>
+      <if test="prompt != null" >
+        F_PROMPT = #{prompt,jdbcType=CLOB},
+      </if>
+      <if test="searchWords != null">
+      	F_SEARCH_WORDS = #{searchWords,jdbcType=VARCHAR},
+      </if>
+      <if test="fee != null">
+      	F_FEE = #{fee,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.business.BusinessBaseInfoBean" >
+    update T_BUSI_BASEINFO
+    set F_BUSI_NAME = #{busiName,jdbcType=VARCHAR},
+      F_BUSI_NAME_EN = #{busiNameEn,jdbcType=VARCHAR},
+      F_BUSI_NAME_PYM1 = #{busiNamePym1,jdbcType=VARCHAR},
+      F_BUSI_NAME_PYM2 = #{busiNamePym2,jdbcType=VARCHAR},
+      F_STATE = #{state,jdbcType=DECIMAL},
+      F_SUPP_PAY_WAY = #{suppPayWay,jdbcType=DECIMAL},
+      F_FEE_TYPE = #{feeType,jdbcType=DECIMAL},
+      F_DEDUCT_WAY = #{deductWay,jdbcType=VARCHAR},
+      F_FEE_SCORE_Q = #{feeScoreQ,jdbcType=DECIMAL},
+      F_FEE_SCORE_M = #{feeScoreM,jdbcType=DECIMAL},
+      F_PROCESS_TYPE = #{processType,jdbcType=DECIMAL},
+      F_BUSI_CLIENT_URL = #{busiClientUrl,jdbcType=VARCHAR},
+      F_JB_NUM = #{jbNum,jdbcType=VARCHAR},
+      F_MJ = #{mj,jdbcType=DECIMAL},
+      F_JB = #{jb,jdbcType=DECIMAL},
+      F_BUSI_ADVL = #{busiAdvl,jdbcType=CLOB},
+      F_BUSI_FEATURE = #{busiFeature,jdbcType=CLOB},
+      F_BUSI_PRIVILEGE = #{busiPrivilege,jdbcType=CLOB},
+      F_PROMPT = #{prompt,jdbcType=CLOB},
+      F_SEARCH_WORDS = #{searchWords,jdbcType=VARCHAR},
+      F_FEE = #{fee,jdbcType=DECIMAL}
+    where F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  </update>
+  
+  <update id="deleteBusinessBaseInfo" parameterType="java.lang.String">
+  	update T_BUSI_BASEINFO set F_STATE='1' where F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  </update>
+</mapper>

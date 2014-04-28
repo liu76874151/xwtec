@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.webinfo.SiteBaseInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.webinfo.SiteBaseInfoBean" >
+    <id column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="F_STATE" property="state" jdbcType="CHAR" />
+    <result column="F_TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="F_NOTICE" property="notice" jdbcType="CLOB" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    F_CHANNEL_NUM, F_STATE, F_TITLE,F_NOTICE
+  </sql>
+  <select id="queryWebInfoList" resultMap="BaseResultMap" parameterType="java.util.Map">
+    SELECT *
+        FROM (SELECT ROWNUM ROW_NUM, A.*
+        FROM (
+        select * from T_SITE_BASEINFO
+        WHERE 1 = 1
+        <if test="state != null">
+            AND F_STATE = #{state}
+        </if>
+        <if test="channelNum != null">
+            AND F_CHANNEL_NUM = #{channelNum}
+        </if>
+        ) A)
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+   </select>
+   
+     <select id="queryWebInfoListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select count(*) from T_SITE_BASEINFO
+         WHERE 1 = 1
+        <if test="state != null">
+            AND F_STATE = #{state}
+        </if>
+        <if test="channelNum != null">
+            AND F_CHANNEL_NUM = #{channelNum}
+        </if>
+   </select>   
+     <update id="updateByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.webinfo.SiteBaseInfoBean" >
+    update T_SITE_BASEINFO
+    <set >
+      <if test="state != null" >
+        F_STATE = #{state,jdbcType=CHAR},
+      </if>
+      <if test="title != null" >
+        F_TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="notice != null" >
+        F_NOTICE = #{notice,jdbcType=CLOB},
+      </if>
+    </set>
+    where F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SITE_BASEINFO
+    where F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+  </select>
+  <!-- <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SITE_BASEINFO
+    where F_CHANNEL_NUM = #{fChannelNum,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SITE_BASEINFO
+    where F_CHANNEL_NUM = #{fChannelNum,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="demo.model.SiteBaseInfo" >
+    insert into T_SITE_BASEINFO (F_CHANNEL_NUM, F_STATE, F_TITLE, 
+      F_NOTICE)
+    values (#{fChannelNum,jdbcType=VARCHAR}, #{fState,jdbcType=CHAR}, #{fTitle,jdbcType=VARCHAR}, 
+      #{fNotice,jdbcType=CLOB})
+  </insert>
+  <insert id="insertSelective" parameterType="demo.model.SiteBaseInfo" >
+    insert into T_SITE_BASEINFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fChannelNum != null" >
+        F_CHANNEL_NUM,
+      </if>
+      <if test="fState != null" >
+        F_STATE,
+      </if>
+      <if test="fTitle != null" >
+        F_TITLE,
+      </if>
+      <if test="fNotice != null" >
+        F_NOTICE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fChannelNum != null" >
+        #{fChannelNum,jdbcType=VARCHAR},
+      </if>
+      <if test="fState != null" >
+        #{fState,jdbcType=CHAR},
+      </if>
+      <if test="fTitle != null" >
+        #{fTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="fNotice != null" >
+        #{fNotice,jdbcType=CLOB},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="demo.model.SiteBaseInfo" >
+    update T_SITE_BASEINFO
+    <set >
+      <if test="fState != null" >
+        F_STATE = #{fState,jdbcType=CHAR},
+      </if>
+      <if test="fTitle != null" >
+        F_TITLE = #{fTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="fNotice != null" >
+        F_NOTICE = #{fNotice,jdbcType=CLOB},
+      </if>
+    </set>
+    where F_CHANNEL_NUM = #{fChannelNum,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="demo.model.SiteBaseInfo" >
+    update T_SITE_BASEINFO
+    set F_STATE = #{fState,jdbcType=CHAR},
+      F_TITLE = #{fTitle,jdbcType=VARCHAR},
+      F_NOTICE = #{fNotice,jdbcType=CLOB}
+    where F_CHANNEL_NUM = #{fChannelNum,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="demo.model.SiteBaseInfo" >
+    update T_SITE_BASEINFO
+    set F_STATE = #{fState,jdbcType=CHAR},
+      F_TITLE = #{fTitle,jdbcType=VARCHAR}
+    where F_CHANNEL_NUM = #{fChannelNum,jdbcType=VARCHAR}
+  </update>-->
+</mapper>

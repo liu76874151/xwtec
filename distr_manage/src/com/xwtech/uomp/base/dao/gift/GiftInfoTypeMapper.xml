@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.gift.GiftInfoTypeMapper" >
+
+  <resultMap id="giftInfoTypeBean" type="com.xwtech.uomp.base.pojo.gift.GiftInfoTypeBean" >
+    <result column="F_APPLY_CODE" property="applyCode" jdbcType="VARCHAR" />
+    <result column="F_START_TIME" property="startTime" jdbcType="VARCHAR" />
+    <result column="F_END_TIME" property="endTime" jdbcType="VARCHAR" />
+    <result column="F_STATE" property="state" jdbcType="CHAR" />
+    <result column="F_PRODUCT_NAME" property="productName" jdbcType="VARCHAR" />
+    <result column="GIFT_SEND_TYPE" property="giftSendType" jdbcType="VARCHAR" />
+    <result column="F_GIFT_TYPE" property="giftType" />
+    <result column="F_GIFT_TYPE_DESC" property="giftTypeDesc"/>
+  </resultMap>
+  
+  <select id="queryGiftInfoTypeList" resultMap="giftInfoTypeBean" parameterType="java.util.Map">
+  	select * from(
+		select rownum row_num, a.*
+			  from (select f_apply_code,
+					       f_start_time,
+					       f_end_time,
+					       f_state,
+					       f_product_name,
+					       gift_send_type,
+					       F_GIFT_TYPE,
+					       F_GIFT_TYPE_DESC
+					  from jsmss_gift_info_type
+					  order by f_gift_type desc
+					) a
+		          where 1=1
+        
+         <if test="state != null">
+            AND f_state = #{state}
+        </if>
+        <if test="applyCode != null">
+            AND F_APPLY_CODE = #{applyCode}
+        </if>
+        <if test="giftType != null">
+            AND F_GIFT_TYPE = #{giftType}
+        </if>
+        <if test="productName != null">
+        	AND F_PRODUCT_NAME like '%'||#{productName}||'%'
+        </if>
+        ) 
+        WHERE 1=1
+        AND ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+
+	<select id="queryCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from jsmss_gift_info_type where 1=1
+		<if test="state != null">
+			AND f_state = #{state}
+		</if>
+		<if test="applyCode != null">
+			AND F_APPLY_CODE = #{applyCode}
+		</if>
+		<if test="giftType != null">
+			AND F_GIFT_TYPE = #{giftType}
+		</if>
+	</select>
+	
+	<!-- 寻找gift_type最大值 -->
+	<select id="queryMaxGiftTypeCode" resultType="java.lang.Integer">
+		select max(f_gift_type)+1 from jsmss_gift_info_type
+	</select>
+	
+	<select id="queryGiftTypeById" resultType="java.lang.String" resultMap="giftInfoTypeBean">
+		select * from jsmss_gift_info_type where f_gift_type = #{giftType}
+	</select>
+	
+	<insert id="addGiftTypeInfo">
+		insert into jsmss_gift_info_type
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="applyCode != null" >
+	        F_APPLY_CODE,
+	      </if>
+	      <if test="state != null">
+	      	F_STATE,
+	      </if>
+	      <if test="productName != null">
+	      	F_PRODUCT_NAME,
+	      </if>
+	      <if test="giftSendType != null">
+	      	GIFT_SEND_TYPE,
+	      </if>
+	      <if test="giftType != null">
+	      	F_GIFT_TYPE,
+	      </if>
+	      <if test="giftTypeDesc != null">
+	      	F_GIFT_TYPE_DESC
+	      </if>
+	     </trim>
+	     <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="applyCode != null" >
+	        #{applyCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="state != null" >
+	        #{state,jdbcType=CHAR},
+	      </if>
+	      <if test="productName != null" >
+	        #{productName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="giftSendType != null" >
+	        #{giftSendType,jdbcType=VARCHAR},
+	      </if>
+	      <if test="giftType != null">
+	      #{giftType,jdbcType=DECIMAL},
+	      </if>
+	      <if test="giftTypeDesc != null" >
+	        #{giftTypeDesc,jdbcType=CLOB}
+	      </if>
+	      </trim>
+	</insert>
+	
+	<update id="updateGiftTypeInfo">
+		update jsmss_gift_info_type
+		<set>
+			  <if test="applyCode != null" >
+		        F_APPLY_CODE = #{applyCode,jdbcType=VARCHAR},
+		      </if>
+		      <if test="state != null" >
+		        F_STATE = #{state,jdbcType=CHAR},
+		      </if>
+		      <if test="productName != null" >
+		        F_PRODUCT_NAME = #{productName,jdbcType=VARCHAR},
+		      </if>
+		      <if test="giftSendType != null" >
+		        GIFT_SEND_TYPE = #{giftSendType,jdbcType=VARCHAR},
+		      </if>
+		      <if test="giftTypeDesc != null" >
+		        F_GIFT_TYPE_DESC = #{giftTypeDesc,jdbcType=CLOB}
+		      </if>
+		</set>
+		where F_GIFT_TYPE = #{giftType}
+	</update>
+  
+</mapper>

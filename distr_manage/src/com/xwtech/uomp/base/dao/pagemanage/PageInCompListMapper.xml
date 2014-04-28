@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.pagemanage.PageInCompListMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.pagemanage.PageInComp" id="pageInComp">
+        <result property="compNum" column="F_COMP_NUM"/>
+        <result property="compName" column="F_COMP_NAME"/>
+        <result property="compType" column="F_COMP_TYPE"/>
+        <result property="compUrl" column="F_COMP_URL"/>
+        <result property="containerId" column="F_CONTAINER_ID"/>
+        <result property="pageTmpNum" column="F_PAGE_TMP_NUM"/>
+        <result property="version" column="F_VERSION"/>
+        <result property="isopen" column="F_ISOPEN"/>
+    </resultMap>
+
+    <!-- 查询页面模板与组件关联“使用”情况列表信息 -->
+    <select id="queryPageCompUsedList" resultMap="pageInComp" parameterType="java.util.Map">
+        select a.f_comp_num,
+               a.f_comp_name,
+               a.f_comp_type,
+               a.f_comp_url,
+               a.f_container_id,
+               b.f_page_tmp_num,
+               b.f_version,
+               b.f_isopen
+          from T_PAGE_COMP_INFO a
+          left join T_PAGE_IN_COMP_LIST b
+            on a.f_comp_num = b.f_comp_num
+           and b.f_page_tmp_num = #{pageTmpNum}
+           and b.f_version = #{version}
+         order by a.f_comp_num
+    </select>
+
+    <!-- 查询页面模板与组件关联列表信息 -->
+    <select id="queryPageInCompList" resultMap="pageInComp" parameterType="java.util.Map">
+        select a.f_page_tmp_num,
+        a.f_version,
+        a.f_comp_num,
+        a.f_isopen,
+        b.f_comp_name,
+        b.f_comp_type,
+        b.f_comp_url,
+        b.f_container_id
+        from T_PAGE_IN_COMP_LIST a
+        left join T_PAGE_COMP_INFO b
+        on a.f_comp_num = b.f_comp_num
+        where 1 = 1
+        <if test="pageTmpNum != null">
+            and a.f_page_tmp_num = #{pageTmpNum}
+        </if>
+        <if test="version != null">
+            and a.f_version in ('0',#{version})
+        </if>
+        order by a.f_page_tmp_num, a.f_version
+    </select>
+
+    <!-- 添加信息 -->
+    <insert id="savePageInCompList" parameterType="com.xwtech.uomp.base.pojo.pagemanage.PageInCompList">
+        INSERT INTO T_PAGE_IN_COMP_LIST
+          (F_PAGE_TMP_NUM, F_VERSION, F_COMP_NUM, F_ISOPEN)
+        VALUES
+          (#{pageTmpNum},#{version},#{compNum},#{isopen})
+    </insert>
+
+    <!-- 删除信息 -->
+    <delete id="deletePageInCompList" parameterType="java.util.Map">
+      DELETE FROM T_PAGE_IN_COMP_LIST WHERE F_PAGE_TMP_NUM = #{pageTmpNum} AND F_VERSION = #{version}
+    </delete>
+</mapper>

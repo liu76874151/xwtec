@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.webinfo.DailyPaperMapper" >
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.webinfo.DailyPaperBean" >
+    <result column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="V_NUM" property="num" jdbcType="VARCHAR" />
+    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+     <result column="V_VALUE" property="value" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="queryOneDailyPaper" resultMap="BaseResultMap" parameterType="java.util.Map" >
+  select * from T_DAILY_PAPER where  1=1
+  			<if test="id != null" >
+	       		AND id=#{id}
+	     	 </if>
+	         <if test="num != null" >
+	          	AND V_NUM=#{num}
+	      	</if>
+	        <if test="type != null" >
+	        	AND type=#{type}
+	     	 </if>
+	      	 <if test="value != null" >
+	            AND V_VALUE=#{value}
+	      	</if>
+  </select>
+  <select id="queryDailyPaperCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+   select count(*) from T_DAILY_PAPER where 1=1
+	          <if test="id != null" >
+	       		AND id=#{id}
+	     	 </if>
+	         <if test="num != null" >
+	          	AND V_NUM=#{num}
+	      	</if>
+	        <if test="type != null" >
+	        	AND type=#{type}
+	     	 </if>
+	      	 <if test="value != null" >
+	            AND V_VALUE=#{value}
+	      	</if>
+  </select>
+   <select id="queryDailyPaper" resultMap="BaseResultMap" parameterType="java.util.Map" >
+     SELECT *
+        FROM (SELECT ROWNUM ROW_NUM, A.*
+        FROM (
+	        select * from T_DAILY_PAPER where 1=1
+	          <if test="id != null" >
+	       		AND id=#{id}
+	     	 </if>
+	         <if test="num != null" >
+	          	AND V_NUM=#{num}
+	      	</if>
+	        <if test="type != null" >
+	        	AND type=#{type}
+	     	 </if>
+	      	 <if test="value != null" >
+	            AND V_VALUE=#{value}
+	      	</if>  
+	      	order by id , v_num,type
+        ) A)
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+   </select>
+   <update id="updateDailyPaperBean" parameterType="java.util.Map" >
+   update T_DAILY_PAPER
+   <set>
+   			
+	      	 <if test="value != null" >
+	             V_VALUE=#{value}
+	      	</if>
+   </set>
+   where id=#{id} and V_NUM=#{num} and type=#{type}
+   </update>
+   <delete id="deleteDailyPaperBean" parameterType="java.util.Map" >
+   delete from T_DAILY_PAPER  where id=#{id} and V_NUM=#{num} and type=#{type}
+   </delete>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.webinfo.DailyPaperBean" >
+    insert into T_DAILY_PAPER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="num != null" >
+        V_NUM,
+      </if>
+      <if test="type != null" >
+        TYPE,
+      </if>
+      <if test="value != null" >
+        V_VALUE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id},
+      </if>
+      <if test="num != null" >
+        #{num},
+      </if>
+      <if test="type != null" >
+        #{type},
+      </if>
+      <if test="value != null" >
+        #{value},
+      </if>
+    </trim>
+  </insert>
+</mapper>

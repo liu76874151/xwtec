@@ -1,0 +1,33 @@
+﻿@charset "utf-8";
+*{padding:0;margin:0;}
+body{font:12px/1.5em "宋体", Helvetica, sans-serif;color:#000;}
+.clearfix:after{font-size:0;line-height:0;content:"\020";display:block;height:0;clear:both;}
+.clearfix{zoom:1;}
+
+.console-contain{position:relative;}
+.console-main{margin-right:260px;}
+.console-module{}
+.console-module-title{background:#eee;min-height:35px;line-height:35px;font-size:14px;font-weight:bold;text-indent:1em;}
+.console-module-title .definded-btn{line-height:20px;float:right;margin-right:10px;color:#3b5998;background:#fff;text-align:center;display:block;padding:3px 10px;text-indent:0;margin-top:4px;cursor:pointer;border:1px solid #ddd;}
+.console-module-title .definded-btn:hover{border-color:#97c853;}
+.consile-module-body{padding:10px;}
+
+.myBox-site{overflow:hidden;padding-left:1px;margin-left:10px;position:relative;}
+.myBox-item{float:left;width:11%;font-size:14px;margin-bottom:10px;margin-left:-1px;}
+.myBox-item a{padding:0 5px;display:block;color:#666;text-decoration:none;border:1px solid #ddd;cursor:pointer;}
+.myBox-item a:hover{background:#f9f9f9;}
+.myBox-item a p{width:100%;display:table;*position:relative;min-height:70px;_height:70px;}
+.myBox-item a cite{font-style:normal;display:table-cell;vertical-align:middle;*position:absolute;*top:50%;}
+.myBox-item a cite em{*position:relative;*top:-50%;font-style:normal;zoom:1;}
+
+.console-sidebar{width:250px;position:absolute;right:0;top:0;margin-left:10px;display:inline;}
+.console-sidebar-list{padding-bottom:15px;}
+.console-sidebar-list .enabled-icon{width:18px;height:18px;display:inline-block;*display:inline;*zoom:1; background:url(../img/toggle_enabled.gif) no-repeat;vertical-align:top;margin:1px 0 0 4px;*vertical-align:middle;*margin-top:0;}
+.console-sidebar-list .disabled-icon{width:18px;height:18px;display:inline-block;*display:inline;*zoom:1; background:url(../img/toggle_disabled.gif) no-repeat;vertical-align:top;margin:1px 0 0 4px;*vertical-align:middle;*margin-top:0;}
+.console-sidebar-list-title{color:#666;font-size:14px;font-weight:bold;padding-bottom:5px;border-bottom:2px solid #eee;}
+.console-sidebar-list-title .more{font-size:12px;font-weight:normal;float:right;text-decoration:none;color:#3b5998;}
+.console-sidebar-item{padding:4px 7px 0 5px;}
+.console-sidebar-item span{display:inline-block;width:132px;overflow:hidden;color:#333;}
+.console-sidebar-item a{cursor:pointer;}
+.console-sidebar-item .preview{color:#3b5998;}
+.console-sidebar-item .console-sidebar-item-action{display:inline-block;text-align:right;}

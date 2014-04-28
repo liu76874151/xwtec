@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.automated.CacheManageMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.memcache.CacheManageBean" id="cacheManageInfo">
+        <result property="memKey" column="F_MEM_KEY"/>
+        <result property="cachedName" column="F_CACHED_NAME"/>
+        <result property="daoName" column="F_DAO_NAME"/>
+        <result property="daoMethod" column="F_DAO_METHOD"/>
+        <result property="isNeedParam" column="F_IS_NEED_PARAM"/>
+        <result property="expireInSeconds" column="F_EXPIRE_IN_SECONDS"/>
+        <result property="bz" column="F_BZ"/>
+        <result property="keyType" column="F_KEY_TYPE"/>
+    </resultMap>
+
+    <resultMap type="com.xwtech.uomp.base.pojo.memcache.CacheServiceManageBean" id="cacheServiceManageBean">
+        <result property="num" column="F_MEM_NUM"/>
+        <result property="typeNum" column="F_MEM_TYPE_NUM"/>
+        <result property="servers" column="F_MEM_SERVERS"/>
+        <result property="weights" column="F_MEM_WEIGHTS"/>
+        <result property="initConn" column="F_MEM_INITCONN"/>
+        <result property="minConn" column="F_MEM_MINCONN"/>
+        <result property="maxConn" column="F_MEM_MAXCONN"/>
+        <result property="maxIdle" column="F_MEM_MAXIDLE"/>
+        <result property="mainSleep" column="F_MEM_MAINSLEEP"/>
+        <result property="nagle" column="F_MEM_NAGLE"/>
+        <result property="socketTo" column="F_MEM_SOCKETTO"/>
+        <result property="socketConnectTo" column="F_MEM_SOCKETCONNECTTO"/>
+    </resultMap>
+
+    <!-- 查询缓存配置信息 -->
+    <select id="queryCacheManageInfoList" resultMap="cacheManageInfo"
+            parameterType="com.xwtech.uomp.base.pojo.memcache.CacheManageBean">
+        SELECT F_MEM_KEY, F_CACHED_NAME, F_DAO_NAME, F_DAO_METHOD, F_IS_NEED_PARAM, F_EXPIRE_IN_SECONDS, F_BZ,
+        F_KEY_TYPE
+        FROM T_MEMCACHED_KEY_DA WHERE 1=1
+        <if test="memKey != null">
+            AND F_MEM_KEY = #{memKey}
+        </if>
+        <if test="keyType != null">
+            AND F_KEY_TYPE = #{keyType}
+        </if>
+        <if test="isNeedParam != null">
+            AND F_IS_NEED_PARAM = #{isNeedParam}
+        </if>
+    </select>
+
+    <!-- 根据id查询缓存配置信息 -->
+    <select id="queryCacheManageInfoById" resultMap="cacheManageInfo" parameterType="java.lang.String">
+    	SELECT F_MEM_KEY, F_CACHED_NAME, F_DAO_NAME, F_DAO_METHOD, F_IS_NEED_PARAM, F_EXPIRE_IN_SECONDS, F_BZ, F_KEY_TYPE 
+    	    FROM T_MEMCACHED_KEY_DA WHERE F_MEM_KEY = #{memKey}
+    </select>
+
+    <!-- 添加缓存配置 -->
+    <insert id="addCacheManageInfo" parameterType="com.xwtech.uomp.base.pojo.memcache.CacheManageBean">
+        INSERT INTO 
+            T_MEMCACHED_KEY_DA(F_MEM_KEY, F_CACHED_NAME, F_DAO_NAME, F_DAO_METHOD, F_IS_NEED_PARAM, F_EXPIRE_IN_SECONDS, F_BZ, F_KEY_TYPE) 
+            VALUES(#{memKey}, #{cachedName}, #{daoName}, #{daoMethod}, #{isNeedParam}, #{expireInSeconds}, #{bz}, #{keyType})
+    </insert>
+
+    <!-- 修改缓存配置 -->
+    <update id="modCacheManageInfo" parameterType="com.xwtech.uomp.base.pojo.memcache.CacheManageBean">
+        UPDATE T_MEMCACHED_KEY_DA 
+         SET
+            F_MEM_KEY = #{memKey},
+            F_CACHED_NAME = #{cachedName},
+            F_DAO_NAME = #{daoName},
+            F_DAO_METHOD = #{daoMethod},
+            F_IS_NEED_PARAM = #{isNeedParam},
+            F_EXPIRE_IN_SECONDS = #{expireInSeconds},
+            F_BZ = #{bz},
+            F_KEY_TYPE = #{keyType}
+         WHERE F_MEM_KEY = #{memKey}
+    </update>
+
+    <!-- 删除缓存配置 -->
+    <delete id="delCacheManageInfo" parameterType="java.lang.String">
+        DELETE FROM T_MEMCACHED_KEY_DA WHERE F_MEM_KEY = #{memKey}
+    </delete>
+
+    <!-- 查询缓存服务信息 -->
+    <select id="queryCacheService" resultMap="cacheServiceManageBean" parameterType="java.util.HashMap">
+        SELECT S.*
+            FROM T_MEMCACHED_KEY_DA K, T_MEMCACHED_SERVICE_DA S
+            WHERE K.F_CACHED_NAME = S.F_MEM_TYPE_NUM
+            AND K.F_MEM_KEY = #{memKey}
+    </select>
+</mapper>

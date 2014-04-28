@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.floor.FloorBlockContentMapper">
+	<resultMap type="com.xwtech.uomp.base.pojo.floor.FloorBlockContentBean"
+		id="floorBlockContentBean">
+		<result property="contentId" column="F_CONTENT_ID" />
+		<result property="blockId" column="F_BLOCK_ID" />
+		<result property="contentType" column="F_CONTENT_TYPE" />
+		<result property="contentTitle" column="F_CONTENT_TITLE" />
+		<result property="contentDesc" column="F_CONTENT_DESC" />
+		<result property="contentImg" column="F_CONTENT_IMG" />
+		<result property="contentUrl" column="F_CONTENT_URL" />
+		<result property="busiNum" column="F_BUSI_NUM" />
+		<result property="sortNum" column="F_SORT_NUM" />
+		<result property="state" column="F_STATE" />
+	</resultMap>
+
+	<select id="queryBlockContentByFloorId" parameterType="java.lang.String" resultMap="floorBlockContentBean">
+		select  t1.f_content_id,
+             	   t1.f_content_type,
+             	   t1.f_content_title,
+                   t1.f_content_desc,
+			       t1.f_content_img,
+			       t1.f_content_url,
+			       t1.f_busi_num,
+			       t1.f_sort_num
+			  from t_floor_block_content t1
+			  left join t_floor_block_da t2
+			    on t1.f_block_id = t2.f_block_id
+			 where t2.f_floor_id = #{floorId}
+	</select>
+
+	<!-- 保存区块内容 -->
+	<insert id="addBlockContent" >
+		INSERT INTO T_FLOOR_BLOCK_CONTENT
+		   <trim prefix="(" suffix=")" suffixOverrides="," >
+		   <if test="contentId != null" >
+			F_CONTENT_ID,
+			</if>
+			<if test="blockId != null" >
+			F_BLOCK_ID,
+			</if>
+			 <if test="contentType != null" >
+			F_CONTENT_TYPE,
+			</if>
+			<if test="contentTitle != null" >
+			F_CONTENT_TITLE,
+			</if>
+			<if test="contentDesc != null" >
+			F_CONTENT_DESC,
+			</if>
+			<if test="contentUrl != null" >
+			F_CONTENT_URL,
+			</if>
+			<if test="contentImg != null" >
+			F_CONTENT_IMG,
+			</if>
+			<if test="busiNum != null" >
+			F_BUSI_NUM,
+			</if>
+			<if test="sortNum != null" >
+			F_SORT_NUM,
+			</if>
+			<if test="state != null" >
+			F_STATE
+			</if>
+		</trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+		   <if test="contentId != null" >
+			#{contentId},
+			</if>
+			 <if test="blockId != null" >
+			#{blockId,jdbcType=VARCHAR},
+			</if>
+			 <if test="contentType != null" >
+			#{contentType},
+			</if>
+			<if test="contentTitle != null" >
+			#{contentTitle},
+			</if>
+			<if test="contentDesc != null" >
+			#{contentDesc},
+			</if>
+			<if test="contentUrl != null" >
+			#{contentUrl},
+			</if>
+			<if test="contentImg != null" >
+			#{contentImg},
+			</if>
+			<if test="busiNum != null" >
+			#{busiNum},
+			</if>
+			<if test="sortNum != null" >
+			#{sortNum},
+			</if>
+			<if test="state != null" >
+			#{state}
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 删除区块内容 -->
+	<delete id="deleteBlockContentInfo" parameterType="java.util.List">
+		DELETE FROM T_FLOOR_BLOCK_CONTENT WHERE F_CONTENT_ID IN
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<!-- 修改区块内容 -->
+	<update id="updateBlockContentInfo" parameterType="java.util.Map">
+	  update T_FLOOR_BLOCK_CONTENT
+    <set> 
+		 <if test="contentImg != null" >
+		        F_CONTENT_IMG=#{contentImg},
+		      </if>
+			 <if test="blockId != null" >
+			F_BLOCK_ID=#{blockId},
+			</if>
+			 <if test="contentType != null" >
+			F_CONTENT_TYPE=#{contentType},
+			</if>
+			<if test="contentTitle != null" >
+			F_CONTENT_TITLE=#{contentTitle},
+			</if>
+			<if test="contentDesc != null" >
+			F_CONTENT_DESC=#{contentDesc},
+			</if>
+			<if test="contentUrl != null" >
+			F_CONTENT_URL=#{contentUrl},
+			</if>
+			<if test="busiNum != null" >
+			F_BUSI_NUM=#{busiNum},
+			</if>
+			<if test="sortNum != null" >
+			F_SORT_NUM=#{sortNum},
+			</if>
+			<if test="state != null" >
+			F_STATE=#{state}
+			</if>
+      </set>
+      where F_CONTENT_ID=#{contentId}
+	</update>
+
+</mapper>        

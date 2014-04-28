@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.floor.FloorFaMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.floor.FloorFaBean" id="floorFaBean">
+        <result property="floorId" column="f_floor_id"/>
+        <result property="planId" column="f_plan_id"/>
+        <result property="floorNum" column="f_floor_num"/>
+        <result property="floorName" column="f_floor_name"/>
+        <result property="floorSeq" column="f_floor_seq"/>
+        <result property="floorImage" column="f_floor_image"/>
+        <result property="floorUrl" column="f_floor_url"/>
+        <result property="tempNum" column="f_temp_num"/>
+        <result property="floorBz" column="f_floor_bz"/>
+        <result property="floorComp" column="f_floor_comp"/>
+    </resultMap>
+
+    <!-- 查询楼层方案信息 -->
+    <select id="queryFloorFaList" resultMap="floorFaBean" parameterType="java.util.Map">
+        select a.*, c.f_floor_comp
+          from T_FLOOR_FA a, T_FLOOR_PLAN b, T_FLOOR_TEMPLATE c
+         where a.f_plan_id = b.f_plan_id
+           and b.f_channel_num = #{channelNum}
+           and b.f_state = #{state}
+           and a.f_temp_num = c.f_temp_num
+           and b.f_channel_num = c.f_channel_num
+           and c.f_state = #{state}
+         order by a.f_floor_seq
+    </select>
+    
+    <!-- 根据楼层查找方案信息 -->
+    <select id="queryFloorFaByFloorId" resultMap="floorFaBean" parameterType="java.lang.String">
+    	select t1.*
+		  from t_floor_fa t1
+		  left join t_floor_plan t2
+		    on t1.f_plan_id = t2.f_plan_id
+		 where t1.f_floor_id = #{floorId}
+		   and t2.f_state = '0'
+    </select>
+    
+    <!-- 保存楼层方案信息 -->
+    <insert id="addFloorFa">
+    	INSERT INTO T_FLOOR_FA
+    	(
+    		F_FLOOR_ID,
+			F_PLAN_ID,
+			F_CHANNEL_NUM,
+			F_FLOOR_NUM,
+			F_FLOOR_NAME,
+			F_FLOOR_SEQ,
+			<if test="floorImage != null">
+			F_FLOOR_IMAGE,
+			</if>
+			F_FLOOR_URL,
+			F_TEMP_NUM,
+			F_FLOOR_BZ
+    	)
+    	VALUES
+    	(
+    		#{floorId},
+    		#{planId},
+    		#{channelNum},
+    		#{floorNum},
+    		#{floorName},
+    		#{floorSeq},
+    		<if test="floorImage != null">
+    		#{floorImage},
+    		</if>
+    		#{floorUrl},
+    		#{tempNum},
+    		#{floorBz}
+    	)
+    </insert>
+    
+    <!-- 批量插入楼层镜像信息 -->
+    <select id="batchInsertFa" parameterType="java.util.List">
+    	insert into t_floor_fa
+    	(
+    		F_FLOOR_ID,
+			F_PLAN_ID,
+			F_CHANNEL_NUM,
+			F_FLOOR_NUM,
+			F_FLOOR_NAME,
+			F_FLOOR_SEQ,
+			F_FLOOR_IMAGE,
+			F_FLOOR_URL,
+			F_TEMP_NUM,
+			F_FLOOR_BZ
+    	)
+    	<foreach collection="list" item="item" index="index" separator="union all">
+    		select 
+    		#{item.floorId},
+    		#{item.planId},
+    		#{item.channelNum},
+    		#{item.floorNum},
+			#{item.floorName},
+			#{item.floorSeq},
+			#{item.floorImage},
+			#{item.floorUrl},
+			#{item.tempNum},
+			#{item.floorBz}
+			from dual
+    	</foreach>
+    </select>
+</mapper>

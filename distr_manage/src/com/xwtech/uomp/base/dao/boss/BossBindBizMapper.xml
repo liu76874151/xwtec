@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.boss.BossBindBizMapper" >
+  <resultMap id="bossBindBizBean" type="com.xwtech.uomp.base.pojo.boss.BossBindBizBean" >
+    <id column="BIZ_ID" property="bizId" jdbcType="DECIMAL" />
+    <result column="BIZ_CODE" property="bizCode" jdbcType="VARCHAR" />
+    <result column="MARKET_SECOND_CODE" property="marketSecondCode" jdbcType="VARCHAR" />
+    <result column="BIZ_NAME" property="bizName" jdbcType="VARCHAR" />
+    <result column="CITY_ID" property="cityId" jdbcType="DECIMAL" />
+    <result column="T_CHANNAL" property="tchannal" jdbcType="VARCHAR" />
+    <result column="PARENT_BIZ_CODE" property="parentBizCode" jdbcType="VARCHAR" />
+    <result column="STATE" property="state" jdbcType="VARCHAR" />
+  </resultMap>
+  <!-- 
+ <select id="queryBossBindBizList" resultMap="bossBindBizBean" parameterType="java.util.Map">
+        select * from(
+		select rownum row_num, a.*
+			  from (select biz_id, biz_code, market_second_code, biz_name, city_id, t_channal from boss_bind_biz
+					) a
+		          where 1=1
+        <if test="tchannal != null">
+            AND T_CHANNAL = #{tchannal}
+        </if>
+         <if test="marketSecondCode != null">
+            AND MARKET_SECOND_CODE = #{marketSecondCode}
+        </if>
+        <if test="cityId != null">
+            AND CITY_ID = #{cityId}
+        </if>
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+    -->
+     <select id="queryBossBindBizList" resultMap="bossBindBizBean" parameterType="java.util.Map">
+	    select t3.biz_id,t3.biz_code ,t3.market_second_code,t3.biz_name,t3.city_id,t3.parent_biz_code 
+		  from (select t1.biz_id,
+		               t1.biz_code,
+		               t1.market_second_code,
+		               t1.biz_name,
+		               t1.city_id,
+		               '0' as parent_biz_code
+		          from boss_bind_biz t1
+		         where 1=1 
+		         	  <if test="marketSecondCode != null">
+		         	   and t1.market_second_code = #{marketSecondCode}
+		         	   </if>
+		         	   <if test="cityId != null">
+		               and t1.city_id = #{cityId}
+		               </if>
+		        union all
+		        select 0,
+		               t2.biz_code,
+		               t2.market_second_code,
+		               t2.biz_name,
+		               t2.city_id,
+		               t2.parent_biz_code
+		          from boss_bind_biz_second t2
+		         where 1=1
+		         	   <if test="marketSecondCode != null">
+		               and t2.market_second_code = #{marketSecondCode}
+		               </if>
+		               <if test="cityId != null">
+		               and t2.city_id = #{cityId}
+		               </if>
+		         ) t3
+		 start with t3.parent_biz_code = 0
+		connect by prior t3.biz_code = t3.parent_biz_code
+		order by t3.parent_biz_code,t3.biz_code
+    </select>
+    
+    <!-- 
+    <select id="queryBossBindBizBySecondPkid" resultMap="bossBindBizBean" parameterType="java.util.Map">
+        select * from(
+		select rownum row_num, a.*
+			  from (select biz_id, biz_code, market_second_code, biz_name, city_id, t_channal from boss_bind_biz
+					) a
+		          where 1=1
+        <if test="tchannal != null">
+            AND a.T_CHANNAL = #{tchannal}
+        </if>
+         <if test="marketSecondCode != null">
+            AND a.MARKET_SECOND_CODE = #{marketSecondCode}
+        </if>
+        <if test="cityId != null">
+            AND a.CITY_ID = #{cityId}
+        </if>
+         and a.biz_code not in(
+				select b.BIZ_CODE from jsmss_bind_biz b where b.market_second_pkid=#{marketSecondPkid}
+			)
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+     -->
+     
+     <select id="queryBossBindBizBySecondPkid" resultMap="bossBindBizBean" parameterType="java.util.Map">
+     	select tt.*,
+			       case when bb.biz_id is not null then 'selected' else 'unselected' end state from
+			(
+			select t3.biz_id,
+			       t3.biz_code,
+			       t3.market_second_code,
+			       t3.biz_name,
+			       t3.city_id,
+			       t3.parent_biz_code
+			  from (select t1.biz_id,
+			               t1.biz_code,
+			               t1.market_second_code,
+			               t1.biz_name,
+			               t1.city_id,
+			               '0' as parent_biz_code
+			          from boss_bind_biz t1
+			         where 1 = 1
+			           <if test="marketSecondCode != null">
+		         	   and t1.market_second_code = #{marketSecondCode}
+		         	   </if>
+		         	   <if test="cityId != null">
+		               and t1.city_id = #{cityId}
+		               </if>
+			        union all
+			        select 0,
+			               t2.biz_code,
+			               t2.market_second_code,
+			               t2.biz_name,
+			               t2.city_id,
+			               t2.parent_biz_code
+			          from boss_bind_biz_second t2
+			         where 1 = 1
+			            <if test="marketSecondCode != null">
+		               and t2.market_second_code = #{marketSecondCode}
+		               </if>
+		               <if test="cityId != null">
+		               and t2.city_id = #{cityId}
+		               </if>
+			           ) t3
+			 start with t3.parent_biz_code = 0
+			connect by prior t3.biz_code = t3.parent_biz_code
+			) tt
+			left join
+			(select * from jsmss_bind_biz aa where 1=1
+			<if test="marketSecondPkid != null">
+			  and aa.market_second_pkid = #{marketSecondPkid}
+			 </if>
+			 ) bb on bb.biz_code = tt.biz_code
+			 order by tt.parent_biz_code,tt.biz_code
+     </select>
+     
+    <select id="queryOneBossBindBiz" resultMap="bossBindBizBean" parameterType="java.util.Map">
+    	select b.*
+		  from BOSS_BIND_BIZ b,jsmss_zone_sort z
+		  where b.market_second_code = #{marketSecondCode}
+		  and b.biz_code = #{bizCode}
+		  and b.city_id=z.org_map_id
+		  and z.boss_code=#{cityId}
+    </select>
+    
+    <insert id="insertBizSecond" parameterType="com.xwtech.uomp.base.pojo.boss.BossBindBizBean" >
+     insert into BOSS_BIND_BIZ_SECOND
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="parentBizCode != null" >
+	        PARENT_BIZ_CODE,
+	      </if>
+	      <if test="bizCode != null" >
+	        BIZ_CODE,
+	      </if>
+	      <if test="marketSecondCode != null" >
+	        MARKET_SECOND_CODE,
+	      </if>
+	      <if test="bizName != null" >
+	        BIZ_NAME,
+	      </if>
+	      <if test="cityId != null" >
+	        CITY_ID,
+	      </if>
+	      <if test="tchannal != null" >
+	        T_CHANNAL,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="parentBizCode != null" >
+	        #{parentBizCode},
+	      </if>
+	      <if test="bizCode != null" >
+	        #{bizCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="marketSecondCode != null" >
+	        #{marketSecondCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="bizName != null" >
+	        #{bizName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="cityId != null" >
+	        (select org_map_id from jsmss_zone_sort where boss_code=#{cityId}),
+	      </if>
+	      <if test="tchannal != null" >
+	        #{tchannal,jdbcType=VARCHAR},
+	      </if>
+	    </trim>
+    </insert>
+    <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.boss.BossBindBizBean" >
+	    insert into BOSS_BIND_BIZ
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="bizId != null" >
+	        BIZ_ID,
+	      </if>
+	      <if test="bizCode != null" >
+	        BIZ_CODE,
+	      </if>
+	      <if test="marketSecondCode != null" >
+	        MARKET_SECOND_CODE,
+	      </if>
+	      <if test="bizName != null" >
+	        BIZ_NAME,
+	      </if>
+	      <if test="cityId != null" >
+	        CITY_ID,
+	      </if>
+	      <if test="tchannal != null" >
+	        T_CHANNAL,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="bizId != null" >
+	        #{bizId,jdbcType=DECIMAL},
+	      </if>
+	      <if test="bizCode != null" >
+	        #{bizCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="marketSecondCode != null" >
+	        #{marketSecondCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="bizName != null" >
+	        #{bizName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="cityId != null" >
+	        (select org_map_id from jsmss_zone_sort where boss_code=#{cityId}),
+	      </if>
+	      <if test="tchannal != null" >
+	        #{tchannal,jdbcType=VARCHAR},
+	      </if>
+	    </trim>
+  </insert>
+  
+  <update id="update" parameterType="com.xwtech.uomp.base.pojo.boss.BossBindBizBean" >
+    update BOSS_BIND_BIZ
+    <set >
+      <if test="bizName != null" >
+        BIZ_NAME = #{bizName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where BIZ_CODE = #{bizCode,jdbcType=VARCHAR}
+    and 
+    MARKET_SECOND_CODE = #{marketSecondCode,jdbcType=VARCHAR}
+    and
+    CITY_ID = (select org_map_id from jsmss_zone_sort where boss_code=#{cityId})
+  </update>
+  <delete id="deleteBossBindBiz" parameterType="java.lang.String"> 
+  
+delete from  boss_bind_biz b where b.market_second_code in (
+select a.market_second_code from boss_market_second a where a.market_first_code=#{marketFirstCode})
+
+  </delete>
+   <delete id="deleteBossBindBizSecond" parameterType="java.lang.String"> 
+	  
+	delete from boss_bind_biz_second b1 where b1.parent_biz_code in (
+	select b.biz_code from boss_bind_biz b where b.market_second_code in (
+	select a.market_second_code from boss_market_second a where a.market_first_code=#{marketFirstCode}))
+
+  </delete>
+</mapper>

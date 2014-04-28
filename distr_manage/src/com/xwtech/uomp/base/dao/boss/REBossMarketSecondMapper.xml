@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.boss.REBossMarketSecondMapper" >
+  <resultMap id="rebossMarketSecondBean" type="com.xwtech.uomp.base.pojo.boss.REBossMarketSecondBean" >
+    <result column="F_MARKET_LEVEL2_ID" property="fmarketLevel2Id"  />
+    <result column="F_MARKET_LEVEL1_ID" property="fmarketLevel1Id"  />
+    <result column="F_MARKET_LEVEL2_NAME" property="fmarketLevel2Name" />
+    <result column="F_BRAND" property="fbrand" />
+    <result column="F_START_TIME" property="fstartTime" />
+    <result column="F_END_TIME" property="fendTime"  />
+    <result column="F_MONEY_VAL" property="fmoneyVal" />
+    <result column="F_USE_FLAG" property="fuseFlag"/>
+    <result column="F_ISCHECK" property="fischeck"/>
+    <result column="F_MARKET_LEVEL2_BOSS" property="fmarketLevel2Boss"/>
+    <result column="F_BZ" property="fbz"/>
+    <result column="F_GOODS_ID" property="fgoodsId"/>
+    <result column="F_GOODS_NAME" property="fgoodsName"/>
+    <result column="F_BUSI_ID" property="fbusiId"/>
+    <result column="F_BUSI_NAME" property="fbusiName"/>
+  </resultMap>
+  
+  <select id="queryCrmSecondInfo" resultMap="rebossMarketSecondBean" parameterType="java.lang.String">
+  	select s.F_MARKET_LEVEL2_ID,
+		       s.F_MARKET_LEVEL1_ID,
+		       s.F_MARKET_LEVEL2_NAME,
+		       s.F_BZ,
+		       s.F_BRAND,
+		       s.F_START_TIME,
+		       s.F_END_TIME,
+		       s.F_MONEY_VAL
+		  from RE_BOSS_MARKET_SECOND s
+		 where s.F_MARKET_LEVEL1_ID = #{crmFirstCode}
+		   and s.F_USE_FLAG = '1'
+		   and s.F_ISCHECK = '1'
+		   <!-- and s.F_END_TIME > to_char(sysdate, 'yyyyMMdd') -->
+  </select>
+  
+  <select id="queryCrmSecondGiftInfo" resultMap="rebossMarketSecondBean" parameterType="java.lang.String">
+  	select s.f_market_level1_id,
+		       s.f_market_level2_id,
+		       s.f_goods_id,
+		       s.f_goods_name,
+		       s.f_busi_id,
+		       s.f_busi_name,
+		       s.f_money_val,
+		       s.f_bz,
+		       s.f_market_level2_boss
+		  from re_boss_market_second s
+		 where s.f_market_level2_id = #{crmSecondCode}
+  </select>
+</mapper>

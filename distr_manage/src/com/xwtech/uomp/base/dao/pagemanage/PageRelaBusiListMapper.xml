@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.pagemanage.PageRelaBusiListMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.pagemanage.PageRelaBusi" id="pageRelaBusi">
+        <result property="busiNum" column="F_BUSI_NUM"/>
+        <result property="busiName" column="F_BUSI_NAME"/>
+        <result property="pageTmpNum" column="F_PAGE_TMP_NUM"/>
+        <result property="version" column="F_VERSION"/>
+        <result property="isopen" column="F_ISOPEN"/>
+    </resultMap>
+
+    <!-- 查询信息 -->
+    <select id="queryBusiUsedList" resultMap="pageRelaBusi" parameterType="java.util.Map">
+        select a.f_busi_num,
+               b.f_busi_name,
+               c.f_page_tmp_num,
+               c.f_version,
+               c.f_isopen
+          from T_PAGE_BUSI_LIST a
+         inner join T_BUSI_INFO b
+            on a.f_busi_num = b.f_busi_num
+           and b.f_state = 0
+          left join T_PAGE_RELA_BUSI_LIST c
+            on a.f_busi_num = c.f_busi_num
+           and c.f_page_tmp_num = #{pageTmpNum}
+           and c.f_version = #{version}
+         order by a.f_busi_num
+    </select>
+
+    <!-- 查询页面模板关联业务信息列表信息 -->
+    <select id="queryPageRelaBusiList" resultMap="pageRelaBusi" parameterType="java.util.Map">
+        select a.f_page_tmp_num,
+        a.f_version,
+        a.f_busi_num,
+        a.f_isopen,
+        b.f_busi_name
+        from T_PAGE_RELA_BUSI_LIST a
+        left join T_BUSI_INFO b
+        on a.f_busi_num = b.f_busi_num
+        where 1 = 1
+        <if test="pageTmpNum != null">
+            and a.f_page_tmp_num = #{pageTmpNum}
+        </if>
+        <if test="version != null">
+            and a.f_version in ('0',#{version})
+        </if>
+        order by a.f_busi_num, a.f_version
+    </select>
+
+    <!-- 生成页面时，查询已选择的业务的信息列表信息 -->
+    <select id="queryGeneratePageRelaBusiList" resultMap="pageRelaBusi" parameterType="java.util.Map">
+        select a.f_page_tmp_num,
+        a.f_version,
+        a.f_busi_num,
+        a.f_isopen,
+        b.f_busi_name
+        from T_PAGE_RELA_BUSI_LIST a
+        left join T_BUSI_INFO b
+        on a.f_busi_num = b.f_busi_num
+        where 1 = 1
+        <if test="pageTmpNum != null">
+            and a.f_page_tmp_num = #{pageTmpNum}
+        </if>
+        <if test="version != null">
+            and a.f_version in ('0',#{version})
+        </if>
+        <if test="busiNums != null">
+            and a.f_busi_num in
+            <foreach item="item" index="index" collection="busiNums" open="(" separator="," close=")">#{item}</foreach>
+        </if>
+        order by a.f_page_tmp_num, a.f_version
+    </select>
+
+    <!-- 添加信息 -->
+    <insert id="savePageRelaBusiList" parameterType="com.xwtech.uomp.base.pojo.pagemanage.PageRelaBusiList">
+        INSERT INTO T_PAGE_RELA_BUSI_LIST
+          (F_PAGE_TMP_NUM, F_VERSION, F_BUSI_NUM, F_ISOPEN)
+        VALUES
+          (#{pageTmpNum},#{version},#{busiNum},#{isopen})
+    </insert>
+
+    <!-- 删除信息 -->
+    <delete id="deletePageRelaBusiList" parameterType="java.util.Map">
+      DELETE FROM T_PAGE_RELA_BUSI_LIST WHERE F_PAGE_TMP_NUM = #{pageTmpNum} AND F_VERSION = #{version}
+    </delete>
+</mapper>

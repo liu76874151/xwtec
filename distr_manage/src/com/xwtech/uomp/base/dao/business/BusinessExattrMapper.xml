@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.business.BusinessExattrMapper" >
+  <resultMap id="businessExattrBean" type="com.xwtech.uomp.base.pojo.business.BusinessExattrBean" >
+    <id column="F_ATTR_KEY" property="attrKey" jdbcType="VARCHAR" />
+    <result column="F_ATTR_NAME" property="attrName" jdbcType="VARCHAR" />
+    <result column="F_ATTR_TYPE" property="attrType" jdbcType="DECIMAL" />
+    <result column="F_ATTR_DESC" property="attrDesc" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="queryByName" resultMap="businessExattrBean" parameterType="java.util.Map" >
+    select * from(
+		select rownum row_num, a.*
+		  from (
+		  	select 
+   			 F_ATTR_KEY, F_ATTR_NAME, F_ATTR_TYPE, F_ATTR_DESC
+    			from T_BUSI_EXATTR_DA
+		   ) a
+		          where 1=1
+         <if test="attrName != null">
+            AND F_ATTR_NAME like #{attrName}||'%'
+        </if>
+        <if test="attrKey != null">
+            AND F_ATTR_KEY like #{attrKey}||'%'
+        </if>
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <select id="queryByKey" resultMap="businessExattrBean" parameterType="java.lang.String" >
+	  	select 
+  			 F_ATTR_KEY, F_ATTR_NAME, F_ATTR_TYPE, F_ATTR_DESC
+   			from T_BUSI_EXATTR_DA
+		where F_ATTR_KEY=#{F_ATTR_KEY}
+  </select>
+  
+  <select id="queryBusinessExtraCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+  		select count(*) from T_BUSI_EXATTR_DA where 1=1 
+  		<if test="attrName != null">
+            AND F_ATTR_NAME like #{attrName}||'%'
+        </if>
+        <if test="attrKey != null">
+            AND F_ATTR_KEY like #{attrKey}||'%'
+        </if>
+  </select>
+  
+  <insert id="addBusiExtra" parameterType="com.xwtech.uomp.base.pojo.business.BusinessExattrBean">
+  	insert into t_busi_exattr_da
+	  (f_attr_key, f_attr_name, f_attr_type, f_attr_desc)
+	values
+	  (#{attrKey}, #{attrName}, #{attrType}, #{attrDesc})
+  </insert>
+  
+  <delete id="deleteBusiExtraByAttrKey" parameterType="java.lang.String">
+  	delete from t_busi_exattr_da where f_attr_key = #{attrKey}
+  </delete>
+  
+  <update id="updateBusinessExattrBean" parameterType="com.xwtech.uomp.base.pojo.business.BusinessExattrBean">
+  	update t_busi_exattr_da
+	   set 
+	       f_attr_name = #{attrName},
+	       f_attr_type = #{attrType},
+	       f_attr_desc = #{attrDesc}
+	 where f_attr_key = #{attrKey}
+  </update>
+  
+</mapper>

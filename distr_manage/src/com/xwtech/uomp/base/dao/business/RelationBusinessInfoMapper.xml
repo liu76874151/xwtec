@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.RelationBusinessInfoMapper" >
+  <resultMap id="relationBusinessInfoBean" type="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoBean" >
+    <id column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="F_RELATIVE_BUSI" property="relativeBusi" jdbcType="VARCHAR" />
+    <result column="F_PRIORITY" property="priority" jdbcType="DECIMAL" />
+    <collection property="relationBusinessInfoAreaDzBeans" ofType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoAreaDzBean" column="F_BUSI_NUM" resultMap="relationBusinessInfoAreaDzMap" />
+    <collection property="relationBusinessInfoBrandDzBeans" ofType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoBrandDzBean" column="F_BUSI_NUM" resultMap="relationBusinessInfoBrandDzMap" />
+  </resultMap>
+  
+  <resultMap id="relationBusinessInfoAreaDzMap" type="java.util.Map" >
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="F_RELATIVE_BUSI" property="relativeBusi" jdbcType="VARCHAR" />
+    <result column="F_AREA_NUM" property="areaNum" jdbcType="VARCHAR" />
+    <result column="F_AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="relationBusinessInfoBrandDzMap" type="java.util.Map" >
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="F_RELATIVE_BUSI" property="relativeBusi" jdbcType="VARCHAR" />
+    <result column="F_BRAND_NUM" property="brandNum" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="queryRelationInfos" parameterType="java.util.Map" resultMap="relationBusinessInfoBean">
+  	SELECT 
+  	A.F_CHANNEL_NUM,
+  	A.F_BUSI_NUM,
+  	A.F_AREA_NUM,
+  	(SELECT F_AREA_NAME FROM T_AREA_INFO WHERE F_AREA_NUM=A.F_AREA_NUM) AS F_AREA_NAME,
+  	B.F_BRAND_NUM 
+  	FROM T_RELATIVE_BUSI R
+	LEFT OUTER JOIN T_RELATIVE_BUSI_AREA_DZ A ON A.F_BUSI_NUM=R.F_BUSI_NUM AND R.F_CHANNEL_NUM=A.F_CHANNEL_NUM
+	LEFT OUTER JOIN T_RELATIVE_BUSI_BRAND_DZ B ON R.F_BUSI_NUM=B.F_BUSI_NUM AND R.F_CHANNEL_NUM=B.F_CHANNEL_NUM
+	WHERE R.F_BUSI_NUM=#{busiNum} AND R.F_CHANNEL_NUM=#{channelNum}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoBean" >
+    delete from T_RELATIVE_BUSI
+    where F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+      and F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+      and F_RELATIVE_BUSI = #{relativeBusi,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoBean" >
+    insert into T_RELATIVE_BUSI (F_BUSI_NUM, F_CHANNEL_NUM, F_RELATIVE_BUSI, 
+      F_PRIORITY)
+    values (#{busiNum,jdbcType=VARCHAR}, #{channelNum,jdbcType=VARCHAR}, #{relativeBusi,jdbcType=VARCHAR}, 
+      #{priority,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoBean" >
+    insert into T_RELATIVE_BUSI
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        F_BUSI_NUM,
+      </if>
+      <if test="channelNum != null" >
+        F_CHANNEL_NUM,
+      </if>
+      <if test="relativeBusi != null" >
+        F_RELATIVE_BUSI,
+      </if>
+      <if test="priority != null" >
+        F_PRIORITY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        #{busiNum,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNum != null" >
+        #{channelNum,jdbcType=VARCHAR},
+      </if>
+      <if test="relativeBusi != null" >
+        #{relativeBusi,jdbcType=VARCHAR},
+      </if>
+      <if test="priority != null" >
+        #{priority,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoBean" >
+    update T_RELATIVE_BUSI
+    <set >
+      <if test="priority != null" >
+        F_PRIORITY = #{priority,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+      and F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+      and F_RELATIVE_BUSI = #{relativeBusi,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoBean" >
+    update T_RELATIVE_BUSI
+    set F_PRIORITY = #{priority,jdbcType=DECIMAL}
+    where F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+      and F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+      and F_RELATIVE_BUSI = #{relativeBusi,jdbcType=VARCHAR}
+  </update>
+  
+  <delete id="deleteRelaBusiness" parameterType="com.xwtech.uomp.base.pojo.business.BusinessInfoBean">
+  	DELETE FROM T_RELATIVE_BUSI WHERE F_BUSI_NUM =#{busiNum,jdbcType=VARCHAR}
+  	AND F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+  </delete>
+  
+  <delete id="deleteByBusiNum" parameterType="java.lang.String">
+  	DELETE FROM T_RELATIVE_BUSI WHERE F_BUSI_NUM =#{busiNum,jdbcType=VARCHAR}
+  </delete>
+  
+  <resultMap id="businessInfoBean" type="com.xwtech.uomp.base.pojo.business.BusinessInfoBean" >
+    <result column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME" property="busiName" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_EN" property="busiNameEn" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_PYM1" property="busiNamePym1" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_PYM2" property="busiNamePym2" jdbcType="VARCHAR" />
+    <result column="F_BUSI_ICON" property="busiIcon" jdbcType="VARCHAR" />
+    <result column="F_BUSI_MENU_ICON" property="busiMenuIcon" jdbcType="VARCHAR" />
+    <result column="F_BUSI_DESC_ICON" property="busiDescIcon" jdbcType="VARCHAR" />
+    <result column="F_FLASH" property="flash" jdbcType="VARCHAR" />
+    <result column="F_PROCESS_TYPE" property="processType" jdbcType="DECIMAL" />
+    <result column="F_FEE" property="fee" jdbcType="DECIMAL" />
+    <result column="F_FEE_SCORE_M" property="feeScoreM" jdbcType="DECIMAL" />
+    <result column="F_FEE_SCORE_Q" property="feeScoreQ" jdbcType="DECIMAL" />
+    <result column="F_FEE_TYPE" property="feeType" jdbcType="DECIMAL" />
+    <result column="F_COUNT_UNIT" property="countUnit" jdbcType="VARCHAR" />
+    <result column="F_SUPP_PAY_WAY" property="suppPayWay" jdbcType="DECIMAL" />
+    <result column="F_DEDUCT_WAY" property="deductWay" jdbcType="VARCHAR" />
+    <result column="F_STATE" property="state" jdbcType="DECIMAL" />
+    <result column="F_JB_NUM" property="jbNum" jdbcType="VARCHAR" />
+    <result column="F_JB" property="jb" jdbcType="DECIMAL" />
+    <result column="F_MJ" property="mj" jdbcType="DECIMAL" />
+    <result column="F_BZ" property="bz" jdbcType="VARCHAR" />
+    <result column="F_BUSI_PIC_URL" property="busiPicUrl" jdbcType="VARCHAR" />
+    <result column="F_BUSI_CLIENT_URL" property="busiClientUrl" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TRANCNUM" property="busiTrancnum" jdbcType="VARCHAR" />
+    <result column="F_START_TIME" property="startTime" jdbcType="DATE" />
+    <result column="F_END_TIME" property="endTime" jdbcType="DATE" />
+    <result column="F_INTRO" property="intro" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_HTML" property="busiNameHtml" jdbcType="CLOB" />
+    <result column="F_BUSI_DESC" property="busiDesc" jdbcType="CLOB" />
+    <result column="F_BUSI_ADVL" property="busiAdvl" jdbcType="CLOB" />
+    <result column="F_BUSI_EXPL" property="busiExpl" jdbcType="CLOB" />
+    <result column="F_PROMPT" property="prompt" jdbcType="CLOB" />
+    <result column="F_BUSI_FEATURE" property="busiFeature" jdbcType="CLOB" />
+    <result column="F_BUSI_NEST_FT" property="busiNestFt" jdbcType="CLOB" />
+    <result column="F_BUSI_NEST_SD" property="busiNestSd" jdbcType="CLOB" />
+    <result column="F_BUSI_PRIVILEGE" property="busiPrivilege" jdbcType="CLOB" />
+  </resultMap>
+  
+  <select id="queryRelaBusiDetail" parameterType="java.util.Map" resultMap="businessInfoBean">
+  	select * from(
+		select rownum row_num, a.*
+		  from (
+		  	SELECT I.* FROM T_BUSI_INFO I WHERE I.F_BUSI_NUM IN 
+				(
+					SELECT T.F_RELATIVE_BUSI
+					  FROM T_RELATIVE_BUSI T
+					 WHERE T.F_BUSI_NUM = #{busiNum}
+					   AND T.F_CHANNEL_NUM = #{channelNum}
+				   )
+		  ) a
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+  <select id="queryRelaBusiDetailCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+  	SELECT COUNT(1) FROM T_BUSI_INFO I WHERE I.F_BUSI_NUM IN 
+	(
+		SELECT T.F_RELATIVE_BUSI
+		  FROM T_RELATIVE_BUSI T
+		 WHERE T.F_BUSI_NUM = #{busiNum}
+		   AND T.F_CHANNEL_NUM = #{channelNum}
+	   )
+  </select>
+</mapper>

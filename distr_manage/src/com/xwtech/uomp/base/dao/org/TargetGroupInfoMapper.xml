@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.org.TargetGroupInfoMapper" >
+  
+  <resultMap id="targetGroupInfoBean" type="com.xwtech.uomp.base.pojo.org.TargetGroupInfoBean" >
+    <id column="GROUP_ID" property="groupId" jdbcType="DECIMAL" />
+    <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="CITY" property="city" jdbcType="DECIMAL" />
+    <result column="STATE" property="state" jdbcType="CHAR" />
+    <result column="GROUP_TYPE" property="groupType" jdbcType="CHAR" />
+    <result column="DATA_SOURCE" property="dataSource" jdbcType="VARCHAR" />
+    <result column="IMPORT_COUNT" property="importCount" jdbcType="VARCHAR" />
+    <result column="f_area_name" property="areaName" jdbcType="VARCHAR"/>
+    <result column="begin_time" property="beginTime" jdbcType="VARCHAR"/>
+    <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+    <result column="PHONE_NUMBER" property="phoneNumber" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <select id="queryTargetGroupInfoList" resultMap="targetGroupInfoBean" parameterType="java.util.Map">
+  	select * from(
+		select rownum row_num, a.*
+			  from (select t1.group_id, t1.group_name, t1.description, t1.city, t1.state, t1.group_type,
+			  			t1.data_source,
+				        t1.import_count,
+				        t1.begin_time,
+       				    t1.end_time,
+				        t2.f_area_name
+ 						 from jsmss_target_group_info t1
+ 						 left join t_area_da t2
+				  		 on t1.city = t2.f_boss_code
+					) a
+		          where 1=1
+        <if test="groupId != null">
+            AND group_id = #{groupId}
+        </if>
+        <if test="groupName != null">
+        	AND group_name like '%'|| #{groupName}||'%' 
+        </if>
+         <if test="city != null " >
+            AND city like #{city}||'%'
+        </if>
+         <if test="state != null">
+            AND state = #{state}
+        </if>
+        <if test="groupType != null">
+            AND group_type =  #{groupType} OR group_type is null
+        </if>
+        <if test="beginTime != null">
+        	AND begin_time &gt; #{beginTime}
+        </if>
+        <if test="endTime != null">
+        	AND end_time &lt;= #{endTime}
+        </if>
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <select id="queryTargetGroupInfoCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+  	select count(*) from jsmss_target_group_info
+  	where 1=1
+  	<if test="groupId != null">
+            AND group_id = #{groupId}
+        </if>
+        <if test="groupName != null">
+        	AND group_name like '%'|| #{groupName}||'%' 
+        </if>
+         <if test="city != null " >
+            AND city like #{city}||'%'
+        </if>
+         <if test="state != null">
+            AND state = #{state}
+        </if>
+        <if test="groupType != null">
+            AND group_type =  #{groupType} OR group_type is null
+        </if>
+        <if test="beginTime != null">
+        	AND begin_time &gt; #{beginTime}
+        </if>
+        <if test="endTime != null">
+        	AND end_time &lt;= #{endTime}
+        </if>
+  </select>
+  
+  <select id="selectTargetGroupFilterBySecondPkid" parameterType="java.util.Map" resultMap="targetGroupInfoBean">
+	  	select * from(
+			select rownum row_num, a.*
+				  from (select group_id, group_name, description, city, state, group_type
+	 						 from jsmss_target_group_info
+						) a
+			          where 1=1
+	        <if test="groupId != null">
+	            AND a.group_id = #{groupId}
+	        </if>
+	         <if test="city != null">
+	            AND a.city = #{city}
+	        </if>
+	         <if test="state != null">
+	            AND a.state = #{state}
+	        </if>
+	        <if test="groupType != null">
+	            AND a.group_type =  #{groupType}
+	        </if>
+	         and a.group_id not in (
+          	 select b.group_id from jsmss_ms_group_relation b where b.market_second_pkid=#{marketSecondPkid}
+          	 <if test="tchannal != null">
+	            AND b.CHANNEL = #{tchannal}
+	        </if>
+				)
+	        ) 
+	        WHERE ROW_NUM &gt; #{start}
+	        AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <select id="queryGroupInfoById" parameterType="java.util.Map" resultMap="targetGroupInfoBean">
+  	select t1.*,t2.f_area_name from jsmss_target_group_info t1
+  	left join t_area_da t2 on t1.city = t2.f_boss_code
+  	where group_id = #{groupId}
+  </select>
+  
+  <select id="queryPhoneNumber"  parameterType="java.util.Map" resultType="java.lang.Integer">
+  	select count(*) from jsmss_target_user_info 
+  	where 
+  	group_id = #{groupId} 
+  	<if test="phoneNumber != null">
+  	and 
+  	phone_number = #{phoneNumber}
+  	</if>
+  </select>
+  
+  <update id="updatePhoneCount">
+  	update jsmss_target_group_info set import_count = #{importCount} where group_id = #{groupId}
+  </update>
+  
+  <update id="updateState">
+  	update jsmss_target_group_info set state = #{state} where group_id = #{groupId}
+  </update>
+  
+  <update id="updateGroupInfo">
+  	update jsmss_target_group_info
+  	<set>
+  	<if test="description != null">
+  		 description = #{description},
+  	</if>
+  	<if test="city != null">
+  		 city = #{city},
+  	</if>
+  	<if test="state != null">
+  		 group_type = #{groupType},
+  	</if>
+  	<if test="beginTime != null">
+  		 begin_time = #{beginTime},
+  	</if>
+  	<if test="endTime != null">
+  		 end_time = #{endTime},
+  	</if>
+  	<if test="groupName != null">
+  		group_name = #{groupName},
+  	</if>
+  	</set>
+  	where group_id = #{groupId}
+  </update>
+  
+  <insert id="addPhoneNumber">
+  	insert into jsmss_target_user_info
+  	(
+  		GROUP_ID,
+		PHONE_NUMBER
+  	)
+  	values
+  	(
+  		#{groupId},
+  		#{phoneNumber}
+  	)
+  </insert>
+  
+  <insert id="addGroupInfo">
+  	insert into jsmss_target_group_info
+  	(
+	  	GROUP_ID,
+		GROUP_NAME,
+		DESCRIPTION,
+		CITY,
+		BEGIN_TIME,
+		END_TIME
+  	)
+  	values
+  	(
+  		#{groupId},
+  		#{groupName},
+  		#{description},
+  		#{city},
+  		#{beginTime},
+  		#{endTime}
+  	)
+  	
+  </insert>
+  <delete id="deletePhoneNumber" parameterType="java.lang.String">
+  delete from jsmss_target_user_info where GROUP_ID=#{groupId}
+  </delete>
+</mapper>

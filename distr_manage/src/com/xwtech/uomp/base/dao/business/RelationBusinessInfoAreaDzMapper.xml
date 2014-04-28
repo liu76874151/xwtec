@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.RelationBusinessInfoAreaDzMapper" >
+  <resultMap id="relationBusinessInfoAreaDzBean" type="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoAreaDzBean" >
+    <result column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="F_RELATIVE_BUSI" property="relativeBusi" jdbcType="VARCHAR" />
+    <result column="F_AREA_NUM" property="areaNum" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <delete id="deleteByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoAreaDzBean" >
+    delete from T_RELATIVE_BUSI_AREA_DZ
+    where F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+      and F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+      and F_RELATIVE_BUSI = #{relativeBusi,jdbcType=VARCHAR}
+      and F_AREA_NUM = #{areaNum,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByBusiNum" parameterType="java.lang.String">
+  	delete from T_RELATIVE_BUSI_AREA_DZ
+  	where
+  	F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  </delete>
+  
+  <delete id="deleteRelaBusiAreaDz" parameterType="com.xwtech.uomp.base.pojo.business.BusinessInfoBean">
+  	delete from T_RELATIVE_BUSI_AREA_DZ
+  	where
+  	F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  	AND F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+  </delete>
+  
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoAreaDzBean" >
+    insert into T_RELATIVE_BUSI_AREA_DZ (F_BUSI_NUM, F_CHANNEL_NUM, F_RELATIVE_BUSI, 
+      F_AREA_NUM)
+    values (#{busiNum,jdbcType=VARCHAR}, #{channelNum,jdbcType=VARCHAR}, #{relativeBusi,jdbcType=VARCHAR}, 
+      #{areaNum,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoAreaDzBean" >
+    insert into T_RELATIVE_BUSI_AREA_DZ
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        F_BUSI_NUM,
+      </if>
+      <if test="channelNum != null" >
+        F_CHANNEL_NUM,
+      </if>
+      <if test="relativeBusi != null" >
+        F_RELATIVE_BUSI,
+      </if>
+      <if test="areaNum != null" >
+        F_AREA_NUM,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        #{busiNum,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNum != null" >
+        #{channelNum,jdbcType=VARCHAR},
+      </if>
+      <if test="relativeBusi != null" >
+        #{relativeBusi,jdbcType=VARCHAR},
+      </if>
+      <if test="areaNum != null" >
+        #{areaNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

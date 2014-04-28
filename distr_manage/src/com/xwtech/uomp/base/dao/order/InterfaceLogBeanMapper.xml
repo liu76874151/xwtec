@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.order.InterfaceLogBeanMapper" >
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.order.InterfaceLogBean" >
+    <id column="PKID" property="pkid" jdbcType="DECIMAL" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+    <result column="INTERFACE_URL" property="interfaceUrl" jdbcType="VARCHAR" />
+    <result column="MSISDN" property="msisdn" jdbcType="VARCHAR" />
+    <result column="REQ_TIME" property="reqTime" jdbcType="VARCHAR" />
+    <result column="ERROR_CODE" property="errorCode" jdbcType="VARCHAR" />
+    <result column="ERROR_MSG" property="errorMsg" jdbcType="VARCHAR" />
+    <result column="TYPE" property="type" jdbcType="CHAR" />
+    <result column="RESP_TIME" property="respTime" jdbcType="VARCHAR" />
+    <result column="RESP_FLAG" property="respFlag" jdbcType="CHAR" />
+    <result column="REQ_TEXT" property="reqText" jdbcType="CLOB" />
+    <result column="RESP_TEXT" property="respText" jdbcType="CLOB" />
+  </resultMap>
+
+  <!-- INTERFACE_LOG_PKID_SEQ -->
+  <insert id="saveInterfaceLogBean" parameterType="com.xwtech.uomp.base.pojo.order.InterfaceLogBean" >
+    insert into JSMSS_INTERFACE_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pkid != null" >
+        PKID,
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID,
+      </if>
+      <if test="interfaceUrl != null" >
+        INTERFACE_URL,
+      </if>
+      <if test="msisdn != null" >
+        MSISDN,
+      </if>
+      <if test="reqTime != null" >
+        REQ_TIME,
+      </if>
+      <if test="errorCode != null" >
+        ERROR_CODE,
+      </if>
+      <if test="errorMsg != null" >
+        ERROR_MSG,
+      </if>
+      <if test="type != null" >
+        TYPE,
+      </if>
+  
+        RESP_TIME,
+
+      <if test="respFlag != null" >
+        RESP_FLAG,
+      </if>
+      <if test="reqText != null" >
+        REQ_TEXT,
+      </if>
+      <if test="respText != null" >
+        RESP_TEXT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pkid != null" >
+        #{pkid,jdbcType=DECIMAL},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceUrl != null" >
+        #{interfaceUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="msisdn != null" >
+        #{msisdn,jdbcType=VARCHAR},
+      </if>
+      <if test="reqTime != null" >
+        #{reqTime,jdbcType=VARCHAR},
+      </if>
+      <if test="errorCode != null" >
+        #{errorCode,jdbcType=VARCHAR},
+      </if>
+      <if test="errorMsg != null" >
+        #{errorMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=CHAR},
+      </if>
+     to_char(SYSDATE,'YYYYMMDDHH24MISS'),
+      <if test="respFlag != null" >
+        #{respFlag,jdbcType=CHAR},
+      </if>
+      <if test="reqText != null" >
+        #{reqText,jdbcType=CLOB},
+      </if>
+      <if test="respText != null" >
+        #{respText,jdbcType=CLOB},
+      </if>
+    </trim>
+  </insert>
+ 
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.org.ZoneInfoMapper">
+	<resultMap type="com.xwtech.uomp.base.pojo.org.ZoneInfoBean"
+		id="zoneInfoBean">
+		<result property="zoneId" column="ZONE_ID" />
+		<result property="parentId" column="PARENT_ID" />
+		<result property="zoneLevel" column="ZONE_LEVEL" />
+		<result property="zoneName" column="ZONE_NAME" />
+		<result property="bossCode" column="BOSS_CODE" />
+		<result property="zoneState" column="ZONE_STATE" />
+		<result property="orgMapId" column="ORG_MAP_ID" />
+	</resultMap>
+	
+	<select id="queryZoneByCity" parameterType="java.util.Map"  resultMap="zoneInfoBean">
+		select *
+		  from jsmss_zone_sort
+		 where parent_id =
+		       (select zone_id from jsmss_zone_sort where boss_code = #{cityId})
+
+	</select>
+	
+	<select id="queryZoneByParentId" parameterType="java.lang.String" resultMap="zoneInfoBean">
+		select boss_code from jsmss_zone_sort where parent_id=#{parentId}
+	</select>
+	 <!-- 查询地市信息 -->
+     
+   <select id="queryBossAreaList" resultMap="zoneInfoBean" parameterType="java.util.Map">
+	select 
+	a.*
+ 	from jsmss_zone_sort a where a.org_map_id is not null 
+   </select>
+</mapper>

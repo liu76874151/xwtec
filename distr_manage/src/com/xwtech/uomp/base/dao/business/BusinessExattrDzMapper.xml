@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.BusinessExattrDzMapper">
+	<resultMap id="businessExattrDzBean" type="com.xwtech.uomp.base.pojo.business.BusinessExattrDzBean">
+		<result column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+		<result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+		<result column="F_ATTR_KEY" property="attrKey" jdbcType="VARCHAR" />
+		<result column="F_ATTR_VALE" property="attrVale" jdbcType="VARCHAR" />
+		<result column="F_BZ" property="bz" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="queryBusiExtraDzByAttrKey" parameterType="java.lang.String" resultMap="businessExattrDzBean">
+		select f_busi_num, f_channel_num, f_attr_key, f_attr_vale, f_bz from t_busi_exattr_dz
+		where  f_attr_key=#{attrKey}
+	</select>
+	
+	<delete id="deleteBusiExtraDzByAttrKey" parameterType="java.lang.String">
+		delete from t_busi_exattr_dz where  f_attr_key = #{attrKey}
+	</delete>
+	
+	<insert id="insert" parameterType="com.xwtech.uomp.base.pojo.business.BusinessExattrDzBean">
+		insert into t_busi_exattr_dz
+		  (f_busi_num, f_attr_key, f_attr_vale, f_bz, f_channel_num)
+		values
+		  (#{busiNum,jdbcType=VARCHAR}, #{attrKey,jdbcType=VARCHAR}, #{attrVale,jdbcType=VARCHAR}, #{bz,jdbcType=VARCHAR},#{channelNum,jdbcType=VARCHAR})
+	</insert>
+	
+	<delete id="deleteByBusiNum" parameterType="java.lang.String">
+		DELETE FROM T_BUSI_EXATTR_DZ WHERE F_BUSI_NUM=#{busiNum}
+	</delete>
+</mapper>

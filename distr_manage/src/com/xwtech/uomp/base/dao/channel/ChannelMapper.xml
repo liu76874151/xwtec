@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.channel.ChannelMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.channel.ChannelBean" id="ChannelBean">
+        <result property="channelNum" column="F_CHANNEL_NUM"/>
+        <result property="channelName" column="F_CHANNEL_NAME"/>
+        <result property="channelEname" column="F_CHANNEL_ENAME"/>
+        <result property="bossChannelNum" column="F_BOSS_CHANNELNUM"/>
+     </resultMap>
+     
+     <!-- 查询渠道列表 -->
+     <select id="queryChannel" parameterType="java.util.Map" resultMap="ChannelBean">
+     	select * from t_channel_da order by f_channel_num
+     </select>
+     
+     <select id="queryChannelByNum" parameterType="java.util.Map" resultMap="ChannelBean">
+     	select * from t_channel_da where 1=1
+     	<if test="channelNum != null">
+     		and f_channel_num = #{channelNum}
+     	</if>
+     </select>
+     
+     <select id="queryChannelCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+     	select count(*) from t_channel_da
+     </select>
+     
+     <insert id="addChannel">
+     	insert into t_channel_da
+     	(
+     	F_CHANNEL_NUM,
+     	F_CHANNEL_NAME,
+     	F_CHANNEL_ENAME
+     	<if test="bossChannelNum != null">
+     	,F_BOSS_CHANNELNUM
+     	</if>
+     	)
+     	values
+     	(
+     	#{channelNum},
+     	#{channelName},
+     	#{channelEname}
+     	<if test="bossChannelNum != null">
+     	,#{bossChannelNum}
+     	</if>
+     	)
+     </insert>
+     
+     <update id="updateChannel">
+     	update t_channel_da
+     	set 
+     	F_CHANNEL_NAME = #{channelName},
+     	F_CHANNEL_ENAME = #{channelEname}
+     	where F_CHANNEL_NUM = #{channelNum}
+     </update>
+     
+     <delete id="deleteChannel" parameterType="java.util.List">
+     	delete from t_channel_da where F_CHANNEL_NUM in
+     	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+     	#{item}
+     	</foreach>
+     </delete>
+</mapper>       

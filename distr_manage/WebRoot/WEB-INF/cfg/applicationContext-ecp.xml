@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- 一二级营销案查询 -->
+	<bean id="queryYxfaList1ServiceClient"
+		class="com.xwtech.xwecp.service.logic.client_impl.common.impl.QueryYxfaList1ServiceClientImpl" />
+
+	<!-- 营销案详细查询 -->
+	<bean id="queryYxfaMxServiceClient"
+		class="com.xwtech.xwecp.service.logic.client_impl.common.impl.QueryYxfaMxServiceClientImpl" />
+	<!-- 捆绑业务包查询 -->
+	<bean id="queryYxfaYwbServiceClient"
+		class="com.xwtech.xwecp.service.logic.client_impl.common.impl.QueryYxfaYwbServiceClientImpl" />
+	<!-- 礼品包查询 -->
+	<bean id="queryYxfaLpbServiceClient"
+		class="com.xwtech.xwecp.service.logic.client_impl.common.impl.QueryYxfaLpbServiceClientImpl" />
+</beans>

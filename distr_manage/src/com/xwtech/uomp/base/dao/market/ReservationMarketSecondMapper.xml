@@ -1,0 +1,774 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.market.ReservationMarketSecondMapper">
+	<resultMap
+		type="com.xwtech.uomp.base.pojo.market.ReservationMarketSecondBean"
+		id="ReservationMarketSecondBean">
+		<result property="marketSecondPkId" column="MARKET_SECOND_PKID" />
+		<result property="marketSecondCode" column="MARKET_SECOND_CODE" />
+		<result property="marketFirstPkid" column="MARKET_FIRST_PKID" />
+		<result property="marketSecondName" column="MARKET_SECOND_NAME" />
+		<result property="city" column="CITY" />
+		<result property="viewName" column="VIEW_NAME" />
+		<result property="imgDir" column="IMG_DIR" />
+		<result property="toObject" column="TO_OBJECT" />
+		<result property="activityComment" column="ACTIVITY_COMMENT" />
+		<result property="moneyVal" column="MONEY_VAL" />
+		<result property="beginTime" column="BEGIN_TIME" />
+		<result property="endTime" column="END_TIME" />
+		<result property="isListView" column="IS_LIST_VIEW" />
+		<result property="state" column="STATE" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="verifyState" column="VERIFY_STATE" />
+		<result property="cfgUserId" column="CFG_USER_ID" />
+		<result property="notice" column="NOTICE" />
+		<result property="proVerifyState" column="PRO_VERIFY_STATE" />
+		<result property="localVerifyState" column="LOCAL_VERIFY_STATE" />
+		<result property="isInGroup" column="IS_IN_GROUP" />
+		<result property="giftBinzInfo" column="GIFT_BINZ_INFO" />
+		<result property="bizCode" column="BIZ_CODE" />
+		<result property="bizName" column="BIZ_NAME" />
+		<result property="bossGiftId" column="BOSS_GIFT_ID" />
+		<result property="bossGiftName" column="BOSS_GIFT_NAME" />
+		<result property="bossSecondCode" column="BOSS_SECOND_CODE" />
+		<result property="bossBizGiftInfo" column="BOSS_BIZ_GIFT_INFO" />
+		<result property="marketFirstName" column="FIRSTMARKET_VIEW_NAME"/>
+		<result property="channelData" column="CHANNAL_DATA"/>
+		
+		<result column="TEST_ONLINE_STATE" property="testOnlineState" />
+		<result column="F_AREA_NAME" property="areaName" />
+		
+		<result column="WT_PRO_VERIFY_STATE" property="wtProVerifyState" jdbcType="VARCHAR" />
+		<result column="WT_LOCAL_VERIFY_STATE" property="wtLocalVerifyState" jdbcType="VARCHAR" />
+		<result column="WT_VERIFY_STATE" property="wtVerifyState" jdbcType="VARCHAR" />
+		
+		<result column="WT_TEST_ONLINE_STATE" property="wtTestOnlineState" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 根据一级预约营销案主键查询关联的二级预约营销案 -->
+	<select id="queryReservationMarketSecondList" resultMap="ReservationMarketSecondBean"
+		parameterType="java.util.Map">
+		select *
+		  from (select ROWNUM ROW_NUM, A.*
+		          from (select t1.MARKET_SECOND_PKID,
+		                       t1.VIEW_NAME,
+		                       t1.TO_OBJECT,
+		                       to_date(t1.BEGIN_TIME, 'yyyy-mm-dd') BEGIN_TIME,
+		                       to_date(t1.END_TIME, 'yyyy-mm-dd') END_TIME,
+		                       t1.CREATE_TIME,
+		                       t1.CFG_USER_ID,
+		                       t1.IS_LIST_VIEW,
+		                       case t1.VERIFY_STATE
+		                         when '0' then
+		                          '待审核'
+		                         when '1' then
+		                          '审核通过'
+		                         else
+		                          '审核不通过'
+		                       end VERIFY_STATE,
+		                       t2.f_area_name city
+		                  from JSMSS_RESERVATION_SECOND t1
+		                  left join T_AREA_INFO t2
+		                    on t1.city = t2.f_boss_code
+		                 where t1.market_first_pkid = #{marketFirstPkid}
+		                 	and t1.city = #{city}
+		                 	and t1.state = #{state}
+		                 ) A)
+		 WHERE ROW_NUM &gt; #{start}
+		   AND ROW_NUM &lt;= #{end}
+	</select>
+	
+	<!-- 审核列表查询 -->
+	<select id="queryReservationMarketSecondAuditList" resultMap="ReservationMarketSecondBean" parameterType="java.util.Map">
+	select *
+		  from (select ROWNUM ROW_NUM, A.*
+		          from (
+					select t1.MARKET_SECOND_PKID,
+						       t1.MARKET_SECOND_CODE,
+						       t1.MARKET_FIRST_PKID,
+						       t2.VIEW_NAME AS FIRSTMARKET_VIEW_NAME,
+						       t1.MARKET_SECOND_NAME,
+						       t3.f_area_name as CITY,
+						       t1.VIEW_NAME,
+						       t1.TO_OBJECT,
+						       t1.ACTIVITY_COMMENT,
+						       t1.MONEY_VAL,
+						       t1.BEGIN_TIME,
+						       t1.END_TIME,
+						       case t1.IS_LIST_VIEW
+						       	 when '1' then '展示'
+						       	 else '不展示'
+						       end IS_LIST_VIEW ,
+						       t1.STATE,
+						       t1.CREATE_TIME,
+						       t1.VERIFY_STATE,
+						       t1.CFG_USER_ID,
+						       t1.PRO_VERIFY_STATE,
+						       t1.LOCAL_VERIFY_STATE,
+						       case t2.CHANNAL_DATA
+			                     when '4' then '网厅'
+			                     when '5' then '掌厅'
+			                     when '6' then '短厅'
+			                   end CHANNAL_DATA
+						  from jsmss_reservation_second t1
+						  left join jsmss_reservation_first t2
+						    on t1.market_first_pkid = t2.market_first_pkid
+						  left join t_area_info t3
+                			on t1.city = t3.f_boss_code
+						 where t1.state = '1'
+						 <if test="city != null" >
+						   and t1.city like #{city}||'%'
+						  </if>
+						 <if test="marketSecondName != null">
+						 	and t1.MARKET_SECOND_NAME = #{marketSecondName}
+						 </if>
+						 <if test="proManager != null">
+				        	<if test="verifyState != null">
+				            	<if test="channalData == 5">
+				            		AND s.pro_verify_state = #{verifyState}
+				            	</if>
+				            	<if test="channalData == 4">
+				            		AND s.wt_pro_verify_state = #{verifyState}
+				            	</if>
+				        	</if>
+				        </if>
+				        <if test="cityManager != null">
+				        	<if test="verifyState != null">
+				            	<if test="channalData == 5">
+				            		AND s.local_verify_state = #{verifyState}
+				            	</if>
+				            	<if test="channalData == 4">
+				            		AND s.wt_local_verify_state = #{verifyState}
+				            	</if>
+				            </if>
+				        </if>
+						 <if test="channalData != null">
+						 	and t2.CHANNEL_DATA like '%'||#{channalData}||'%'
+						 </if>
+						 <if test="beginTime != null">
+						 	and t1.BEGIN_TIME = #{beginTime}
+						 </if>
+						 <if test="endTime != null">
+						 	and t1.END_TIME = #{endTime}
+						 </if>
+						   ) A)
+		 WHERE ROW_NUM &gt; #{start}
+		   AND ROW_NUM &lt;= #{end}
+	</select>
+	
+	<!-- 审核列表中营销案个数 -->
+	<select id="queryReservationMarketSecondAuditCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from jsmss_reservation_second t1
+								left join jsmss_reservation_first t2
+								on t1.market_first_pkid = t2.market_first_pkid
+								where t1.state = '1'
+								<if test="city != null">
+									and t1.city like #{city}||'%'
+								</if>
+								<if test="marketSecondName != null">
+									and t1.MARKET_SECOND_NAME = #{marketSecondName}
+								</if>
+								<if test="verifyState != null">
+									and t1.VERIFY_STATE = #{verifyState}
+								</if>
+								<if test="channelData != null">
+									and t2.CHANNEL_DATA = #{channelData}
+								</if>
+								<if test="beginTime != null">
+									and t1.BEGIN_TIME = #{beginTime}
+								</if>
+								<if test="endTime != null">
+									and t1.END_TIME = #{endTime}
+								</if>
+	</select>
+	
+	<!-- 查询某一个一级预约营销案下的二级预约营销案个数 -->
+	<select id="queryReservationMarketSecondListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from JSMSS_RESERVATION_SECOND where MARKET_FIRST_PKID =#{marketFirstPkid} AND STATE = '1' AND CITY = #{city}
+	</select>
+	
+	<!-- 查询某一个二级预约营销案信息 -->
+	<select id="queryReservationMarketSecondByPkid" resultMap="ReservationMarketSecondBean" parameterType="java.lang.String">
+		SELECT T1.MARKET_SECOND_PKID,
+						   T1.MARKET_SECOND_CODE,
+						   T1.MARKET_FIRST_PKID,
+						   T1.MARKET_SECOND_NAME,
+						   T1.CITY,
+						   T1.VIEW_NAME,
+						   T1.TO_OBJECT,
+						   T1.ACTIVITY_COMMENT,
+						   T1.MONEY_VAL,
+						   T1.BEGIN_TIME,
+						   T1.END_TIME,
+						   T1.IS_LIST_VIEW,
+						   T1.STATE,
+						   T1.CREATE_TIME,
+						   T1.VERIFY_STATE,
+						   T1.CFG_USER_ID,
+						   T1.NOTICE,
+						   T1.PRO_VERIFY_STATE,
+						   T1.LOCAL_VERIFY_STATE,
+						   T1.IS_IN_GROUP,
+						   T1.GIFT_BINZ_INFO,
+						   T1.BIZ_CODE,
+						   T1.BIZ_NAME,
+						   T1.BOSS_GIFT_ID,
+						   T1.BOSS_GIFT_NAME,
+						   T1.BOSS_SECOND_CODE,
+						   T2.MARKET_FIRST_NAME as FIRSTMARKET_VIEW_NAME
+				FROM JSMSS_RESERVATION_SECOND T1
+				LEFT JOIN JSMSS_RESERVATION_FIRST T2
+				ON T1.MARKET_FIRST_PKID = T2.MARKET_FIRST_PKID
+				WHERE MARKET_SECOND_PKID = #{marketSecondPkid}
+	</select>
+	
+	<select id="queryMarketForTest" resultMap="ReservationMarketSecondBean" parameterType="java.util.Map" >
+  	select * from(
+		select rownum row_num, a.*
+		  from (
+		  	select s.*,t.f_area_name,f.channal_data
+		                  from jsmss_reservation_second s
+		                  left join t_area_da t
+		                  on t.f_boss_code = s.city
+		                  left join jsmss_reservation_first f
+		                  on f.MARKET_FIRST_PKID = s.MARKET_FIRST_PKID
+		                 where 1 = 1
+  	<if test="state != null">
+		AND s.state = #{state}
+    </if>
+      <if test="marketFirstPkid != null">
+		 AND s.market_first_pkid = #{marketFirstPkid}
+	</if>
+	<if test="city != null">
+		AND s.city like #{city}||'%'
+	</if>
+	<if test="viewName != null">
+		AND s.view_name like #{viewName}||'%'
+	</if>
+	<if test="verifyState != null">
+		<if test="channalData == 5">
+			AND s.pro_verify_state = #{verifyState}
+		</if>
+		<if test="channalData == 4">
+			AND s.wt_pro_verify_state = #{verifyState}
+		</if>
+	</if>
+	<if test="verifyState != null">
+		<if test="channalData == 5">
+			AND s.local_verify_state = #{verifyState}
+		</if>
+		<if test="channalData == 4">
+			AND s.wt_local_verify_state = #{verifyState}
+		</if>
+	</if>
+	<if test="isListView != null">
+		AND s.is_list_view = #{isListView}
+	</if>
+	<if test="beginTime != null">
+		AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt;
+		to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="endTime != null">
+		AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;=
+		to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="channalData != null">
+		AND f.CHANNAL_DATA like '%'||#{channalData}||'%'
+	</if>
+	<if test="type != null">
+		AND s.TYPE = #{type}
+	</if>
+	<if test="testOnlineState != null">
+		AND s.test_online_state = #{testOnlineState}
+	</if>
+		) a
+     ) 
+     WHERE ROW_NUM &gt; #{start}
+     AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <select id="queryCountForTest"  resultType="java.lang.Integer" parameterType="java.util.Map" >
+  	select count(*) from jsmss_reservation_second s
+  	left join jsmss_reservation_first a
+  	on a.market_first_pkid = s.market_first_pkid
+  	where 1=1
+  	<if test="state != null">
+		AND s.state = #{state}
+    </if>
+	<if test="city != null">
+		AND s.city like #{city}||'%'
+	</if>
+	<if test="viewName != null">
+		AND s.view_name like #{viewName}||'%'
+	</if>
+	<if test="verifyState != null">
+		<if test="channalData == 5">
+			AND s.pro_verify_state = #{verifyState}
+		</if>
+		<if test="channalData == 4">
+			AND s.wt_pro_verify_state = #{verifyState}
+		</if>
+	</if>
+	<if test="verifyState != null">
+		<if test="channalData == 5">
+			AND s.local_verify_state = #{verifyState}
+		</if>
+		<if test="channalData == 4">
+			AND s.wt_local_verify_state = #{verifyState}
+		</if>
+	</if>
+	<if test="isListView != null">
+		AND s.is_list_view = #{isListView}
+	</if>
+	<if test="beginTime != null">
+		AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt;
+		to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="endTime != null">
+		AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;=
+		to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="channalData != null">
+		AND a.CHANNAL_DATA like '%'||#{channalData}||'%'
+	</if>
+	<if test="type != null">
+		AND s.TYPE = #{type}
+	</if>
+	<if test="testOnlineState != null">
+		AND s.test_online_state = #{testOnlineState}
+	</if>
+  </select>
+	
+	<select id="queryMarketSecondForVerify" resultMap="ReservationMarketSecondBean" parameterType="java.util.Map">
+					select * from(
+					select rownum row_num, a.*
+					from (
+						select s.*,t.f_area_name,f.channal_data
+			          from jsmss_reservation_second s
+			          left join t_area_da t
+			          on t.f_boss_code = s.city
+			          left join jsmss_reservation_first f
+			          on f.market_first_pkid = s.market_first_pkid
+			          where 1=1
+				    <if test="marketFirstPkid != null">
+			            AND s.market_first_pkid = #{marketFirstPkid}
+			        </if>
+			        <if test="state != null">
+			            AND s.state = #{state}
+			        </if>
+			        <if test="city != null">
+			            AND s.city like #{city}||'%'
+			        </if>
+			        <if test="viewName != null">
+			            AND s.view_name like #{viewName}||'%'
+			        </if>
+			        <if test="proManager != null">
+				        	<if test="verifyState != null">
+				            	<if test="channalData == 5">
+				            		AND s.pro_verify_state = #{verifyState}
+				            	</if>
+				            	<if test="channalData == 4">
+				            		AND s.wt_pro_verify_state = #{verifyState}
+				            	</if>
+				        	</if>
+				        </if>
+				        <if test="cityManager != null">
+				        	<if test="verifyState != null">
+				            	<if test="channalData == 5">
+				            		AND s.local_verify_state = #{verifyState}
+				            	</if>
+				            	<if test="channalData == 4">
+				            		AND s.wt_local_verify_state = #{verifyState}
+				            	</if>
+				            </if>
+				        </if>
+			        <if test="isListView != null">
+			            AND s.is_list_view = #{isListView}
+			        </if>
+			        <if test="beginTime != null">
+			            AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt; to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+			        </if>
+			        <if test="endTime != null">
+			            AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+			        </if>
+			        <if test="channalData != null">
+			        	AND f.CHANNAL_DATA like '%'||#{channalData}||'%'
+			        </if>
+				 ) a
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+    
+	<select id="queryMarketSecondCountForVerify" resultType="java.lang.Integer" parameterType="java.util.Map">
+			SELECT COUNT(*)
+			FROM
+			jsmss_reservation_second s
+			left join
+			jsmss_reservation_first f on s.market_first_pkid=f.market_first_pkid
+			where 1=1
+        <if test="marketFirstPkid != null">
+            AND s.market_first_pkid = #{marketFirstPkid}
+        </if>
+        <if test="state != null">
+            AND s.state = #{state}
+        </if>
+        <if test="city != null">
+            AND s.city like #{city}||'%'
+        </if>
+        <if test="viewName != null">
+            AND s.view_name like #{viewName}||'%'
+        </if>
+		<if test="proManager != null">
+			<if test="verifyState != null">
+				<if test="channalData == 5">
+					AND s.pro_verify_state = #{verifyState}
+				</if>
+				<if test="channalData == 4">
+					AND s.wt_pro_verify_state = #{verifyState}
+				</if>
+			</if>
+		</if>
+		<if test="cityManager != null">
+			<if test="verifyState != null">
+				<if test="channalData == 5">
+					AND s.local_verify_state = #{verifyState}
+				</if>
+				<if test="channalData == 4">
+					AND s.wt_local_verify_state = #{verifyState}
+				</if>
+			</if>
+		</if>
+        <if test="isListView != null">
+            AND s.is_list_view = #{isListView}
+        </if>
+        <if test="beginTime != null">
+            AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt; to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+        </if>
+        <if test="endTime != null">
+            AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+        </if>
+        <if test="channalData != null">
+        	AND f.CHANNAL_DATA like '%'||#{channalData}||'%'
+        </if>
+	</select>
+	
+	<!-- 添加二级预约营销案 -->
+	<insert id="addReservationMarketSecond">
+		INSERT INTO JSMSS_RESERVATION_SECOND
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+						<if test="marketSecondPkId != null">
+						   MARKET_SECOND_PKID,
+						</if>
+						<if test="marketSecondCode != null">
+						   MARKET_SECOND_CODE,
+						</if>
+						<if test="marketFirstPkid != null">
+						   MARKET_FIRST_PKID,
+						</if>
+						<if test="marketSecondName != null">
+						   MARKET_SECOND_NAME,
+						</if>
+						<if test="city != null">
+						   CITY,
+						</if>
+						<if test="viewName != null">
+						   VIEW_NAME,
+						</if>
+						<if test="toObject != null">
+						   TO_OBJECT,
+						</if>
+						<if test="activityComment != null">
+						   ACTIVITY_COMMENT,
+						</if>
+						<if test="moneyVal != null">
+						   MONEY_VAL,
+						</if>
+						<if test="beginTime != null">
+						   BEGIN_TIME,
+						</if>
+						<if test="endTime != null">
+						   END_TIME,
+						</if>
+						<if test="isListView != null">
+						   IS_LIST_VIEW,
+						</if>
+						<if test="state != null">
+						   STATE,
+						</if>
+						   CREATE_TIME,
+						<if test="verifyState != null">
+						   VERIFY_STATE,
+						</if>
+						<if test="cfgUserId != null">
+						   CFG_USER_ID,
+						</if>
+						<if test="notice != null">
+						   NOTICE,
+						</if>
+						<if test="proVerifyState != null">
+						   PRO_VERIFY_STATE,
+						</if>
+						<if test="localVerifyState != null">
+						   LOCAL_VERIFY_STATE,
+						</if>
+						<if test="giftBinzInfo != null">
+						   GIFT_BINZ_INFO,
+						</if>
+						<if test="bizCode != null">
+						   BIZ_CODE,
+						</if>
+						<if test="bizName != null">
+						   BIZ_NAME,
+						</if>
+						<if test="bossGiftId != null">
+						   BOSS_GIFT_ID,
+						</if>
+						<if test="bossGiftName != null">
+						   BOSS_GIFT_NAME,
+						</if>
+						<if test="bossSecondCode != null">
+						   BOSS_SECOND_CODE
+						</if>
+						</trim>
+						<trim prefix="values (" suffix=")" suffixOverrides="," >
+						<if test="marketSecondPkId != null">
+						   #{marketSecondPkId,jdbcType=VARCHAR},
+						</if>
+						<if test="marketSecondCode != null">
+						   #{marketSecondCode,jdbcType=VARCHAR},
+						</if>
+						<if test="marketFirstPkid != null">
+						   #{marketFirstPkid,jdbcType=VARCHAR},
+						</if>
+						<if test="marketSecondName != null">
+						   #{marketSecondName,jdbcType=VARCHAR},
+						</if>
+						<if test="city != null">
+						   #{city,jdbcType=VARCHAR},
+						</if>
+						<if test="viewName != null">
+						   #{viewName,jdbcType=VARCHAR},
+						</if>
+						<if test="toObject != null">
+						   #{toObject,jdbcType=VARCHAR},
+						</if>
+						<if test="activityComment != null">
+						   #{activityComment,jdbcType=VARCHAR},
+						</if>
+						<if test="moneyVal != null">
+						   #{moneyVal,jdbcType=DECIMAL},
+						</if>
+						<if test="beginTime != null">
+						   #{beginTime,jdbcType=VARCHAR},
+						</if>
+						<if test="endTime != null">
+						   #{endTime,jdbcType=VARCHAR},
+						</if>
+						<if test="isListView != null">
+						   #{isListView,jdbcType=CHAR},
+						</if>
+						<if test="state != null">
+						   #{state,jdbcType=CHAR},
+						</if>
+						   to_char(SYSDATE, 'YYYYMMDDHH24MISS'),
+						<if test="verifyState != null">
+						   #{verifyState,jdbcType=CHAR},
+						</if>
+						<if test="cfgUserId != null">
+						   #{cfgUserId,jdbcType=VARCHAR},
+						</if>
+						<if test="notice != null">
+						   #{notice,jdbcType=CHAR},
+						</if>
+						<if test="proVerifyState != null">
+						   #{proVerifyState,jdbcType=CHAR},
+						</if>
+						<if test="localVerifyState != null">
+						   #{localVerifyState,jdbcType=CHAR},
+						</if>
+						<if test="giftBinzInfo != null">
+						   #{giftBinzInfo,jdbcType=VARCHAR},
+						</if>
+						<if test="bizCode != null">
+						   #{bizCode,jdbcType=VARCHAR},
+						</if>
+						<if test="bizName != null">
+						   #{bizName,jdbcType=VARCHAR},
+						</if>
+						<if test="bossGiftId != null">
+						   #{bossGiftId,jdbcType=VARCHAR},
+						</if>
+						<if test="bossGiftName != null">
+						   #{bossGiftName,jdbcType=VARCHAR},
+						</if>
+						<if test="bossSecondCode != null">
+						   #{bossSecondCode,jdbcType=VARCHAR}
+						</if>
+    				</trim>
+	</insert>
+	
+	<!-- 控制台二级预约营销案 -->
+	<select id="queryMarketSecondForVerifyOnConsole" resultMap="ReservationMarketSecondBean" parameterType="java.util.Map">
+					select * from(
+					select rownum row_num, a.*
+					from (
+						select MARKET_SECOND_PKID,'['||substr(f_area_name,0,instr(f_area_name,'地')-1)||']'||s.view_name as view_name,s.pro_verify_state,s.local_verify_state,s.verify_state,t.f_area_name,f.channal_data,
+						s.wt_pro_verify_state,s.wt_local_verify_state,s.wt_verify_state
+			          from jsmss_reservation_second s
+			          left join t_area_da t
+			          on t.f_boss_code = s.city
+			          left join jsmss_reservation_first f
+			          on f.market_first_pkid = s.market_first_pkid
+			          where 1=1
+				    <if test="marketFirstPkid != null">
+			            AND s.market_first_pkid = #{marketFirstPkid}
+			        </if>
+			        <if test="state != null">
+			            AND s.state = #{state}
+			        </if>
+			        <if test="city != null">
+			            AND s.city like #{city}||'%'
+			        </if>
+			        <if test="viewName != null">
+			            AND s.view_name like #{viewName}||'%'
+			        </if>
+			        <if test="proManager != null">
+						<if test="verifyState != null">
+							<if test="channelData == 5">
+								AND s.pro_verify_state = #{verifyState}
+							</if>
+							<if test="channelData == 4">
+								AND s.wt_pro_verify_state = #{verifyState}
+							</if>
+						</if>
+					</if>
+						<if test="cityManager != null">
+							<if test="verifyState != null">
+								<if test="channelData == 5">
+									AND s.local_verify_state = #{verifyState}
+								</if>
+								<if test="channelData == 4">
+									AND s.wt_local_verify_state = #{verifyState}
+								</if>
+							</if>
+					</if>
+			        <if test="isListView != null">
+			            AND s.is_list_view = #{isListView}
+			        </if>
+			        <if test="beginTime != null">
+			            AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt; to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+			        </if>
+			        <if test="endTime != null">
+			            AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+			        </if>
+			        <if test="channalData != null">
+			        	AND f.CHANNAL_DATA like '%'||#{channalData}||'%'
+			        </if>
+				 ) a
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+	
+	<!-- 修改二级预约营销案 -->
+	<update id="updateReservationMarketSecond">
+		UPDATE JSMSS_RESERVATION_SECOND
+		SET VIEW_NAME = #{viewName},
+			   TO_OBJECT = #{toObject},
+			   ACTIVITY_COMMENT = #{activityComment},
+			   BEGIN_TIME = #{beginTime},
+			   END_TIME = #{endTime},
+			   NOTICE = #{notice}
+		WHERE MARKET_SECOND_PKID = #{marketSecondPkId}
+	</update>
+	
+	<!-- 删除二级预约营销案 -->
+	<update id="deleteReservationMarketSecond" parameterType="java.lang.String">
+		UPDATE JSMSS_RESERVATION_SECOND
+		SET STATE = '0'
+		WHERE MARKET_SECOND_PKID = #{marketSecondPkId}
+	</update>
+	
+	<!-- 更新二级预约营销案列表展示状态 -->
+	<update id="updateIsViewListState">
+		UPDATE JSMSS_RESERVATION_SECOND
+		SET IS_LIST_VIEW = #{isListView}
+		WHERE MARKET_SECOND_PKID = #{marketSecondPkId}
+	</update>
+	
+	<!-- 更新二级预约营销案审核状态 -->
+	<update id="updateAuditState">
+		UPDATE JSMSS_RESERVATION_SECOND
+		<set>
+			<if test="verifyState != null">
+				VERIFY_STATE = #{verifyState},
+			</if>
+			<if test="proVerifyState != null">
+				pro_verify_state = #{proVerifyState},
+			</if>
+			<if test="localVerifyState != null">
+				local_verify_state = #{localVerifyState},
+			</if>
+			<if test="wtProVerifyState != null">
+				wt_pro_verify_state = #{wtProVerifyState},
+			</if>
+			<if test="wtLocalVerifyState != null">
+				wt_local_verify_state = #{wtLocalVerifyState},
+			</if>
+			<if test="wtVerifyState != null">
+				wt_verify_state = #{wtVerifyState},
+			</if>
+		</set>
+		WHERE MARKET_SECOND_PKID = #{marketSecondPkId}
+	</update>
+	
+	<!-- 更新测试状态 -->
+	<update id="updateTestState">
+ 	update jsmss_reservation_second
+ 	<set>
+ 		<if test="testOnlineState != null">
+	 		test_online_state = #{testOnlineState},
+ 		</if>
+ 		<if test="verifyState != null">
+ 			verify_state = #{verifyState},
+ 		</if>
+ 		<if test="wtTestOnlineState != null">
+ 			wt_test_online_state = #{wtTestOnlineState},
+ 		</if>
+ 		<if test="wtVerifyState != null">
+ 			wt_verify_state = #{wtVerifyState}
+ 		</if>
+ 	</set>
+ 	where MARKET_SECOND_PKID = #{marketSecondPkId}
+ </update>
+ 
+ <update id="updateMarketSecondForVerify" >
+		update jsmss_reservation_second
+		<set>
+			<if test="verifyState != null">
+				VERIFY_STATE = #{verifyState},
+			</if>
+			<if test="proVerifyState != null">
+				pro_verify_state = #{proVerifyState},
+			</if>
+			<if test="localVerifyState != null">
+				local_verify_state = #{localVerifyState},
+			</if>
+			<if test="wtProVerifyState != null">
+				wt_pro_verify_state = #{wtProVerifyState},
+			</if>
+			<if test="wtLocalVerifyState != null">
+				wt_local_verify_state = #{wtLocalVerifyState},
+			</if>
+			<if test="wtVerifyState != null">
+				wt_verify_state = #{wtVerifyState},
+			</if>
+		</set>
+		where  
+		MARKET_SECOND_PKID = #{marketSecondPkId}
+	</update>
+</mapper>        

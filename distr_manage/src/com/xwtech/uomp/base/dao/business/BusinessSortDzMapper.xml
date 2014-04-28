@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.BusinessSortDzMapper" >
+  <resultMap id="businessSortDzBean" type="com.xwtech.uomp.base.pojo.business.BusinessSortDzBean" >
+    <result column="F_BUSI_TYPE_NUM" property="busiTypeNum" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_XH" property="xh" jdbcType="DECIMAL" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="queryByBusiTypeNum" parameterType="java.lang.String" resultMap="businessSortDzBean">
+  	select f_busi_type_num, f_busi_num, f_xh, f_channel_num from t_busi_sort_dz
+  	where f_busi_type_num=#{busiTypeNum}
+  </select>
+  
+  <select id="queryByjbNum" parameterType="java.lang.String" resultMap="businessSortDzBean">
+  	select a.f_busi_type_num, a.f_busi_num, a.f_xh, a.f_channel_num 
+	  from t_busi_sort_dz a
+	 where EXISTS (
+	        select t.f_busi_type_num
+	          from T_BUSI_TYPE_DA t
+	         where t.f_jb_num like #{jbNum}||'%'
+	           and t.f_busi_type_num = a.f_busi_type_num) and rownum=1
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.business.BusinessSortDzBean" >
+    delete from T_BUSI_SORT_DZ
+    where F_BUSI_TYPE_NUM = #{busiTypeNum,jdbcType=VARCHAR}
+      and F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.business.BusinessSortDzBean" >
+    insert into T_BUSI_SORT_DZ (F_BUSI_TYPE_NUM, F_BUSI_NUM, F_XH, 
+      F_CHANNEL_NUM)
+    values (#{busiTypeNum,jdbcType=VARCHAR}, #{busiNum,jdbcType=VARCHAR}, #{xh,jdbcType=DECIMAL}, 
+      #{channelNum,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.business.BusinessSortDzBean" >
+    insert into T_BUSI_SORT_DZ
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="busiTypeNum != null" >
+        F_BUSI_TYPE_NUM,
+      </if>
+      <if test="busiNum != null" >
+        F_BUSI_NUM,
+      </if>
+      <if test="xh != null" >
+        F_XH,
+      </if>
+      <if test="channelNum != null" >
+        F_CHANNEL_NUM,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="busiTypeNum != null" >
+        #{busiTypeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNum != null" >
+        #{busiNum,jdbcType=VARCHAR},
+      </if>
+      <if test="xh != null" >
+        #{xh,jdbcType=DECIMAL},
+      </if>
+      <if test="channelNum != null" >
+        #{channelNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xwtech.uomp.base.pojo.business.BusinessSortDzBean" >
+    update T_BUSI_SORT_DZ
+    <set >
+      <if test="xh != null" >
+        F_XH = #{xh,jdbcType=DECIMAL},
+      </if>
+      <if test="channelNum != null" >
+        F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where F_BUSI_TYPE_NUM = #{busiTypeNum,jdbcType=VARCHAR}
+      and F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.business.BusinessSortDzBean" >
+    update T_BUSI_SORT_DZ
+    set F_XH = #{xh,jdbcType=DECIMAL},
+      F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+    where F_BUSI_TYPE_NUM = #{busiTypeNum,jdbcType=VARCHAR}
+      and F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  </update>
+</mapper>

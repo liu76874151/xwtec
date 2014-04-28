@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.adv.AdvAreaDzMapper" >
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.adv.AdvAreaDzBean" >
+    <id column="F_ADV_NUM" property="advNum" jdbcType="VARCHAR" />
+    <id column="F_AREA_NUM" property="advAreaNum" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="saveAdvAreaDz" parameterType="com.xwtech.uomp.base.pojo.adv.AdvAreaDzBean">
+    insert into T_ADV_AREA_DZ
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="advNum != null" >
+        F_ADV_NUM,
+      </if>
+      <if test="advAreaNum != null" >
+        F_AREA_NUM
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="advNum != null" >
+        #{advNum,jdbcType=VARCHAR},
+      </if>
+	  <if test="advAreaNum != null" >
+        #{advAreaNum,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+     <delete id="deleteAdvAreaDz" parameterType="java.lang.String" >
+    delete from T_ADV_AREA_DZ where F_ADV_NUM=#{advNum}  
+  </delete>
+</mapper>

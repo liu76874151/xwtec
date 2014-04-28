@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.BusiTagMapper" >
+
+  <resultMap id="busiTagBean" type="com.xwtech.uomp.base.pojo.business.BusiTagBean" >
+    <id column="F_TAG_ID" property="tagId" jdbcType="DECIMAL" />
+    <result column="F_TAG_NAME" property="tagName" jdbcType="VARCHAR" />
+    <result column="F_TAG_ENAME" property="tagEname" jdbcType="VARCHAR" />
+    <result column="F_TAG_DESC" property="tagDesc" jdbcType="VARCHAR" />
+    <result column="F_TAG_STATE" property="tagState" jdbcType="CHAR" />
+  </resultMap>
+  
+  <select id="queryBusiTagList" parameterType="java.util.Map" resultMap="busiTagBean">
+  	SELECT 
+    F_TAG_ID, F_TAG_NAME, F_TAG_ENAME, F_TAG_DESC, F_TAG_STATE
+    from T_BUSI_TAG_DA
+    where 1=1
+    <if test="tagName != null">
+    	and F_TAG_NAME = #{tagName}
+    </if>
+    <if test="tagState != null">
+    	and F_TAG_STATE = #{tagState}
+    </if>
+    <if test="end != null">
+    	and rownum &lt; #{end}
+    </if>
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="busiTagBean" parameterType="java.lang.Long" >
+    select 
+    F_TAG_ID, F_TAG_NAME, F_TAG_ENAME, F_TAG_DESC, F_TAG_STATE
+    from T_BUSI_TAG_DA
+    where F_TAG_ID = #{tagId,jdbcType=DECIMAL}
+  </select>
+  
+  <select id="selectBusiTagBean" resultMap="busiTagBean" parameterType="java.util.Map" >
+    select 
+    F_TAG_ID, F_TAG_NAME, F_TAG_ENAME, F_TAG_DESC, F_TAG_STATE
+    from T_BUSI_TAG_DA
+    where 1=1
+    <if test="tagId != null">
+    	and F_TAG_ID = #{tagId,jdbcType=DECIMAL}
+    </if>
+    <if test="tagState != null">
+    	and F_TAG_STATE = #{tagState,jdbcType=CHAR}
+    </if>
+    <if test="tagName != null">
+    	and F_TAG_NAME = #{tagName,jdbcType=VARCHAR}
+    </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from T_BUSI_TAG_DA
+    where F_TAG_ID = #{tagId,jdbcType=DECIMAL}
+  </delete>
+  
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.business.BusiTagBean" >
+    insert into T_BUSI_TAG_DA (F_TAG_ID, F_TAG_NAME, F_TAG_ENAME, 
+      F_TAG_DESC, F_TAG_STATE)
+    values (#{tagId,jdbcType=DECIMAL}, #{tagName,jdbcType=VARCHAR}, #{tagEname,jdbcType=VARCHAR}, 
+      #{tagDesc,jdbcType=VARCHAR}, #{tagState,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.business.BusiTagBean" >
+    insert into T_BUSI_TAG_DA
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tagId != null" >
+        F_TAG_ID,
+      </if>
+      <if test="tagName != null" >
+        F_TAG_NAME,
+      </if>
+      <if test="tagEname != null" >
+        F_TAG_ENAME,
+      </if>
+      <if test="tagDesc != null" >
+        F_TAG_DESC,
+      </if>
+      <if test="tagState != null" >
+        F_TAG_STATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tagId != null" >
+        #{tagId,jdbcType=DECIMAL},
+      </if>
+      <if test="tagName != null" >
+        #{tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="tagEname != null" >
+        #{tagEname,jdbcType=VARCHAR},
+      </if>
+      <if test="tagDesc != null" >
+        #{tagDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="tagState != null" >
+        #{tagState,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xwtech.uomp.base.pojo.business.BusiTagBean" >
+    update T_BUSI_TAG_DA
+    <set >
+      <if test="tagName != null" >
+        F_TAG_NAME = #{tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="tagEname != null" >
+        F_TAG_ENAME = #{tagEname,jdbcType=VARCHAR},
+      </if>
+      <if test="tagDesc != null" >
+        F_TAG_DESC = #{tagDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="tagState != null" >
+        F_TAG_STATE = #{tagState,jdbcType=CHAR},
+      </if>
+    </set>
+    where F_TAG_ID = #{tagId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.business.BusiTagBean" >
+    update T_BUSI_TAG_DA
+    set F_TAG_NAME = #{tagName,jdbcType=VARCHAR},
+      F_TAG_ENAME = #{tagEname,jdbcType=VARCHAR},
+      F_TAG_DESC = #{tagDesc,jdbcType=VARCHAR},
+      F_TAG_STATE = #{tagState,jdbcType=CHAR}
+    where F_TAG_ID = #{tagId,jdbcType=DECIMAL}
+  </update>
+  
+  <delete id="deleteBusinessTag" parameterType="java.util.Map">
+  	UPDATE T_BUSI_TAG_DA SET F_TAG_STATE='0'
+  	WHERE
+  	F_TAG_ID IN
+  	<foreach collection="tagId" open="(" close=")" item="item" separator=",">
+  		#{item,jdbcType=DECIMAL}
+  	</foreach>
+  </delete>
+</mapper>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.automated.ResultMsgMapper">
+
+    <select id="queryResultMsgInfo" resultType="java.lang.String" parameterType="java.util.Map">
+		SELECT F_MSG FROM T_RESULT_MSG_MAPPING WHERE F_SUBSYS_NUM = #{subSysNum} AND F_SYSTEM_CODE = #{sysCode} 
+    </select>
+
+    <!-- 当使用该Mybatis与Spring整合的时候，该文件必须和相应的Mapper接口文件同名，并在同一路径下 -->
+</mapper> 

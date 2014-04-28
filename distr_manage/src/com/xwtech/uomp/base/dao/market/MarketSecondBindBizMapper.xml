@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.market.MarketSecondBindBizMapper">
+	<resultMap id="marketSecondBindBizBean" type="com.xwtech.uomp.base.pojo.market.MarketSecondBindBizBean">
+		<id column="BIZ_ID" property="bizId" jdbcType="DECIMAL" />
+		<result column="BIZ_CODE" property="bizCode" jdbcType="VARCHAR" />
+		<result column="MARKET_SECOND_PKID" property="marketSecondPkid"
+			jdbcType="DECIMAL" />
+		<result column="BIZ_NAME" property="bizName" jdbcType="VARCHAR" />
+		<result column="CITY" property="city" jdbcType="DECIMAL" />
+		<result column="BIZ_COMMENT" property="bizComment" jdbcType="VARCHAR" />
+		<result column="BIZ_TYPE" property="bizType" jdbcType="CHAR" />
+		<result column="STATE" property="state" jdbcType="CHAR" />
+		<result column="GPRS_CODE" property="gprsCode" jdbcType="VARCHAR" />
+		<result column="PARENT_BIZ_CODE" property="parentBizCode" jdbcType="VARCHAR" />
+		<result column="PARENT_BIZ_NAME" property="parentBizName" jdbcType="VARCHAR" />
+		<result column="CHANNEL" property="channel" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<insert id="batchUpdate" parameterType="java.util.List">
+		insert into 
+		JSMSS_BIND_BIZ (BIZ_ID, BIZ_CODE, MARKET_SECOND_PKID,BIZ_NAME, CITY, BIZ_COMMENT,BIZ_TYPE, STATE, GPRS_CODE)
+		 <foreach collection="list" item="item" index="index" separator="union all">
+		 select #{item.bizId},#{item.bizCode},#{item.marketSecondPkid},#{item.bizName},#{item.city},#{item.bizComment},#{item.bizType},#{item.state},#{item.gprsCode} from dual
+		</foreach>
+	</insert>
+	<insert id="insert" parameterType="com.xwtech.uomp.base.pojo.market.MarketSecondBindBizBean">
+		insert into 
+		JSMSS_BIND_BIZ (BIZ_ID, BIZ_CODE, MARKET_SECOND_PKID,BIZ_NAME, CITY, BIZ_COMMENT,BIZ_TYPE, STATE, GPRS_CODE,channel,parent_biz_code,parent_biz_name)
+		values(
+		#{bizId},#{bizCode},#{marketSecondPkid},#{bizName},#{city},#{bizComment},#{bizType},#{state},#{gprsCode},#{channel},#{parentBizCode},#{parentBizName}
+		)
+	</insert>
+	<sql id="Base_Column_List">
+		BIZ_ID, BIZ_CODE, MARKET_SECOND_PKID, BIZ_NAME, CITY, BIZ_COMMENT, BIZ_TYPE,
+		STATE,
+		GPRS_CODE,channel,parent_biz_code,parent_biz_name
+  </sql>
+	<select id="selectBySecondPkid" resultMap="marketSecondBindBizBean"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from JSMSS_BIND_BIZ
+		where MARKET_SECOND_PKID = #{marketSecondPkid}
+		<if test="channel !=null">
+		and channel=#{channel}
+		</if>
+	</select>
+	<delete id="deleteBySecondPkid" parameterType="java.lang.String">
+		delete from JSMSS_BIND_BIZ
+		where MARKET_SECOND_PKID = #{marketSecondPkid}
+  </delete>
+  
+  <update id="updateBySecondPkid" parameterType="java.util.Map">
+  	update JSMSS_BIND_BIZ set state=#{state}
+		where MARKET_SECOND_PKID = #{marketSecondPkid}
+  </update>
+  
+	<insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.market.MarketSecondBindBizBean">
+		insert into JSMSS_BIND_BIZ
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bizId != null">
+				BIZ_ID,
+      </if>
+			<if test="bizCode != null">
+				BIZ_CODE,
+      </if>
+			<if test="marketSecondPkid != null">
+				MARKET_SECOND_PKID,
+      </if>
+			<if test="bizName != null">
+				BIZ_NAME,
+      </if>
+			<if test="city != null">
+				CITY,
+      </if>
+			<if test="bizComment != null">
+				BIZ_COMMENT,
+      </if>
+			<if test="bizType != null">
+				BIZ_TYPE,
+      </if>
+			<if test="state != null">
+				STATE,
+      </if>
+			<if test="gprsCode != null">
+				GPRS_CODE,
+      </if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bizId != null">
+				#{bizId,jdbcType=DECIMAL},
+      </if>
+			<if test="bizCode != null">
+				#{bizCode,jdbcType=VARCHAR},
+      </if>
+			<if test="marketSecondPkid != null">
+				#{marketSecondPkid,jdbcType=DECIMAL},
+      </if>
+			<if test="bizName != null">
+				#{bizName,jdbcType=VARCHAR},
+      </if>
+			<if test="city != null">
+				#{city,jdbcType=DECIMAL},
+      </if>
+			<if test="bizComment != null">
+				#{bizComment,jdbcType=VARCHAR},
+      </if>
+			<if test="bizType != null">
+				#{bizType,jdbcType=CHAR},
+      </if>
+			<if test="state != null">
+				#{state,jdbcType=CHAR},
+      </if>
+			<if test="gprsCode != null">
+				#{gprsCode,jdbcType=VARCHAR},
+      </if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.xwtech.uomp.base.pojo.market.MarketSecondBindBizBean">
+		update JSMSS_BIND_BIZ
+		<set>
+			<if test="bizCode != null">
+				BIZ_CODE = #{bizCode,jdbcType=VARCHAR},
+      </if>
+			<if test="marketSecondPkid != null">
+				MARKET_SECOND_PKID = #{marketSecondPkid,jdbcType=DECIMAL},
+      </if>
+			<if test="bizName != null">
+				BIZ_NAME = #{bizName,jdbcType=VARCHAR},
+      </if>
+			<if test="city != null">
+				CITY = #{city,jdbcType=DECIMAL},
+      </if>
+			<if test="bizComment != null">
+				BIZ_COMMENT = #{bizComment,jdbcType=VARCHAR},
+      </if>
+			<if test="bizType != null">
+				BIZ_TYPE = #{bizType,jdbcType=CHAR},
+      </if>
+			<if test="state != null">
+				STATE = #{state,jdbcType=CHAR},
+      </if>
+			<if test="gprsCode != null">
+				GPRS_CODE = #{gprsCode,jdbcType=VARCHAR},
+      </if>
+		</set>
+		where BIZ_ID = #{bizId,jdbcType=DECIMAL}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.market.MarketSecondBindBizBean">
+		update JSMSS_BIND_BIZ
+		set BIZ_CODE = #{bizCode,jdbcType=VARCHAR},
+		MARKET_SECOND_PKID = #{marketSecondPkid,jdbcType=DECIMAL},
+		BIZ_NAME = #{bizName,jdbcType=VARCHAR},
+		CITY = #{city,jdbcType=DECIMAL},
+		BIZ_COMMENT = #{bizComment,jdbcType=VARCHAR},
+		BIZ_TYPE = #{bizType,jdbcType=CHAR},
+		STATE = #{state,jdbcType=CHAR},
+		GPRS_CODE = #{gprsCode,jdbcType=VARCHAR}
+		where BIZ_ID = #{bizId,jdbcType=DECIMAL}
+  </update>
+</mapper>

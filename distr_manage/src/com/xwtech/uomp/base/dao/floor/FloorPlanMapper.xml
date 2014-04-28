@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.floor.FloorPlanMapper">
+	<resultMap type="com.xwtech.uomp.base.pojo.floor.FloorPlanBean"
+		id="floorPlanBean">
+		<result property="planId" column="F_PLAN_ID" />
+		<result property="channelNum" column="F_CHANNEL_NUM" />
+		<result property="planNum" column="F_PLAN_NUM" />
+		<result property="creater" column="F_CREATER" />
+		<result property="createTime" column="F_CREATE_TIME" />
+		<result property="state" column="F_STATE" />
+		
+		<result property="floorId" column="F_FLOOR_ID" />
+		<result property="floorNum" column="F_FLOOR_NUM" />
+		<result property="floorName" column="F_FLOOR_NAME" />
+		<result property="floorSeq" column="F_FLOOR_SEQ" />
+		<result property="floorImage" column="F_FLOOR_IMAGE" />
+		<result property="floorUrl" column="F_FLOOR_URL" />
+		<result property="floorTempNum" column="F_TEMP_NUM" />
+		<result property="floorBz" column="F_FLOOR_BZ" />
+		<result property="channelName" column="F_CHANNEL_NAME"/>
+		<result property="tempName" column="F_TEMP_NAME"/>
+	</resultMap>
+
+	<!-- 查询楼层方案信息 -->
+	<select id="queryFloorPlan" parameterType="java.util.Map" resultMap="floorPlanBean">
+		select *
+		  from (select ROWNUM ROW_NUM, A.*
+		          from (select t1.f_plan_id,
+		                       t1.f_channel_num,
+		                       t1.f_plan_num,
+		                       t1.f_creater,
+		                       t1.f_create_time,
+		                       t1.f_state,
+		                       
+		                       t4.f_channel_name
+		                  from T_FLOOR_PLAN t1
+		                 
+		                  left join T_USER T3
+		                    ON T3.F_LOGIN_NAME = T1.F_CREATER
+		                  left join T_CHANNEL_DA T4
+                    		ON T4.F_CHANNEL_NUM = T1.F_CHANNEL_NUM
+		                  WHERE 1=1
+		                  <if test="userAreaCode != null">
+		                  	AND T3.F_USER_AREA_CODE = #{userAreaCode}
+		                  </if>
+		                  <if test="channelNum != null">
+		                  	AND T1.F_CHANNEL_NUM = #{channelNum}
+		                  </if>
+		                  
+		                  <if test="state != null">
+		                  	AND T1.F_STATE = #{state}
+		                  </if>
+		                  ORDER BY T1.F_CREATE_TIME DESC
+		                    ) A)      
+				 WHERE ROW_NUM &gt; #{start}
+				   AND ROW_NUM &lt;= #{end}
+	</select>
+
+	<!-- 查询楼层方案个数 -->
+	<select id="getFloorPlanCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+				select count(*) from
+				(
+					 select t1.f_plan_id,
+		                       t1.f_channel_num,
+		                       t1.f_plan_num,
+		                       t1.f_creater,
+		                       t1.f_create_time,
+		                       t1.f_state,
+		                       t4.f_channel_name
+		                  from T_FLOOR_PLAN t1
+		                  left join T_USER T3
+		                    ON T3.F_LOGIN_NAME = T1.F_CREATER
+		                  left join T_CHANNEL_DA T4
+                    		ON T4.F_CHANNEL_NUM = T1.F_CHANNEL_NUM
+		                  WHERE 1=1
+				 <if test="userAreaCode != null">
+		         	AND T3.F_USER_AREA_CODE = #{userAreaCode}
+		         </if>
+		         <if test="channelNum != null">
+		         	AND T1.F_CHANNEL_NUM = #{channelNum}
+		          </if>
+		          <if test="state != null">
+		          	AND T1.F_STATE = #{state}
+					</if>
+					)
+	</select>
+
+	<!-- 根据主键查看方案信息 -->
+	<select id="queryFloorPlanByPk" parameterType="java.lang.String" resultMap="floorPlanBean">
+		select  t1.f_plan_id,
+			       t1.f_plan_num,
+			       t1.f_state,
+			       t1.f_channel_num,
+			       t2.f_floor_id,
+			       t2.f_floor_num,
+			       t2.f_floor_name,
+			       t2.f_floor_seq,
+			       t2.f_floor_image,
+			       t2.f_floor_url,
+			       t2.f_temp_num,
+			       t2.f_floor_bz,
+			       t3.f_temp_name,
+			       t4.f_channel_name
+			  from t_Floor_Plan t1
+			  left join T_Floor_fa t2
+			    on t1.f_plan_id = t2.f_plan_id
+			  left join t_floor_template t3 
+			    on t3.f_temp_num = t2.f_temp_num
+			  left join t_channel_da t4
+			    on t4.f_channel_num = t1.f_channel_num
+			  where t1.f_plan_id = #{planId}
+	</select>
+
+	<!-- 添加方案 -->
+	<insert id="addFloorPlan">
+		INSERT INTO T_FLOOR_PLAN
+		(
+			F_PLAN_ID,
+			F_CHANNEL_NUM,
+			F_PLAN_NUM,
+			F_CREATER,
+			F_CREATE_TIME,
+			F_STATE
+		)
+		VALUES
+		(
+			#{planId},
+			#{channelNum},
+			#{planNum},
+			#{creater},
+			#{createTime},
+			#{state}
+		)
+	</insert>
+
+	<!-- 方案不可用状态更新 -->
+	<update id="updateState">
+		update T_FLOOR_PLAN set f_state = '1' where f_channel_num = #{channelNum} and f_state = '0'
+	</update>
+	
+	<update id="changeState">
+		update T_FLOOR_PLAN set f_state = #{state} where f_plan_id = #{planId}
+	</update>
+</mapper>        

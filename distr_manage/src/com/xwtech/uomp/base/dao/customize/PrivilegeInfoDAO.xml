@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.customize.PrivilegeInfoDAO">
+
+    <resultMap id="userTreeMap" type="java.util.Map">
+        <result property="id" column="F_JB_NUM"/>
+        <result property="text" column="F_GROUP_NAME"/>
+        <result property="pid" column="PID"/>
+        <result property="mj" column="F_MJ"/>
+        <result property="groupId" column="F_GROUP_ID"/>
+        <result property="userType" column="USER_TYPE"/>
+    </resultMap>
+
+    <resultMap id="privilegeTreeMap" type="java.util.Map">
+        <result property="id" column="F_JB_NUM"/>
+        <result property="text" column="F_FUNC_NAME"/>
+        <result property="pid" column="PID"/>
+        <result property="mj" column="F_MJ"/>
+        <result property="subSysNum" column="F_SUBSYS_NUM"/>
+        <result property="funcId" column="F_FUNC_ID"/>
+        <result property="checked" column="ISCHECK"/>
+    </resultMap>
+
+    <resultMap id="insertPrivilegeInfoBean" type="com.xwtech.uomp.base.pojo.admin.UserPrivilegeInfoBean">
+        <result property="subSysNum" column="F_SUBSYS_NUM"/>
+        <result property="userId" column="F_USER"/>
+        <result property="userType" column="F_USER_TYPE"/>
+        <result property="funcId" column="F_FUNC_ID"/>
+    </resultMap>
+
+    <select id="queryUserInfo" resultMap="userTreeMap">
+    	<![CDATA[
+
+	    	SELECT M.F_JB_NUM,M.F_GROUP_NAME,0 AS F_MJ,M.F_GROUP_ID,
+				(CASE WHEN N.F_JB_NUM IS NULL THEN '-1' ELSE N.F_JB_NUM END) AS PID,
+				'0' AS USER_TYPE 
+			FROM T_USER_GROUP M
+			LEFT JOIN (SELECT * FROM T_USER_GROUP) N  ON SUBSTR(M.F_JB_NUM, 0, 2 * (M.F_JB - 1)) = N.F_JB_NUM
+			UNION ALL
+			SELECT T1.F_JB_NUM || ROWNUM AS F_JB_NUM,T2.F_LOGIN_NAME AS F_GROUP_NAME,1 AS F_MJ,T2.F_LOGIN_NAME AS F_GROUP_ID,T1.F_JB_NUM AS PID,'1' AS USER_TYPE 
+			FROM T_USER_GROUP T1
+			JOIN T_USER T2    
+			ON T1.F_GROUP_ID = T2.F_USER_GROUP 
+			ORDER BY F_JB_NUM
+
+        ]]>
+    </select>
+
+    <select id="queryGroupPrivilegeInfo" resultMap="privilegeTreeMap" parameterType="java.lang.String">
+    	<![CDATA[
+
+    		SELECT F_SUBSYS_NUM,0 AS F_JB,'SUBSYS'||F_SUBSYS_NUM AS F_JB_NUM,'' AS F_FUNC_ID,F_SUBSYS_NAME AS F_FUNC_NAME,0 AS F_MJ,'' AS ISCHECK,'-1' AS PID 
+			FROM T_SUBSYS_DA T 
+			WHERE F_SUBSYS_NUM IN (SELECT DISTINCT F_SUBSYS_NUM FROM T_PRM_FUNC) 
+			UNION ALL 
+			SELECT M.F_SUBSYS_NUM,M.F_JB,'SUBSYS'||M.F_SUBSYS_NUM||M.F_JB_NUM AS F_JB_NUM, M.F_FUNC_ID,M.F_FUNC_NAME,M.F_MJ,M.ISCHECK, 
+					(CASE WHEN N.F_JB_NUM IS NULL THEN 'SUBSYS'||M.F_SUBSYS_NUM ELSE 'SUBSYS'||M.F_SUBSYS_NUM||N.F_JB_NUM END) AS PID 
+	        FROM (
+	        	SELECT DISTINCT A.F_SUBSYS_NUM,A.F_JB,A.F_JB_NUM, A.F_FUNC_ID,A.F_FUNC_NAME,A.F_MJ, 
+	        		CASE WHEN B.F_FUNC_ID IS NOT NULL THEN '1' ELSE '' END ISCHECK 
+		        FROM T_PRM_FUNC A 
+		        LEFT JOIN( 
+			        SELECT A.F_FUNC_ID,A.F_SUBSYS_NUM FROM T_FUNC_QX A 
+			        JOIN( 
+				        SELECT MAX(F_USER) F_USER, F_FUNC_ID, F_USER_TYPE, F_SUBSYS_NUM 
+				        FROM T_FUNC_QX WHERE F_USER_TYPE = 0 AND F_USER IN( 
+				        SELECT F_GROUP_ID FROM T_USER_GROUP A WHERE EXISTS( 
+				        SELECT * FROM T_USER_GROUP WHERE F_GROUP_ID = #{userId} 
+				        AND ( 
+				        (SUBSTR(A.F_JB_NUM, 1, 2*A.F_JB) = SUBSTR(F_JB_NUM, 1, 2*A.F_JB) AND A.F_JB < F_JB) 
+				        OR (A.F_JB_NUM = F_JB_NUM) 
+				        ))) GROUP BY F_FUNC_ID, F_USER_TYPE ,F_SUBSYS_NUM 
+			        ) B 
+			        ON (A.F_USER = B.F_USER AND A.F_USER_TYPE = B.F_USER_TYPE AND A.F_FUNC_ID = B.F_FUNC_ID  AND A.F_SUBSYS_NUM = B.F_SUBSYS_NUM)
+			        WHERE A.F_OPT_TYPE = 0 
+		        ) B 
+		        ON A.F_FUNC_ID = B.F_FUNC_ID AND A.F_SUBSYS_NUM = B.F_SUBSYS_NUM 
+	        ) M 
+	      LEFT JOIN (SELECT * FROM T_PRM_FUNC) N 
+	      ON SUBSTR(M.F_JB_NUM, 0, 2 * (M.F_JB - 1)) = N.F_JB_NUM AND M.F_SUBSYS_NUM = N.F_SUBSYS_NUM 
+	      ORDER BY F_JB_NUM 
+
+        ]]>
+    </select>
+
+    <select id="queryUserPrivilegeInfo" resultMap="privilegeTreeMap" parameterType="java.lang.String">
+    	<![CDATA[
+
+			SELECT F_SUBSYS_NUM,0 AS F_JB,'SUBSYS'||F_SUBSYS_NUM AS F_JB_NUM,'' AS F_FUNC_ID,F_SUBSYS_NAME AS F_FUNC_NAME,0 AS F_MJ,'' AS ISCHECK,'-1' AS PID 
+			FROM T_SUBSYS_DA T 
+			WHERE F_SUBSYS_NUM IN (SELECT DISTINCT F_SUBSYS_NUM FROM T_PRM_FUNC) 
+			UNION ALL 
+			SELECT M.F_SUBSYS_NUM,M.F_JB,'SUBSYS'||M.F_SUBSYS_NUM||M.F_JB_NUM AS F_JB_NUM, M.F_FUNC_ID,M.F_FUNC_NAME,M.F_MJ,M.ISCHECK, 
+    			(CASE WHEN N.F_JB_NUM IS NULL THEN 'SUBSYS'||M.F_SUBSYS_NUM ELSE 'SUBSYS'||M.F_SUBSYS_NUM||N.F_JB_NUM END) AS PID 
+  			FROM ( 
+  				SELECT DISTINCT A.F_SUBSYS_NUM,A.F_JB,A.F_JB_NUM, A.F_FUNC_ID,A.F_FUNC_NAME,A.F_MJ, 
+					CASE WHEN B.F_FUNC_ID IS NOT NULL THEN '1' ELSE '' END ISCHECK 
+				FROM T_PRM_FUNC A 
+				LEFT JOIN( 
+					SELECT A.F_FUNC_ID,A.F_SUBSYS_NUM FROM T_FUNC_QX A 
+					JOIN( 
+						SELECT MAX(F_USER) F_USER, F_FUNC_ID, F_USER_TYPE, F_SUBSYS_NUM 
+						FROM T_FUNC_QX WHERE F_USER_TYPE = 0 AND F_USER IN( 
+						SELECT F_GROUP_ID FROM T_USER_GROUP A WHERE EXISTS( 
+						SELECT * FROM T_USER_GROUP WHERE F_GROUP_ID IN( 
+						SELECT F_USER_GROUP FROM T_USER WHERE F_LOGIN_NAME = #{userId}) 
+						AND ( 
+						(SUBSTR(A.F_JB_NUM, 1, 2*A.F_JB) = SUBSTR(F_JB_NUM, 1, 2*A.F_JB) AND A.F_JB < F_JB) 
+						OR (A.F_JB_NUM = F_JB_NUM) 
+						))) GROUP BY F_FUNC_ID, F_USER_TYPE, F_SUBSYS_NUM 
+					) B 
+					ON (A.F_USER = B.F_USER AND A.F_USER_TYPE = B.F_USER_TYPE 
+						AND A.F_FUNC_ID = B.F_FUNC_ID AND A.F_SUBSYS_NUM = B.F_SUBSYS_NUM) 
+					WHERE A.F_OPT_TYPE = 0 
+					UNION 
+					SELECT F_FUNC_ID,F_SUBSYS_NUM FROM T_FUNC_QX WHERE F_USER_TYPE = 1 
+					AND F_USER = #{userId} AND F_OPT_TYPE = 1 
+					MINUS 
+					SELECT F_FUNC_ID,F_SUBSYS_NUM FROM T_FUNC_QX WHERE F_USER_TYPE = 1 
+					AND F_USER = #{userId} AND F_OPT_TYPE = 2 
+				) B 
+				ON A.F_FUNC_ID = B.F_FUNC_ID AND A.F_SUBSYS_NUM = B.F_SUBSYS_NUM 
+			) M 
+			LEFT JOIN (SELECT * FROM T_PRM_FUNC) N 
+			ON SUBSTR(M.F_JB_NUM, 0, 2 * (M.F_JB - 1)) = N.F_JB_NUM AND M.F_SUBSYS_NUM = N.F_SUBSYS_NUM 
+			ORDER BY F_JB_NUM 
+
+        ]]>
+    </select>
+
+    <delete id="deletePrivilegeInfo" parameterType="java.util.Map">
+        <![CDATA[
+
+        	DELETE FROM T_FUNC_QX WHERE F_USER_TYPE = #{userType} AND F_USER = #{userId}
+
+        ]]>
+    </delete>
+
+    <select id="queryGroupInsertPrivilegeInfo" resultMap="insertPrivilegeInfoBean" parameterType="java.util.Map">
+    	<![CDATA[
+
+    		SELECT F_SUBSYS_NUM, #{userId} AS F_USER, 0 AS F_USER_TYPE, F_FUNC_ID 
+    		FROM T_PRM_FUNC 
+			WHERE F_SUBSYS_NUM = #{subSysNum} AND F_FUNC_ID IN  ( ${selectedPrivilege} ) 
+			AND F_FUNC_ID NOT IN( 
+				SELECT A.F_FUNC_ID FROM T_FUNC_QX A JOIN( 
+					SELECT MAX(F_USER) F_USER, F_FUNC_ID, F_USER_TYPE, F_SUBSYS_NUM 
+					FROM T_FUNC_QX WHERE F_SUBSYS_NUM = #{subSysNum} AND F_USER_TYPE = 0 AND F_USER IN( 
+						SELECT F_GROUP_ID FROM T_USER_GROUP A WHERE EXISTS( 
+							SELECT * FROM T_USER_GROUP WHERE F_GROUP_ID = #{userId} 
+							AND (SUBSTR(A.F_JB_NUM, 1, 2*A.F_JB) = SUBSTR(F_JB_NUM, 1, 2*A.F_JB) AND A.F_JB < F_JB) 
+						) 
+					) 
+					GROUP BY F_FUNC_ID, F_USER_TYPE, F_SUBSYS_NUM 
+				) B 
+				ON (A.F_USER = B.F_USER AND A.F_USER_TYPE = B.F_USER_TYPE 
+				AND A.F_FUNC_ID = B.F_FUNC_ID AND A.F_SUBSYS_NUM = B.F_SUBSYS_NUM) 
+				WHERE A.F_OPT_TYPE = 0 
+			) 
+
+        ]]>
+    </select>
+
+    <select id="queryUserInsertPrivilegeInfo" resultMap="insertPrivilegeInfoBean" parameterType="java.util.Map">
+    	<![CDATA[
+
+    		SELECT F_SUBSYS_NUM, #{userId} AS F_USER, 1 AS F_USER_TYPE, F_FUNC_ID 
+    		FROM T_PRM_FUNC A 
+			WHERE F_SUBSYS_NUM = #{subSysNum} AND F_FUNC_ID IN  ( ${selectedPrivilege} ) 
+			AND F_FUNC_ID NOT IN( 
+				SELECT A.F_FUNC_ID FROM T_FUNC_QX A JOIN( 
+					SELECT MAX(F_USER) F_USER, F_FUNC_ID, F_USER_TYPE, F_SUBSYS_NUM 
+					FROM T_FUNC_QX WHERE F_SUBSYS_NUM = #{subSysNum} AND F_USER_TYPE = 0 AND F_USER IN( 
+						SELECT F_GROUP_ID FROM T_USER_GROUP A WHERE EXISTS( 
+							SELECT * FROM T_USER_GROUP WHERE F_GROUP_ID IN(
+								SELECT F_USER_GROUP FROM T_USER WHERE F_LOGIN_NAME = #{userId}
+							) 
+							AND ((SUBSTR(A.F_JB_NUM, 1, 2*A.F_JB) = SUBSTR(F_JB_NUM, 1, 2*A.F_JB) AND A.F_JB < F_JB) 
+							OR (A.F_JB_NUM = F_JB_NUM)) 
+						) 
+					) GROUP BY F_FUNC_ID, F_USER_TYPE, F_SUBSYS_NUM 
+				) B 
+				ON (A.F_USER = B.F_USER AND A.F_USER_TYPE = B.F_USER_TYPE 
+				AND A.F_FUNC_ID = B.F_FUNC_ID AND A.F_SUBSYS_NUM = B.F_SUBSYS_NUM) 
+			) 
+
+        ]]>
+    </select>
+
+    <insert id="insertPrivilegeInfo" parameterType="com.xwtech.uomp.base.pojo.admin.UserPrivilegeInfoBean">
+		INSERT INTO T_FUNC_QX(F_SUBSYS_NUM, F_USER, F_USER_TYPE, F_FUNC_ID, F_OPT_TYPE) 
+		VALUES (#{subSysNum},#{userId},#{userType},#{funcId},#{optType}) 
+    </insert>
+    <!-- 当使用该Mybatis与Spring整合的时候，该文件必须和相应的Mapper接口文件同名，并在同一路径下 -->
+</mapper> 

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.automated.FunInfoMapper">
+    <resultMap id="treeMap" type="java.util.Map">
+        <result property="id" column="ID"/>
+        <result property="text" column="TEXT"/>
+        <result property="pid" column="PID"/>
+        <result property="mj" column="MJ"/>
+        <result property="funcId" column="F_FUNC_ID"/>
+        <result property="jb" column="F_JB"/>
+        <result property="subSysName" column="F_SUBSYS_NUM"/>
+        <result property="jbNum" column="F_JB_NUM"/>
+        <result property="subSysNum" column="F_SUBSYS_NUM"/>
+    </resultMap>
+
+    <resultMap type="com.xwtech.uomp.base.pojo.admin.FunInfoBean" id="funInfo">
+        <result property="subSysName" column="F_SUBSYS_NUM"/>
+        <result property="funcId" column="F_FUNC_ID"/>
+        <result property="funcName" column="F_FUNC_NAME"/>
+        <result property="bz" column="F_BZ"/>
+        <result property="funcType" column="F_FUNC_TYPE"/>
+        <result property="funcURI" column="F_FUNC_URI"/>
+        <result property="jbNum" column="F_JB_NUM"/>
+        <result property="jb" column="F_JB"/>
+        <result property="mj" column="F_MJ"/>
+        <result property="parentId" column="parentId"/>
+    </resultMap>
+
+    <!-- 查询所有模块信息 -->
+    <select id="queryFunInfoList" resultMap="treeMap" parameterType="java.lang.String">
+    	SELECT DISTINCT A.F_JB_NUM AS ID, A.F_FUNC_NAME AS TEXT, (CASE WHEN B.F_JB_NUM IS NULL THEN '-1' ELSE B.F_JB_NUM END) AS PID, A.F_MJ AS MJ, A.F_FUNC_ID, A.F_JB, A.F_SUBSYS_NUM, A.F_JB_NUM 
+		FROM T_PRM_FUNC A LEFT JOIN (SELECT * FROM T_PRM_FUNC) B ON SUBSTR(A.F_JB_NUM, 0, 2 * (A.F_JB - 1)) = B.F_JB_NUM ORDER BY A.F_JB_NUM ASC
+    </select>
+
+    <!-- 根据模块ID查询模块信息 -->
+    <select id="queryFunInfoById" resultMap="funInfo" parameterType="java.lang.String">
+		SELECT CASE WHEN SUBSTR(F_JB_NUM, 0, 2 * (F_JB - 1)) IS NULL THEN '0' ELSE SUBSTR(F_JB_NUM, 0, 2 * (F_JB - 1)) END PARENTID, G.* FROM T_PRM_FUNC G WHERE F_FUNC_ID = #{id}
+    </select>
+
+    <!-- 修改模块信息 -->
+    <update id="modFunInfo" parameterType="com.xwtech.uomp.base.pojo.admin.FunInfoBean">
+        UPDATE T_PRM_FUNC 
+             SET F_FUNC_ID = #{funcId},
+                 F_FUNC_NAME = #{funcName},
+                 F_FUNC_URI = #{funcURI},
+                 F_BZ = #{bz},
+                 F_FUNC_TYPE = #{funcType} 
+             WHERE F_SUBSYS_NUM = #{subSysName} AND F_JB_NUM = #{jbNum}
+    </update>
+
+    <!-- 删除模块信息 -->
+    <delete id="deleteFunInfo" parameterType="com.xwtech.uomp.base.pojo.admin.FunInfoBean">
+        DELETE FROM　T_PRM_FUNC　WHERE F_SUBSYS_NUM = #{subSysName} AND F_JB_NUM = #{jbNum}
+    </delete>
+
+    <!-- 删除权限表信息 -->
+    <delete id="deleteQxInfo" parameterType="com.xwtech.uomp.base.pojo.admin.FunInfoBean">
+        DELETE FROM　T_FUNC_QX　WHERE F_SUBSYS_NUM = #{subSysName} AND F_FUNC_ID = #{funcId}
+    </delete>
+
+    <!-- 删除module_user表信息 -->
+    <delete id="deleteMouldUser" parameterType="com.xwtech.uomp.base.pojo.admin.FunInfoBean">
+        DELETE FROM　T_FUNC_QX　WHERE F_SUBSYS_NUM = #{subSysName} AND F_FUNC_ID = #{funcId}
+    </delete>
+
+    <!-- 添加模块信息 -->
+    <insert id="addFunInfo" parameterType="com.xwtech.uomp.base.pojo.admin.FunInfoBean">
+        INSERT INTO 
+            T_PRM_FUNC(F_SUBSYS_NUM, F_FUNC_ID, F_FUNC_NAME, F_FUNC_TYPE, F_FUNC_URI, F_JB_NUM, F_JB, F_MJ, F_BZ) 
+            VALUES(#{subSysName}, #{funcId}, #{funcName}, #{funcType}, #{funcURI}, #{jbNum}, #{jb}, #{mj}, #{bz})
+    </insert>
+
+    <!-- 查询父模块下子模块的个数 -->
+    <select id="queryJbNumBySup" resultType="int" parameterType="com.xwtech.uomp.base.pojo.admin.FunInfoBean">
+        SELECT COUNT(*) FROM T_PRM_FUNC WHERE F_SUBSYS_NUM = #{subSysName}
+        <if test="jbNum != null">
+            AND F_JB_NUM LIKE '${jbNum}__'
+        </if>
+        <if test="jbNum == null">
+            AND F_JB_NUM LIKE '__'
+        </if>
+    </select>
+
+    <!-- 修改父模块末级信息为0 -->
+    <update id="updateMjById" parameterType="com.xwtech.uomp.base.pojo.admin.FunInfoBean">
+        UPDATE T_PRM_FUNC 
+             SET F_MJ = 0
+             WHERE F_SUBSYS_NUM = #{subSysName} AND F_JB_NUM = #{jbNum}
+    </update>
+
+    <!-- 修改父模块末级信息为1 -->
+    <update id="updateMjToOne" parameterType="com.xwtech.uomp.base.pojo.admin.FunInfoBean">
+        UPDATE T_PRM_FUNC 
+             SET F_MJ = 1
+             WHERE F_SUBSYS_NUM = #{subSysName} AND F_JB_NUM = #{jbNum}
+    </update>
+
+    <!-- 查询父模块下子模块的个数 -->
+    <select id="querySupJbNum" resultType="java.lang.String"
+            parameterType="com.xwtech.uomp.base.pojo.admin.FunInfoBean">
+		SELECT #{jbNum} || F_NUM AS N_JB_NUM
+          FROM (SELECT MAX(F_NUM) F_NUM
+          FROM (SELECT SUBSTR(F_NUM, LENGTH(F_NUM) - 1, 2) F_NUM
+                  FROM (SELECT '00' ||
+                               TO_CHAR(TO_NUMBER(SUBSTR(MAX(F_JB_NUM),
+                                                        LENGTH(#{jbNum}) + 1,
+                                                        2)) + 1) F_NUM
+                          FROM T_PRM_FUNC
+                         WHERE F_JB_NUM LIKE #{jbNum}||'%'
+                           AND F_JB = LENGTH(#{jbNum}) / 2 + 1
+                           AND F_SUBSYS_NUM = #{subSysName})
+                UNION
+                SELECT '01' F_NUM FROM DUAL))
+    </select>
+    <!-- 当使用该Mybatis与Spring整合的时候，该文件必须和相应的Mapper接口文件同名，并在同一路径下 -->
+</mapper> 

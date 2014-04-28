@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.BusinessDeductMapper" >
+  <resultMap id="businessDeductBean" type="com.xwtech.uomp.base.pojo.business.BusinessDeductBean" >
+    <id column="F_DEDUCT_NUM" property="deductNum" jdbcType="VARCHAR" />
+    <result column="F_DEDUCT_WAY" property="deductWay" jdbcType="VARCHAR" />
+    <result column="F_BZ" property="bz" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="queryBusinessDeductList" parameterType="java.util.Map" resultMap="businessDeductBean">
+  	select * from(
+		select rownum row_num, a.*
+		  from (
+		  	select F_DEDUCT_NUM, F_DEDUCT_WAY, F_BZ from T_BUSI_DEDUCT_DA
+		   ) a
+		          where 1=1
+         <if test="deductNum != null">
+            AND F_DEDUCT_NUM like #{deductNum}||'%'
+        </if>
+        <if test="deductWay != null">
+            AND F_DEDUCT_WAY like #{deductWay}||'%'
+        </if>
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <select id="queryBusinessDeductCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+  	select count(1) from T_BUSI_DEDUCT_DA where 1=1
+  		<if test="deductNum != null">
+            AND F_DEDUCT_NUM like #{deductNum}||'%'
+     	</if>
+      	<if test="deductWay != null">
+         	 AND F_DEDUCT_WAY like #{deductWay}||'%'
+     	</if>
+  </select>
+  
+  <select id="queryBusiDeductBykey" parameterType="java.lang.String" resultMap="businessDeductBean">
+  	select F_DEDUCT_NUM, F_DEDUCT_WAY, F_BZ from T_BUSI_DEDUCT_DA 
+  	where F_DEDUCT_NUM =#{deductNum}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_BUSI_DEDUCT_DA
+    where F_DEDUCT_NUM = #{deductNum,jdbcType=VARCHAR}
+  </delete>
+  <insert id="addBusiDeduct" parameterType="com.xwtech.uomp.base.pojo.business.BusinessDeductBean" >
+    insert into T_BUSI_DEDUCT_DA (F_DEDUCT_NUM, F_DEDUCT_WAY, F_BZ
+      )
+    values (#{deductNum,jdbcType=VARCHAR}, #{deductWay,jdbcType=VARCHAR}, #{bz,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.xwtech.uomp.base.pojo.business.BusinessDeductBean" >
+    update T_BUSI_DEDUCT_DA
+    <set >
+      <if test="deductWay != null" >
+        F_DEDUCT_WAY = #{deductWay,jdbcType=VARCHAR},
+      </if>
+      <if test="bz != null" >
+        F_BZ = #{bz,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where F_DEDUCT_NUM = #{deductNum,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.business.BusinessDeductBean" >
+    update T_BUSI_DEDUCT_DA
+    set F_DEDUCT_WAY = #{deductWay,jdbcType=VARCHAR},
+      F_BZ = #{bz,jdbcType=VARCHAR}
+    where F_DEDUCT_NUM = #{deductNum,jdbcType=VARCHAR}
+  </update>
+</mapper>

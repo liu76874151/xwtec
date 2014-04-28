@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.area.AreaDAMapper" >
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.area.AreaDABean" >
+    <result column="F_AREA_NUM" property="areaNum" jdbcType="VARCHAR" />
+    <result column="F_AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+    <result column="F_JB_NUM" property="jbNum" jdbcType="VARCHAR" />
+    <result column="F_JB" property="jb" jdbcType="DECIMAL" />
+    <result column="F_MJ" property="mj" jdbcType="DECIMAL" />
+    <result column="F_BZ" property="bz" jdbcType="VARCHAR" />
+    <result column="F_BOSS_CODE" property="bossCode" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="queryAreaDAList" resultMap="BaseResultMap" parameterType="java.lang.String">
+  select * from T_AREA_da where f_boss_code LIKE  #{bossCode}||'%' order by f_boss_code 
+  </select>
+  
+  <select id="queryAreaCityList" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select * from T_AREA_da where f_jb = '2' and f_boss_code LIKE  #{bossCode}||'%' order by f_boss_code 
+  </select>
+  
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.area.AreaDABean" >
+    insert into T_AREA_DA (F_AREA_NUM, F_AREA_NAME, F_JB_NUM, 
+      F_JB, F_MJ, F_BZ, F_BOSS_CODE
+      )
+    values (#{fAreaNum,jdbcType=VARCHAR}, #{fAreaName,jdbcType=VARCHAR}, #{fJbNum,jdbcType=VARCHAR}, 
+      #{fJb,jdbcType=DECIMAL}, #{fMj,jdbcType=DECIMAL}, #{fBz,jdbcType=VARCHAR}, #{fBossCode,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.area.AreaDABean" >
+    insert into T_AREA_DA
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fAreaNum != null" >
+        F_AREA_NUM,
+      </if>
+      <if test="fAreaName != null" >
+        F_AREA_NAME,
+      </if>
+      <if test="fJbNum != null" >
+        F_JB_NUM,
+      </if>
+      <if test="fJb != null" >
+        F_JB,
+      </if>
+      <if test="fMj != null" >
+        F_MJ,
+      </if>
+      <if test="fBz != null" >
+        F_BZ,
+      </if>
+      <if test="fBossCode != null" >
+        F_BOSS_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fAreaNum != null" >
+        #{fAreaNum,jdbcType=VARCHAR},
+      </if>
+      <if test="fAreaName != null" >
+        #{fAreaName,jdbcType=VARCHAR},
+      </if>
+      <if test="fJbNum != null" >
+        #{fJbNum,jdbcType=VARCHAR},
+      </if>
+      <if test="fJb != null" >
+        #{fJb,jdbcType=DECIMAL},
+      </if>
+      <if test="fMj != null" >
+        #{fMj,jdbcType=DECIMAL},
+      </if>
+      <if test="fBz != null" >
+        #{fBz,jdbcType=VARCHAR},
+      </if>
+      <if test="fBossCode != null" >
+        #{fBossCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

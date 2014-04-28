@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.brand.BrandSortMapper" >
+  <resultMap id="brandSortBean" type="com.xwtech.uomp.base.pojo.brand.BrandSortBean" >
+    <id column="BRAND_ID" property="brandId" jdbcType="DECIMAL" />
+    <result column="PARENT_ID" property="parentId" jdbcType="DECIMAL" />
+    <result column="BRAND_LEVEL" property="brandLevel" jdbcType="DECIMAL" />
+    <result column="BRAND_NAME" property="brandName" jdbcType="VARCHAR" />
+    <result column="BOSS_CODE" property="bossCode" jdbcType="DECIMAL" />
+    <result column="BRAND_DESCRIBE" property="brandDescribe" jdbcType="VARCHAR" />
+    <result column="BRAND_STATE" property="brandState" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRAND_ID, PARENT_ID, BRAND_LEVEL, BRAND_NAME, BOSS_CODE, BRAND_DESCRIBE, BRAND_STATE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="brandSortBean" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from JSMSS_BRAND_SORT
+    where BRAND_ID = #{brandId,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from JSMSS_BRAND_SORT
+    where BRAND_ID = #{brandId,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.brand.BrandSortBean" >
+    insert into JSMSS_BRAND_SORT (BRAND_ID, PARENT_ID, BRAND_LEVEL, 
+      BRAND_NAME, BOSS_CODE, BRAND_DESCRIBE, 
+      BRAND_STATE)
+    values (#{brandId,jdbcType=DECIMAL}, #{parentId,jdbcType=DECIMAL}, #{brandLevel,jdbcType=DECIMAL}, 
+      #{brandName,jdbcType=VARCHAR}, #{bossCode,jdbcType=DECIMAL}, #{brandDescribe,jdbcType=VARCHAR}, 
+      #{brandState,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.brand.BrandSortBean" >
+    insert into JSMSS_BRAND_SORT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="brandId != null" >
+        BRAND_ID,
+      </if>
+      <if test="parentId != null" >
+        PARENT_ID,
+      </if>
+      <if test="brandLevel != null" >
+        BRAND_LEVEL,
+      </if>
+      <if test="brandName != null" >
+        BRAND_NAME,
+      </if>
+      <if test="bossCode != null" >
+        BOSS_CODE,
+      </if>
+      <if test="brandDescribe != null" >
+        BRAND_DESCRIBE,
+      </if>
+      <if test="brandState != null" >
+        BRAND_STATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="brandId != null" >
+        #{brandId,jdbcType=DECIMAL},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=DECIMAL},
+      </if>
+      <if test="brandLevel != null" >
+        #{brandLevel,jdbcType=DECIMAL},
+      </if>
+      <if test="brandName != null" >
+        #{brandName,jdbcType=VARCHAR},
+      </if>
+      <if test="bossCode != null" >
+        #{bossCode,jdbcType=DECIMAL},
+      </if>
+      <if test="brandDescribe != null" >
+        #{brandDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="brandState != null" >
+        #{brandState,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xwtech.uomp.base.pojo.brand.BrandSortBean" >
+    update JSMSS_BRAND_SORT
+    <set >
+      <if test="parentId != null" >
+        PARENT_ID = #{parentId,jdbcType=DECIMAL},
+      </if>
+      <if test="brandLevel != null" >
+        BRAND_LEVEL = #{brandLevel,jdbcType=DECIMAL},
+      </if>
+      <if test="brandName != null" >
+        BRAND_NAME = #{brandName,jdbcType=VARCHAR},
+      </if>
+      <if test="bossCode != null" >
+        BOSS_CODE = #{bossCode,jdbcType=DECIMAL},
+      </if>
+      <if test="brandDescribe != null" >
+        BRAND_DESCRIBE = #{brandDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="brandState != null" >
+        BRAND_STATE = #{brandState,jdbcType=CHAR},
+      </if>
+    </set>
+    where BRAND_ID = #{brandId,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.brand.BrandSortBean" >
+    update JSMSS_BRAND_SORT
+    set PARENT_ID = #{parentId,jdbcType=DECIMAL},
+      BRAND_LEVEL = #{brandLevel,jdbcType=DECIMAL},
+      BRAND_NAME = #{brandName,jdbcType=VARCHAR},
+      BOSS_CODE = #{bossCode,jdbcType=DECIMAL},
+      BRAND_DESCRIBE = #{brandDescribe,jdbcType=VARCHAR},
+      BRAND_STATE = #{brandState,jdbcType=CHAR}
+    where BRAND_ID = #{brandId,jdbcType=DECIMAL}
+  </update>
+  
+  <select id="queryBrandId" parameterType="java.lang.String" resultMap="brandSortBean">
+  	select brand_id
+	  from jsmss_brand_sort
+	 where parent_id = 0
+	   and boss_code in (#{bossCode})
+	union
+	select parent_id as brand_id
+	  from jsmss_brand_sort parent_id
+	 where parent_id &lt;&gt; 0
+	   and boss_code in (#{bossCode})
+	 group by parent_id
+  </select>
+</mapper>

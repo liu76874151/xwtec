@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.BusinessEffectWayDzMapper" >
+  <resultMap id="businessEffectWayBean" type="com.xwtech.uomp.base.pojo.business.BusinessEffectWayBean" >
+    <result column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_BUSI_OPRT_TYPE" property="busiOprtType" jdbcType="DECIMAL" />
+    <result column="F_EFFECT_WAY" property="effectWay" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.business.BusinessEffectWayBean" >
+    insert into T_BUSI_EFFECT_WAY_DZ (F_BUSI_NUM, F_BUSI_OPRT_TYPE, F_EFFECT_WAY
+      )
+    values (#{busiNum,jdbcType=VARCHAR}, #{busiOprtType,jdbcType=DECIMAL}, #{effectWay,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.business.BusinessEffectWayBean" >
+    insert into T_BUSI_EFFECT_WAY_DZ
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        F_BUSI_NUM,
+      </if>
+      <if test="busiOprtType != null" >
+        F_BUSI_OPRT_TYPE,
+      </if>
+      <if test="effectWay != null" >
+        F_EFFECT_WAY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        #{busiNum,jdbcType=VARCHAR},
+      </if>
+      <if test="busiOprtType != null" >
+        #{busiOprtType,jdbcType=DECIMAL},
+      </if>
+      <if test="effectWay != null" >
+        #{effectWay,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  
+  <delete id="deleteEffectWayByBusiNum" parameterType="java.lang.String">
+  	DELETE FROM T_BUSI_EFFECT_WAY_DZ WHERE F_BUSI_NUM=#{busiNum}
+  </delete>
+  
+</mapper>

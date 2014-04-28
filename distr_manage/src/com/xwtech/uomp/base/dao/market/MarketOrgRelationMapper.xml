@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.market.MarketOrgRelationMapper">
+
+  <resultMap id="marketOrgRelationBean" type="com.xwtech.uomp.base.pojo.market.MarketOrgRelationBean">
+    <id column="ORG_ID" jdbcType="DECIMAL" property="orgId" />
+    <result column="MARKET_SECOND_PKID" jdbcType="DECIMAL" property="marketSecondPkid" />
+    <result column="ORG_CODE" jdbcType="DECIMAL" property="orgCode" />
+    <association property="orgInfoBean" column="ORG_CODE" javaType="com.xwtech.uomp.base.pojo.org.OrgInfoBean" resultMap="orgInfoBean"></association>
+  </resultMap>
+  
+  <resultMap id="orgInfoBean" type="com.xwtech.uomp.base.pojo.org.OrgInfoBean" >
+    <id column="ORG_CODE" property="orgCode" jdbcType="DECIMAL" />
+    <result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+    <result column="ORG_ADDR" property="orgAddr" jdbcType="VARCHAR" />
+    <result column="LINK_TEL" property="linkTel" jdbcType="VARCHAR" />
+    <result column="CITY_ID" property="cityId" jdbcType="DECIMAL" />
+    <result column="ZONE_ID" property="zoneId" jdbcType="DECIMAL" />
+    <result column="STATE" property="state" jdbcType="CHAR" />
+    <result column="ORG_TYPE" property="orgType" jdbcType="CHAR" />
+  </resultMap>
+	
+  <insert id="batchUpdate" parameterType="java.util.List">
+  		insert into JSMSS_MARKET_ORG_RELATION(ORG_ID,
+                               MARKET_SECOND_PKID,
+                               ORG_CODE) 
+		 <foreach collection="list" item="item" index="index" separator="union all">
+		 select #{orgId}, #{marketSecondPkid}, #{orgCode} from dual
+		</foreach>
+  </insert>
+  
+  <insert id="insertOrgInfo" parameterType="com.xwtech.uomp.base.pojo.market.MarketOrgRelationBean" >
+  	insert into JSMSS_MARKET_ORG_RELATION(ORG_ID,
+                               MARKET_SECOND_PKID,
+                               ORG_CODE) values (#{orgId}, #{marketSecondPkid}, #{orgCode})
+  </insert>
+  
+  <select id="selectOrgInfoBySecondPkid" parameterType="java.lang.String" resultMap="marketOrgRelationBean">
+  	select 
+	b.org_code,
+	b.org_name
+	from jsmss_market_org_relation a
+	join
+	jsmss_org_info b on a.org_code=b.org_code and a.market_second_pkid=#{marketSecondPkid}
+  </select>
+  
+  <select id="selectOrgInfoCodeBySecondPkid" parameterType="java.lang.String" resultMap="marketOrgRelationBean">
+  	select 
+	org_code
+	from jsmss_market_org_relation
+	where market_second_pkid=#{marketSecondPkid}
+  </select>
+  
+  <delete id="deleteBySecondPkid" parameterType="java.lang.String">
+  	delete from jsmss_market_org_relation where market_second_pkid=#{marketSecondPkid}
+  </delete>
+</mapper>

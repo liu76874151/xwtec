@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.verify.AuditLogMapper" >
+  <resultMap id="auditLogBean" type="com.xwtech.uomp.base.pojo.verify.AuditLogBean" >
+    <id column="PKID" property="pkid" jdbcType="DECIMAL" />
+    <result column="BISU_ID" property="bisuId" jdbcType="VARCHAR" />
+    <result column="CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="AUDIT_STATE" property="auditState" jdbcType="CHAR" />
+    <result column="OPER_TYPE" property="operType" jdbcType="CHAR" />
+    <result column="OPER_LEVEL" property="operLevel" jdbcType="CHAR" />
+    <result column="OPER_TIME" property="operTime" jdbcType="TIMESTAMP" />
+    <result column="OPER_USER" property="operUser" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PKID, BISU_ID, CHANNEL_NUM, AUDIT_STATE, OPER_TYPE, OPER_LEVEL, OPER_TIME, OPER_USER, 
+    DESCRIPTION
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="auditLogBean" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_AUDIT_LOG
+    where PKID = #{pkid,jdbcType=DECIMAL}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from T_AUDIT_LOG
+    where PKID = #{pkid,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.verify.AuditLogBean" >
+    insert into T_AUDIT_LOG (PKID, BISU_ID, CHANNEL_NUM, 
+      AUDIT_STATE, OPER_TYPE, OPER_LEVEL, 
+      OPER_TIME, OPER_USER, DESCRIPTION
+      )
+    values (#{pkid,jdbcType=DECIMAL}, #{bisuId,jdbcType=VARCHAR}, #{channelNum,jdbcType=VARCHAR}, 
+      #{auditState,jdbcType=CHAR}, #{operType,jdbcType=CHAR}, #{operLevel,jdbcType=CHAR}, 
+      #{operTime,jdbcType=TIMESTAMP}, #{operUser,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.verify.AuditLogBean" >
+    insert into T_AUDIT_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pkid != null" >
+        PKID,
+      </if>
+      <if test="bisuId != null" >
+        BISU_ID,
+      </if>
+      <if test="channelNum != null" >
+        CHANNEL_NUM,
+      </if>
+      <if test="auditState != null" >
+        AUDIT_STATE,
+      </if>
+      <if test="operType != null" >
+        OPER_TYPE,
+      </if>
+      <if test="operLevel != null" >
+        OPER_LEVEL,
+      </if>
+        OPER_TIME,
+      <if test="operUser != null" >
+        OPER_USER,
+      </if>
+      <if test="description != null" >
+        DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pkid != null" >
+        #{pkid,jdbcType=DECIMAL},
+      </if>
+      <if test="bisuId != null" >
+        #{bisuId,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNum != null" >
+        #{channelNum,jdbcType=VARCHAR},
+      </if>
+      <if test="auditState != null" >
+        #{auditState,jdbcType=CHAR},
+      </if>
+      <if test="operType != null" >
+        #{operType,jdbcType=CHAR},
+      </if>
+      <if test="operLevel != null" >
+        #{operLevel,jdbcType=CHAR},
+      </if>
+        sysdate,
+      <if test="operUser != null" >
+        #{operUser,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xwtech.uomp.base.pojo.verify.AuditLogBean" >
+    update T_AUDIT_LOG
+    <set >
+      <if test="bisuId != null" >
+        BISU_ID = #{bisuId,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNum != null" >
+        CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR},
+      </if>
+      <if test="auditState != null" >
+        AUDIT_STATE = #{auditState,jdbcType=CHAR},
+      </if>
+      <if test="operType != null" >
+        OPER_TYPE = #{operType,jdbcType=CHAR},
+      </if>
+      <if test="operLevel != null" >
+        OPER_LEVEL = #{operLevel,jdbcType=CHAR},
+      </if>
+      <if test="operTime != null" >
+        OPER_TIME = #{operTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operUser != null" >
+        OPER_USER = #{operUser,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        DESCRIPTION = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where PKID = #{pkid,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.verify.AuditLogBean" >
+    update T_AUDIT_LOG
+    set BISU_ID = #{bisuId,jdbcType=VARCHAR},
+      CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR},
+      AUDIT_STATE = #{auditState,jdbcType=CHAR},
+      OPER_TYPE = #{operType,jdbcType=CHAR},
+      OPER_LEVEL = #{operLevel,jdbcType=CHAR},
+      OPER_TIME = #{operTime,jdbcType=TIMESTAMP},
+      OPER_USER = #{operUser,jdbcType=VARCHAR},
+      DESCRIPTION = #{description,jdbcType=VARCHAR}
+    where PKID = #{pkid,jdbcType=DECIMAL}
+  </update>
+</mapper>

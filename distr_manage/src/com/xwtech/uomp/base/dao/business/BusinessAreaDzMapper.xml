@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.BusinessAreaDzMapper" >
+  <resultMap id="businessAreaDzBean" type="com.xwtech.uomp.base.pojo.business.BusinessAreaDzBean" >
+    <result column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_AREA_NUM" property="areaNum" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+  </resultMap>
+  
+	<resultMap id="areaInfoMap" type="com.xwtech.uomp.base.pojo.area.AreaDABean" >
+	    <result column="F_AREA_NUM" property="areaNum" jdbcType="VARCHAR" />
+	    <result column="F_AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+	    <result column="F_JB_NUM" property="jbNum" jdbcType="VARCHAR" />
+	    <result column="F_JB" property="jb" jdbcType="DECIMAL" />
+	    <result column="F_MJ" property="mj" jdbcType="DECIMAL" />
+	    <result column="F_BZ" property="bz" jdbcType="VARCHAR" />
+	    <result column="F_BOSS_CODE" property="bossCode" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="queryAreaByBusiNum" parameterType="java.util.Map" resultMap="areaInfoMap">
+  	select 
+  		*
+	  from t_area_da t
+	 where t.f_area_num in
+	       (select t.f_area_num
+	          from t_busi_area_dz t
+	         where t.f_busi_num = #{busiNum}
+	           )
+  </select>
+  
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.business.BusinessAreaDzBean" >
+    insert into T_BUSI_AREA_DZ (F_BUSI_NUM, F_AREA_NUM, F_CHANNEL_NUM
+      )
+    values (#{busiNum,jdbcType=VARCHAR}, #{areaNum,jdbcType=VARCHAR}, #{channelNum,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.business.BusinessAreaDzBean" >
+    insert into T_BUSI_AREA_DZ
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        F_BUSI_NUM,
+      </if>
+      <if test="areaNum != null" >
+        F_AREA_NUM,
+      </if>
+      <if test="channelNum != null" >
+        F_CHANNEL_NUM,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        #{busiNum,jdbcType=VARCHAR},
+      </if>
+      <if test="areaNum != null" >
+        #{areaNum,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNum != null" >
+        #{channelNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <delete id="deleteByBusiNum" parameterType="java.lang.String">
+  	DELETE FROM T_BUSI_AREA_DZ WHERE F_BUSI_NUM=#{busiNum}
+  </delete>
+</mapper>

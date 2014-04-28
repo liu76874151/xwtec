@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.boss.REBossMarketFirstMapper" >
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.boss.REBossMarketFirstBean" >
+    <id column="F_MARKET_LEVEL1_ID" property="marketLevel1Id" jdbcType="VARCHAR" />
+    <result column="F_MARKET_LEVEL1_NAME" property="marketLevel1Name" jdbcType="VARCHAR" />
+    <result column="F_CITY" property="city" jdbcType="VARCHAR" />
+    <result column="F_START_TIME" property="startTime" jdbcType="CHAR" />
+    <result column="F_END_TIME" property="endTime" jdbcType="CHAR" />
+    <result column="F_TYPE" property="type" jdbcType="CHAR" />
+    <result column="F_USE_FLAG" property="useFlag" jdbcType="CHAR" />
+    <result column="F_ISCHECK" property="ischeck" jdbcType="CHAR" />
+    <result column="F_MAKET_LEVEL1_BOSS" property="maketLevel1Boss" jdbcType="VARCHAR" />
+    <result column="F_BRAND" property="brand" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    F_MARKET_LEVEL1_ID, F_MARKET_LEVEL1_NAME, F_CITY, F_START_TIME, F_END_TIME, F_TYPE, 
+    F_USE_FLAG, F_ISCHECK, F_MAKET_LEVEL1_BOSS, F_BRAND
+  </sql>
+  <select id="queryCrmInfo" resultMap="BaseResultMap" parameterType="java.util.Map">
+
+	select f_market_level1_id,f_market_level1_name
+	from RE_BOSS_MARKET_FIRST
+	where 1=1
+	<if test="city != null  and city != 0">
+		and f_city=#{city}
+	</if>
+	and f_use_flag ='1' and f_ischeck='1'
+
+  
+       </select>
+   
+  <select id="queryCrmBrandInfo"  resultType="java.lang.String" parameterType="java.lang.String">
+  	select f.f_brand from RE_BOSS_MARKET_FIRST f
+    where f.f_market_level1_id = #{crmfirstCode}
+  </select>
+ <!--  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from RE_BOSS_MARKET_FIRST
+    where F_MARKET_LEVEL1_ID = #{fMarketLevel1Id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="demo.model.REBossMarketFirstBean" >
+    insert into RE_BOSS_MARKET_FIRST (F_MARKET_LEVEL1_ID, F_MARKET_LEVEL1_NAME, 
+      F_CITY, F_START_TIME, F_END_TIME, 
+      F_TYPE, F_USE_FLAG, F_ISCHECK, F_MAKET_LEVEL1_BOSS, 
+      F_BRAND)
+    values (#{fMarketLevel1Id,jdbcType=VARCHAR}, #{fMarketLevel1Name,jdbcType=VARCHAR}, 
+      #{fCity,jdbcType=VARCHAR}, #{fStartTime,jdbcType=CHAR}, #{fEndTime,jdbcType=CHAR}, 
+      #{fType,jdbcType=CHAR}, #{fUseFlag,jdbcType=CHAR}, #{fIscheck,jdbcType=CHAR}, #{fMaketLevel1Boss,jdbcType=VARCHAR}, 
+      #{fBrand,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.boss.REBossMarketFirstBean" >
+    insert into RE_BOSS_MARKET_FIRST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fMarketLevel1Id != null" >
+        F_MARKET_LEVEL1_ID,
+      </if>
+      <if test="fMarketLevel1Name != null" >
+        F_MARKET_LEVEL1_NAME,
+      </if>
+      <if test="fCity != null" >
+        F_CITY,
+      </if>
+      <if test="fStartTime != null" >
+        F_START_TIME,
+      </if>
+      <if test="fEndTime != null" >
+        F_END_TIME,
+      </if>
+      <if test="fType != null" >
+        F_TYPE,
+      </if>
+      <if test="fUseFlag != null" >
+        F_USE_FLAG,
+      </if>
+      <if test="fIscheck != null" >
+        F_ISCHECK,
+      </if>
+      <if test="fMaketLevel1Boss != null" >
+        F_MAKET_LEVEL1_BOSS,
+      </if>
+      <if test="fBrand != null" >
+        F_BRAND,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fMarketLevel1Id != null" >
+        #{fMarketLevel1Id,jdbcType=VARCHAR},
+      </if>
+      <if test="fMarketLevel1Name != null" >
+        #{fMarketLevel1Name,jdbcType=VARCHAR},
+      </if>
+      <if test="fCity != null" >
+        #{fCity,jdbcType=VARCHAR},
+      </if>
+      <if test="fStartTime != null" >
+        #{fStartTime,jdbcType=CHAR},
+      </if>
+      <if test="fEndTime != null" >
+        #{fEndTime,jdbcType=CHAR},
+      </if>
+      <if test="fType != null" >
+        #{fType,jdbcType=CHAR},
+      </if>
+      <if test="fUseFlag != null" >
+        #{fUseFlag,jdbcType=CHAR},
+      </if>
+      <if test="fIscheck != null" >
+        #{fIscheck,jdbcType=CHAR},
+      </if>
+      <if test="fMaketLevel1Boss != null" >
+        #{fMaketLevel1Boss,jdbcType=VARCHAR},
+      </if>
+      <if test="fBrand != null" >
+        #{fBrand,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.xwtech.uomp.base.pojo.boss.REBossMarketFirstBean" >
+    update RE_BOSS_MARKET_FIRST
+    <set >
+      <if test="fMarketLevel1Name != null" >
+        F_MARKET_LEVEL1_NAME = #{fMarketLevel1Name,jdbcType=VARCHAR},
+      </if>
+      <if test="fCity != null" >
+        F_CITY = #{fCity,jdbcType=VARCHAR},
+      </if>
+      <if test="fStartTime != null" >
+        F_START_TIME = #{fStartTime,jdbcType=CHAR},
+      </if>
+      <if test="fEndTime != null" >
+        F_END_TIME = #{fEndTime,jdbcType=CHAR},
+      </if>
+      <if test="fType != null" >
+        F_TYPE = #{fType,jdbcType=CHAR},
+      </if>
+      <if test="fUseFlag != null" >
+        F_USE_FLAG = #{fUseFlag,jdbcType=CHAR},
+      </if>
+      <if test="fIscheck != null" >
+        F_ISCHECK = #{fIscheck,jdbcType=CHAR},
+      </if>
+      <if test="fMaketLevel1Boss != null" >
+        F_MAKET_LEVEL1_BOSS = #{fMaketLevel1Boss,jdbcType=VARCHAR},
+      </if>
+      <if test="fBrand != null" >
+        F_BRAND = #{fBrand,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where F_MARKET_LEVEL1_ID = #{fMarketLevel1Id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.boss.REBossMarketFirstBean" >
+    update RE_BOSS_MARKET_FIRST
+    set F_MARKET_LEVEL1_NAME = #{fMarketLevel1Name,jdbcType=VARCHAR},
+      F_CITY = #{fCity,jdbcType=VARCHAR},
+      F_START_TIME = #{fStartTime,jdbcType=CHAR},
+      F_END_TIME = #{fEndTime,jdbcType=CHAR},
+      F_TYPE = #{fType,jdbcType=CHAR},
+      F_USE_FLAG = #{fUseFlag,jdbcType=CHAR},
+      F_ISCHECK = #{fIscheck,jdbcType=CHAR},
+      F_MAKET_LEVEL1_BOSS = #{fMaketLevel1Boss,jdbcType=VARCHAR},
+      F_BRAND = #{fBrand,jdbcType=VARCHAR}
+    where F_MARKET_LEVEL1_ID = #{fMarketLevel1Id,jdbcType=VARCHAR}
+  </update>-->
+</mapper>

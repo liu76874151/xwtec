@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.RelationBusinessInfoBrandDzMapper" >
+  <resultMap id="relationBusinessInfoBrandDzBean" type="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoBrandDzBean" >
+    <result column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="F_RELATIVE_BUSI" property="relativeBusi" jdbcType="VARCHAR" />
+    <result column="F_BRAND_NUM" property="brandNum" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <delete id="deleteByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoBrandDzBean" >
+    delete from T_RELATIVE_BUSI_BRAND_DZ
+    where F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+      and F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+      and F_RELATIVE_BUSI = #{relativeBusi,jdbcType=VARCHAR}
+      and F_BRAND_NUM = #{brandNum,jdbcType=VARCHAR}
+  </delete>
+  
+  <delete id="deleteByBusiNum" parameterType="java.lang.String">
+  	DELETE FROM T_RELATIVE_BUSI_BRAND_DZ 
+  	WHERE F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  </delete>
+  
+  <delete id="deleteRelaBusiBrandDz" parameterType="com.xwtech.uomp.base.pojo.business.BusinessInfoBean">
+  	DELETE FROM T_RELATIVE_BUSI_BRAND_DZ 
+  	WHERE F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  	AND F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+  </delete>
+  
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoBrandDzBean" >
+    insert into T_RELATIVE_BUSI_BRAND_DZ (F_BUSI_NUM, F_CHANNEL_NUM, F_RELATIVE_BUSI, 
+      F_BRAND_NUM)
+    values (#{busiNum,jdbcType=VARCHAR}, #{channelNum,jdbcType=VARCHAR}, #{relativeBusi,jdbcType=VARCHAR}, 
+      #{brandNum,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoBrandDzBean" >
+    insert into T_RELATIVE_BUSI_BRAND_DZ
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        F_BUSI_NUM,
+      </if>
+      <if test="channelNum != null" >
+        F_CHANNEL_NUM,
+      </if>
+      <if test="relativeBusi != null" >
+        F_RELATIVE_BUSI,
+      </if>
+      <if test="brandNum != null" >
+        F_BRAND_NUM,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        #{busiNum,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNum != null" >
+        #{channelNum,jdbcType=VARCHAR},
+      </if>
+      <if test="relativeBusi != null" >
+        #{relativeBusi,jdbcType=VARCHAR},
+      </if>
+      <if test="brandNum != null" >
+        #{brandNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

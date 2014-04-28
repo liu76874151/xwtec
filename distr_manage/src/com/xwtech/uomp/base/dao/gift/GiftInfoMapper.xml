@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.gift.GiftInfoMapper">
+	<resultMap id="giftInfoBean" type="com.xwtech.uomp.base.pojo.gift.GiftInfoBean">
+		<result column="GIFT_ID" property="giftId" jdbcType="DECIMAL" />
+		<result column="MARKET_SECOND_PKID" property="marketSecondPkid"
+			jdbcType="DECIMAL" />
+		<result column="GIFT_NAME" property="giftName" jdbcType="VARCHAR" />
+		<result column="GIFT_PRICE" property="giftPrice" jdbcType="DECIMAL" />
+		<result column="IMG_DIR" property="imgDir" jdbcType="VARCHAR" />
+		<result column="GIFT_COMMENT" property="giftComment" jdbcType="VARCHAR" />
+		<result column="STATE" property="state" jdbcType="CHAR" />
+		<result column="GIFT_GET_TYPES" property="giftGetTypes"
+			jdbcType="VARCHAR" />
+		<result column="BOSS_GIFT_ID" property="bossGiftId" jdbcType="VARCHAR" />
+		<result column="GIFT_NUM" property="giftNum" jdbcType="DECIMAL" />
+		<result column="GIFT_SEND_TYPE" property="giftSendType"
+			jdbcType="VARCHAR" />
+		<result column="GIFT_COUNT_STATE" property="giftCountState"
+			jdbcType="CHAR" />
+		<result column="F_GIFT_TYPE" property="giftType" />
+		<result column="CHANNEL" property="channel" />
+		<result column="PARENT_GIFT_CODE" property="parentGiftCode" />
+		<result column="PARENT_GIFT_NAME" property="parentGiftName" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		GIFT_ID, MARKET_SECOND_PKID, GIFT_NAME, GIFT_PRICE,
+		IMG_DIR, GIFT_COMMENT,
+		STATE,
+		GIFT_GET_TYPES, BOSS_GIFT_ID, GIFT_NUM,
+		GIFT_SEND_TYPE, GIFT_COUNT_STATE,CHANNEL,F_GIFT_TYPE,PARENT_GIFT_CODE,PARENT_GIFT_NAME
+  </sql>
+
+
+	<select id="selectBySecondPkid" resultMap="giftInfoBean"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from JSMSS_GIFT_INFO
+		where MARKET_SECOND_PKID = #{marketSecondPkid}
+	</select>
+	 
+	 <!-- 
+		 <select id="selectBySecondPkid" resultMap="giftInfoBean"
+		parameterType="java.util.Map">
+			
+	</select>
+	-->
+	 
+	<select id="selectByPrimaryKey" resultMap="giftInfoBean"
+		parameterType="java.lang.Long">
+		select
+		<include refid="Base_Column_List" />
+		from JSMSS_GIFT_INFO
+		where GIFT_ID = #{giftId,jdbcType=DECIMAL}
+	</select>
+	<delete id="deleteBySecondPkid" parameterType="java.lang.String">
+		delete from
+		JSMSS_GIFT_INFO
+		where MARKET_SECOND_PKID = #{marketSecondPkid}
+  </delete>
+	<insert id="insert" parameterType="com.xwtech.uomp.base.pojo.gift.GiftInfoBean">
+		insert into JSMSS_GIFT_INFO
+		(GIFT_ID, MARKET_SECOND_PKID, GIFT_NAME,
+		GIFT_PRICE, IMG_DIR,
+		GIFT_COMMENT,
+		STATE, GIFT_GET_TYPES, BOSS_GIFT_ID,
+		GIFT_NUM,
+		GIFT_SEND_TYPE, GIFT_COUNT_STATE,CHANNEL,F_GIFT_TYPE,PARENT_GIFT_CODE,PARENT_GIFT_NAME
+		)
+		values (#{giftId,jdbcType=DECIMAL},
+		#{marketSecondPkid,jdbcType=DECIMAL},
+		#{giftName,jdbcType=VARCHAR},
+		#{giftPrice,jdbcType=DECIMAL}, #{imgDir,jdbcType=VARCHAR},
+		#{giftComment,jdbcType=VARCHAR},
+		#{state,jdbcType=CHAR},
+		#{giftGetTypes,jdbcType=VARCHAR},
+		#{bossGiftId,jdbcType=VARCHAR},
+		#{giftNum,jdbcType=DECIMAL}, #{giftSendType,jdbcType=VARCHAR},
+		#{giftCountState,jdbcType=CHAR},
+		#{channel,jdbcType=VARCHAR},
+		#{giftType,jdbcType=VARCHAR},
+		#{parentGiftCode,jdbcType=VARCHAR},
+		#{parentGiftName,jdbcType=VARCHAR}
+		)
+  </insert>
+	<insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.gift.GiftInfoBean">
+		insert into JSMSS_GIFT_INFO
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="giftId != null">
+				GIFT_ID,
+      </if>
+			<if test="marketSecondPkid != null">
+				MARKET_SECOND_PKID,
+      </if>
+			<if test="giftName != null">
+				GIFT_NAME,
+      </if>
+			<if test="giftPrice != null">
+				GIFT_PRICE,
+      </if>
+			<if test="imgDir != null">
+				IMG_DIR,
+      </if>
+			<if test="giftComment != null">
+				GIFT_COMMENT,
+      </if>
+			<if test="state != null">
+				STATE,
+      </if>
+			<if test="giftGetTypes != null">
+				GIFT_GET_TYPES,
+      </if>
+			<if test="bossGiftId != null">
+				BOSS_GIFT_ID,
+      </if>
+			<if test="giftNum != null">
+				GIFT_NUM,
+      </if>
+			<if test="giftSendType != null">
+				GIFT_SEND_TYPE,
+      </if>
+			<if test="giftCountState != null">
+				GIFT_COUNT_STATE,
+      </if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="giftId != null">
+				#{giftId,jdbcType=DECIMAL},
+      </if>
+			<if test="marketSecondPkid != null">
+				#{marketSecondPkid,jdbcType=DECIMAL},
+      </if>
+			<if test="giftName != null">
+				#{giftName,jdbcType=VARCHAR},
+      </if>
+			<if test="giftPrice != null">
+				#{giftPrice,jdbcType=DECIMAL},
+      </if>
+			<if test="imgDir != null">
+				#{imgDir,jdbcType=VARCHAR},
+      </if>
+			<if test="giftComment != null">
+				#{giftComment,jdbcType=VARCHAR},
+      </if>
+			<if test="state != null">
+				#{state,jdbcType=CHAR},
+      </if>
+			<if test="giftGetTypes != null">
+				#{giftGetTypes,jdbcType=VARCHAR},
+      </if>
+			<if test="bossGiftId != null">
+				#{bossGiftId,jdbcType=VARCHAR},
+      </if>
+			<if test="giftNum != null">
+				#{giftNum,jdbcType=DECIMAL},
+      </if>
+			<if test="giftSendType != null">
+				#{giftSendType,jdbcType=VARCHAR},
+      </if>
+			<if test="giftCountState != null">
+				#{giftCountState,jdbcType=CHAR},
+      </if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.xwtech.uomp.base.pojo.gift.GiftInfoBean">
+		update JSMSS_GIFT_INFO
+		<set>
+			<if test="marketSecondPkid != null">
+				MARKET_SECOND_PKID =
+				#{marketSecondPkid,jdbcType=DECIMAL},
+      </if>
+			<if test="giftName != null">
+				GIFT_NAME = #{giftName,jdbcType=VARCHAR},
+      </if>
+			<if test="giftPrice != null">
+				GIFT_PRICE = #{giftPrice,jdbcType=DECIMAL},
+      </if>
+			<if test="imgDir != null">
+				IMG_DIR = #{imgDir,jdbcType=VARCHAR},
+      </if>
+			<if test="giftComment != null">
+				GIFT_COMMENT = #{giftComment,jdbcType=VARCHAR},
+      </if>
+			<if test="state != null">
+				STATE = #{state,jdbcType=CHAR},
+      </if>
+			<if test="giftGetTypes != null">
+				GIFT_GET_TYPES = #{giftGetTypes,jdbcType=VARCHAR},
+      </if>
+			<if test="bossGiftId != null">
+				BOSS_GIFT_ID = #{bossGiftId,jdbcType=VARCHAR},
+      </if>
+			<if test="giftNum != null">
+				GIFT_NUM = #{giftNum,jdbcType=DECIMAL},
+      </if>
+			<if test="giftSendType != null">
+				GIFT_SEND_TYPE = #{giftSendType,jdbcType=VARCHAR},
+      </if>
+			<if test="giftCountState != null">
+				GIFT_COUNT_STATE = #{giftCountState,jdbcType=CHAR},
+      </if>
+		</set>
+		where GIFT_ID = #{giftId,jdbcType=DECIMAL}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.gift.GiftInfoBean">
+		update
+		JSMSS_GIFT_INFO
+		set MARKET_SECOND_PKID =
+		#{marketSecondPkid,jdbcType=DECIMAL},
+		GIFT_NAME =
+		#{giftName,jdbcType=VARCHAR},
+		GIFT_PRICE =
+		#{giftPrice,jdbcType=DECIMAL},
+		IMG_DIR = #{imgDir,jdbcType=VARCHAR},
+		GIFT_COMMENT = #{giftComment,jdbcType=VARCHAR},
+		STATE =
+		#{state,jdbcType=CHAR},
+		GIFT_GET_TYPES =
+		#{giftGetTypes,jdbcType=VARCHAR},
+		BOSS_GIFT_ID =
+		#{bossGiftId,jdbcType=VARCHAR},
+		GIFT_NUM = #{giftNum,jdbcType=DECIMAL},
+		GIFT_SEND_TYPE = #{giftSendType,jdbcType=VARCHAR},
+		GIFT_COUNT_STATE =
+		#{giftCountState,jdbcType=CHAR}
+		where GIFT_ID =
+		#{giftId,jdbcType=DECIMAL}
+  </update>
+</mapper>

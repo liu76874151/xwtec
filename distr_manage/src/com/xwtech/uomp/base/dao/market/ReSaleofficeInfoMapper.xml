@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.market.ReSaleofficeInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.market.ReSaleofficeInfoBean" >
+    <result column="F_MARKET_LEVEL1_ID" property="marketFirstPkid" jdbcType="VARCHAR" />
+    <result column="F_OFFICE_NUM" property="officeNum" jdbcType="VARCHAR" />
+    <result column="F_OFFICE_TYPE" property="officeType" jdbcType="VARCHAR" />
+    <result column="F_OFFICE_NAME" property="officeName" jdbcType="VARCHAR" />
+    <result column="F_OFFICE_BOROUGH_NUM" property="officeBoroughNum" jdbcType="CHAR" />
+    <result column="F_OFFICE_BOROUGH_NAME" property="officeBoroughName" jdbcType="CHAR" />
+    <result column="F_OFFICE_ADDR" property="officeAddr" jdbcType="VARCHAR" />
+    <result column="F_OFFICE_TEL" property="officeTel" jdbcType="VARCHAR" />
+    <result column="F_OFFICE_CONCATOR" property="officeConcator" jdbcType="VARCHAR" />
+    <result column="F_OFFICE_CITY" property="officeCity" jdbcType="CHAR" />
+  </resultMap>
+  <select id="queryReSaleOfficeInfo" resultMap="BaseResultMap" parameterType="java.lang.String">
+  select d.f_market_level1_id as F_MARKET_LEVEL1_ID,d.f_office_num as F_OFFICE_NUM,
+   o.f_office_type as F_OFFICE_TYPE,o.f_office_name as F_OFFICE_NAME,
+   o.f_office_borough_num as F_OFFICE_BOROUGH_NUM ,o.f_office_borough_name as  F_OFFICE_BOROUGH_NAME,
+   o.f_office_addr as F_OFFICE_ADDR,o.f_office_tel as F_OFFICE_TEL ,
+   o.f_office_concator as F_OFFICE_CONCATOR, o.F_OFFICE_CITY as F_OFFICE_CITY
+    from RE_MARKET_OFFICE_DZ d, RE_SALEOFFICE_INFO o 
+   where d.f_office_num =o.f_office_num
+   and  d.f_market_level1_id=#{marketFirstPkid}
+  </select>
+<!--  
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.market.ReSaleofficeInfoBean" >
+    insert into RE_SALEOFFICE_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fOfficeNum != null" >
+        F_OFFICE_NUM,
+      </if>
+      <if test="fOfficeType != null" >
+        F_OFFICE_TYPE,
+      </if>
+      <if test="fOfficeName != null" >
+        F_OFFICE_NAME,
+      </if>
+      <if test="fOfficeBoroughNum != null" >
+        F_OFFICE_BOROUGH_NUM,
+      </if>
+      <if test="fOfficeBoroughName != null" >
+        F_OFFICE_BOROUGH_NAME,
+      </if>
+      <if test="fOfficeAddr != null" >
+        F_OFFICE_ADDR,
+      </if>
+      <if test="fOfficeTel != null" >
+        F_OFFICE_TEL,
+      </if>
+      <if test="fOfficeConcator != null" >
+        F_OFFICE_CONCATOR,
+      </if>
+      <if test="fOfficeCity != null" >
+        F_OFFICE_CITY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fOfficeNum != null" >
+        #{fOfficeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="fOfficeType != null" >
+        #{fOfficeType,jdbcType=VARCHAR},
+      </if>
+      <if test="fOfficeName != null" >
+        #{fOfficeName,jdbcType=VARCHAR},
+      </if>
+      <if test="fOfficeBoroughNum != null" >
+        #{fOfficeBoroughNum,jdbcType=CHAR},
+      </if>
+      <if test="fOfficeBoroughName != null" >
+        #{fOfficeBoroughName,jdbcType=CHAR},
+      </if>
+      <if test="fOfficeAddr != null" >
+        #{fOfficeAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="fOfficeTel != null" >
+        #{fOfficeTel,jdbcType=VARCHAR},
+      </if>
+      <if test="fOfficeConcator != null" >
+        #{fOfficeConcator,jdbcType=VARCHAR},
+      </if>
+      <if test="fOfficeCity != null" >
+        #{fOfficeCity,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>-->
+</mapper>

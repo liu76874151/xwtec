@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.pagemanage.PageTmpInfoMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.pagemanage.PageTmpInfo" id="pageTmpInfo">
+        <result property="pageTmpNum" column="F_PAGE_TMP_NUM"/>
+        <result property="pageTmpName" column="F_PAGE_TMP_NAME"/>
+        <result property="tmplatePath" column="F_TMPLATE_PATH"/>
+        <result property="version" column="F_VERSION"/>
+        <result property="isRelaBusi" column="F_IS_RELA_BUSI"/>
+        <result property="type" column="F_TYPE"/>
+        <result property="desc" column="F_DESC"/>
+    </resultMap>
+
+    <!-- 查询信息 -->
+    <select id="pagingQueryPageTmpInfoList" resultMap="pageTmpInfo" parameterType="java.util.Map">
+        SELECT *
+        FROM (SELECT ROWNUM ROW_NUM, A.*
+        FROM (SELECT F_PAGE_TMP_NUM,
+        F_PAGE_TMP_NAME,
+        F_TMPLATE_PATH,
+        F_VERSION,
+        F_IS_RELA_BUSI,
+        F_TYPE,
+        F_DESC
+        FROM T_PAGE_TMP_INFO
+        WHERE 1 = 1
+        <if test="pageTmpNum != null">
+            AND F_PAGE_TMP_NUM = #{pageTmpNum}
+        </if>
+        <if test="pageTmpName != null">
+            AND F_PAGE_TMP_NAME LIKE '%'||#{pageTmpName}||'%'
+        </if>
+        <if test="version != null">
+            AND F_VERSION = #{version}
+        </if>
+        ORDER BY F_PAGE_TMP_NUM) A)
+        WHERE ROW_NUM &gt;#{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+
+    <select id="countPageTmpInfoList" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT COUNT(*)
+        FROM T_PAGE_TMP_INFO
+        WHERE 1 = 1
+        <if test="pageTmpNum != null">
+            AND F_PAGE_TMP_NUM = #{pageTmpNum}
+        </if>
+        <if test="pageTmpName != null">
+            AND F_PAGE_TMP_NAME LIKE '%'||#{pageTmpName}||'%'
+        </if>
+        <if test="version != null">
+            AND F_VERSION = #{version}
+        </if>
+    </select>
+
+    <select id="queryPageTmpInfoList" resultMap="pageTmpInfo" parameterType="java.util.Map">
+        SELECT F_PAGE_TMP_NUM,
+        F_PAGE_TMP_NAME,
+        F_TMPLATE_PATH,
+        F_VERSION,
+        F_IS_RELA_BUSI,
+        F_TYPE,
+        F_DESC
+        FROM T_PAGE_TMP_INFO
+        WHERE 1 = 1
+        <if test="pageTmpNum != null">
+            AND F_PAGE_TMP_NUM = #{pageTmpNum}
+        </if>
+        <if test="pageTmpName != null">
+            AND F_PAGE_TMP_NAME LIKE '%'||#{pageTmpName}||'%'
+        </if>
+        <if test="version != null">
+            AND F_VERSION = #{version}
+        </if>
+        ORDER BY F_PAGE_TMP_NUM
+    </select>
+
+
+    <!-- 根据pageTmpNum和version查询信息 -->
+    <select id="findPageTmpInfoList" resultMap="pageTmpInfo" parameterType="java.util.Map">
+        SELECT F_PAGE_TMP_NUM,
+        F_PAGE_TMP_NAME,
+        F_TMPLATE_PATH,
+        F_VERSION,
+        F_IS_RELA_BUSI,
+        F_TYPE,
+        F_DESC
+        FROM T_PAGE_TMP_INFO
+         WHERE F_PAGE_TMP_NUM = #{pageTmpNum} AND F_VERSION IN ('0',#{version})
+         ORDER BY F_PAGE_TMP_NUM
+    </select>
+
+    <!-- 根据id查询信息 -->
+    <select id="findOnePageTmpInfo" resultMap="pageTmpInfo" parameterType="java.util.Map">
+        SELECT F_PAGE_TMP_NUM,
+        F_PAGE_TMP_NAME,
+        F_TMPLATE_PATH,
+        F_VERSION,
+        F_IS_RELA_BUSI,
+        F_TYPE,
+        F_DESC
+        FROM T_PAGE_TMP_INFO
+         WHERE F_PAGE_TMP_NUM = #{pageTmpNum} AND F_VERSION = #{version}
+         ORDER BY F_PAGE_TMP_NUM
+    </select>
+
+    <!-- 添加信息 -->
+    <insert id="savePageTmpInfo" parameterType="com.xwtech.uomp.base.pojo.pagemanage.PageTmpInfo">
+        INSERT INTO T_PAGE_TMP_INFO
+          (F_PAGE_TMP_NUM,F_PAGE_TMP_NAME,F_TMPLATE_PATH,F_VERSION,F_IS_RELA_BUSI,F_TYPE,F_DESC)
+        VALUES
+          (#{pageTmpNum}, #{pageTmpName}, #{tmplatePath}, #{version}, #{isRelaBusi},#{type}, #{desc})
+    </insert>
+
+    <!-- 修改信息 -->
+    <update id="updatePageTmpInfo" parameterType="com.xwtech.uomp.base.pojo.pagemanage.PageTmpInfo">
+        UPDATE T_PAGE_TMP_INFO
+           SET F_PAGE_TMP_NAME    = #{pageTmpName},
+               F_TMPLATE_PATH = #{tmplatePath},
+               F_IS_RELA_BUSI   = #{isRelaBusi},
+               F_TYPE   = #{type},
+               F_DESC   = #{desc}
+         WHERE F_PAGE_TMP_NUM = #{pageTmpNum} AND F_VERSION = #{version}
+    </update>
+
+    <!-- 删除信息 -->
+    <delete id="deletePageTmpInfo" parameterType="java.lang.String">
+      DELETE FROM T_PAGE_TMP_INFO WHERE F_PAGE_TMP_NUM = #{pageTmpNum} AND F_VERSION = #{version}
+    </delete>
+</mapper>

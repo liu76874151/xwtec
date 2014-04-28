@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.automated.CacheServiceManagerMapper">
+
+    <resultMap type="com.xwtech.uomp.base.pojo.memcache.CacheServiceManageBean" id="cacheServiceManageBean">
+        <result property="num" column="F_MEM_NUM"/>
+        <result property="typeNum" column="F_MEM_TYPE_NUM"/>
+        <result property="servers" column="F_MEM_SERVERS"/>
+        <result property="weights" column="F_MEM_WEIGHTS"/>
+        <result property="initConn" column="F_MEM_INITCONN"/>
+        <result property="minConn" column="F_MEM_MINCONN"/>
+        <result property="maxConn" column="F_MEM_MAXCONN"/>
+        <result property="maxIdle" column="F_MEM_MAXIDLE"/>
+        <result property="mainSleep" column="F_MEM_MAINSLEEP"/>
+        <result property="nagle" column="F_MEM_NAGLE"/>
+        <result property="socketTo" column="F_MEM_SOCKETTO"/>
+        <result property="serverType" column="F_SERVER_TYPE"/>
+        <result property="redHost" column="F_RED_HOST"/>
+        <result property="redPort" column="F_RED_PORT"/>
+        <result property="redPass" column="F_RED_PASS"/>
+        <result property="redDefaultdb" column="F_RED_DEFAULTDB"/>
+        <result property="redTimeout" column="F_RED_TIMEOUT"/>
+        <result property="redMaxactive" column="F_RED_MAXACTIVE"/>
+        <result property="redMaxidle" column="F_RED_MAXIDLE"/>
+        <result property="redMaxwait" column="F_RED_MAXWAIT"/>
+        <result property="redTestonborrow" column="F_RED_TESTONBORROW"/>
+    </resultMap>
+
+    <select id="queryCacheServiceList" resultMap="cacheServiceManageBean" parameterType="java.util.HashMap">
+        SELECT * FROM T_MEMCACHED_SERVICE_DA where 1=1
+        <if test="num != null and num != '' ">
+            and F_MEM_NUM LIKE '%${num}%' escape '/'
+        </if>
+        <if test="typeNum != null and typeNum != '' ">
+            and F_MEM_TYPE_NUM LIKE '%${typeNum}%' escape '/'
+        </if>
+    </select>
+
+    <select id="addCacheService" parameterType="com.xwtech.uomp.base.pojo.memcache.CacheServiceManageBean">
+		INSERT INTO 
+            T_MEMCACHED_SERVICE_DA(F_MEM_NUM, F_MEM_TYPE_NUM, F_MEM_SERVERS, F_MEM_WEIGHTS, F_MEM_INITCONN,
+             F_MEM_MINCONN, F_MEM_MAXCONN, F_MEM_MAXIDLE, F_MEM_MAINSLEEP ,F_MEM_NAGLE, F_MEM_SOCKETTO,F_MEM_SOCKETCONNECTTO) 
+         VALUES(#{num}, #{typeNum}, #{servers}, #{weights}, #{initConn}, #{minConn}, #{maxConn},
+             #{maxIdle}, #{mainSleep} , #{nagle} , #{socketTo}  , #{socketConnectTo} ) 
+    </select>
+
+    <select id="queryCacheServiceById" resultMap="cacheServiceManageBean" parameterType="java.lang.String">
+		SELECT * FROM T_MEMCACHED_SERVICE_DA  where F_MEM_NUM = #{id}
+    </select>
+
+    <select id="updateCacheService" parameterType="com.xwtech.uomp.base.pojo.memcache.CacheServiceManageBean">
+		update T_MEMCACHED_SERVICE_DA 
+			set F_MEM_TYPE_NUM = #{typeNum},
+				F_MEM_SERVERS = #{servers},
+				F_MEM_WEIGHTS = #{weights},
+				F_MEM_INITCONN = #{initConn},
+				F_MEM_MINCONN = #{minConn},
+				F_MEM_MAXCONN = #{maxConn},
+				F_MEM_MAXIDLE = #{maxIdle},
+				F_MEM_MAINSLEEP = #{mainSleep},
+				F_MEM_NAGLE = #{nagle},
+				F_MEM_SOCKETTO = #{socketTo},
+				F_MEM_SOCKETCONNECTTO = #{socketConnectTo}
+			where F_MEM_NUM = #{num}
+    </select>
+
+    <select id="deleteCacheService" parameterType="java.lang.String">
+		delete  FROM T_MEMCACHED_SERVICE_DA  where   F_MEM_NUM = #{id}
+    </select>
+
+    <!-- 当使用该Mybatis与Spring整合的时候，该文件必须和相应的Mapper接口文件同名，并在同一路径下 -->
+</mapper> 

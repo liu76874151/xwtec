@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.pagemanage.PageInfoMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.pagemanage.PageInfo" id="pageInfo">
+        <result property="pageNum" column="F_PAGE_NUM"/>
+        <result property="pageName" column="F_PAGE_NAME"/>
+        <result property="version" column="F_VERSION"/>
+        <result property="pageContent" column="F_PAGE_CONTENT"/>
+        <result property="confirmComp" column="F_CONFIRM_COMP"/>
+        <result property="resultComp" column="F_RESULT_COMP"/>
+        <result property="type" column="F_TYPE"/>
+        <result property="desc" column="F_DESC"/>
+        <result property="updateTime" column="F_UPDATE_TIME"/>
+    </resultMap>
+
+    <!-- 查询信息 -->
+    <select id="pagingQueryPageInfoList" resultMap="pageInfo" parameterType="java.util.Map">
+        SELECT *
+        FROM (SELECT ROWNUM ROW_NUM, A.*
+        FROM (SELECT F_PAGE_NUM,
+        F_PAGE_NAME,
+        F_VERSION,
+        F_PAGE_CONTENT,
+        F_CONFIRM_COMP,
+        F_RESULT_COMP,
+        F_TYPE,
+        F_DESC,
+        F_UPDATE_TIME
+        FROM T_PAGE_INFO
+        WHERE 1 = 1
+        <if test="compNum != null">
+            AND F_PAGE_NUM = #{pageNum}
+        </if>
+        <if test="pageName != null">
+            AND F_PAGE_NAME LIKE '%'||#{pageName}||'%'
+        </if>
+        <if test="version != null">
+            AND F_VERSION = #{version}
+        </if>
+        ORDER BY F_PAGE_NUM) A)
+        WHERE ROW_NUM &gt;#{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+
+    <select id="countPageInfoList" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT COUNT(*)
+        FROM T_PAGE_INFO
+        WHERE 1 = 1
+        <if test="pageNum != null">
+            AND F_PAGE_NUM = #{pageNum}
+        </if>
+        <if test="pageName != null">
+            AND F_PAGE_NAME LIKE '%'||#{pageName}||'%'
+        </if>
+        <if test="version != null">
+            AND F_VERSION = #{version}
+        </if>
+    </select>
+
+    <!-- 根据id查询信息 -->
+    <select id="findOnePageInfo" resultMap="pageInfo" parameterType="java.util.Map">
+        SELECT F_PAGE_NUM,
+        F_PAGE_NAME,
+        F_VERSION,
+        F_PAGE_CONTENT,
+        F_CONFIRM_COMP,
+        F_RESULT_COMP,
+        F_TYPE,
+        F_DESC,
+        F_UPDATE_TIME
+        FROM T_PAGE_INFO
+         WHERE F_PAGE_NUM = #{pageNum} AND F_VERSION = #{version}
+         ORDER BY F_PAGE_NUM
+    </select>
+
+    <!-- 添加信息 -->
+    <insert id="savePageInfo" parameterType="com.xwtech.uomp.base.pojo.pagemanage.PageInfo">
+        INSERT INTO T_PAGE_INFO
+          (F_PAGE_NUM,F_PAGE_NAME,F_VERSION,F_PAGE_CONTENT,F_CONFIRM_COMP,F_RESULT_COMP,F_TYPE,F_DESC,F_UPDATE_TIME)
+        VALUES
+          (#{pageNum}, #{pageName}, #{version}, #{pageContent}, #{confirmComp}, #{resultComp}, #{type},#{desc},#{updateTime})
+    </insert>
+
+    <!-- 修改信息 -->
+    <update id="updatePageInfo" parameterType="com.xwtech.uomp.base.pojo.pagemanage.PageInfo">
+        UPDATE T_PAGE_INFO
+           SET F_PAGE_NAME    = #{pageName},
+               F_PAGE_CONTENT    = #{pageContent},
+               F_CONFIRM_COMP   = #{confirmComp},
+               F_RESULT_COMP   = #{resultComp},
+               F_TYPE   = #{type},
+               F_DESC   = #{desc},
+               F_UPDATE_TIME = #{updateTime}
+         WHERE F_PAGE_NUM = #{pageNum} AND F_VERSION = #{version}
+    </update>
+
+    <!-- 删除信息 -->
+    <delete id="deletePageInfo" parameterType="java.util.Map">
+      DELETE FROM T_PAGE_INFO WHERE F_PAGE_NUM = #{pageNum} AND F_VERSION = #{version}
+    </delete>
+
+    <select id="queryPageInfoList" resultMap="pageInfo" parameterType="java.util.Map">
+        SELECT F_PAGE_NUM,
+        F_PAGE_NAME,
+        F_VERSION,
+        F_PAGE_CONTENT,
+        F_CONFIRM_COMP,
+        F_RESULT_COMP,
+        F_TYPE,
+        F_DESC,
+        F_UPDATE_TIME
+        FROM T_PAGE_INFO
+        WHERE 1 = 1
+        <if test="type != null">
+            AND F_TYPE = #{type}
+        </if>
+        <if test="version != null">
+            AND F_VERSION = #{version}
+        </if>
+        ORDER BY F_PAGE_NUM
+    </select>
+</mapper>

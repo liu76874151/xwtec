@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.boss.BossGiftInfoMapper" >
+  <resultMap id="bossGiftInfoBean" type="com.xwtech.uomp.base.pojo.boss.BossGiftInfoBean" >
+    <result column="BOSS_GIFT_ID" property="bossGiftId" jdbcType="VARCHAR" />
+    <result column="BOSS_PARENT_GIFT_ID" property="bossParentGiftId" jdbcType="VARCHAR" />
+    <result column="CITY_ID" property="cityId" jdbcType="DECIMAL" />
+    <result column="MARKET_SECOND_CODE" property="marketSecondCode" jdbcType="VARCHAR" />
+    <result column="GIFT_NAME" property="giftName" jdbcType="VARCHAR" />
+    <result column="GIFT_COMMENT" property="giftComment" jdbcType="VARCHAR" />
+    <result column="T_CHANNAL" property="tchannal" jdbcType="VARCHAR" />
+    <result column="BOSS_PARENT_GIFT_ID" property="bossParentGiftId" jdbcType="VARCHAR"/>
+    <result column="STATE" property="state" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <!-- 
+  <select id="queryBossGiftInfoList" resultMap="bossGiftInfoBean" parameterType="java.util.Map">
+        select * from(
+		select rownum row_num, a.*
+			  from ( select boss_gift_id,
+			               market_second_code,
+			               gift_name,
+			               gift_comment,
+			               city_id,
+			               t_channal
+			          from boss_gift_info
+					) a
+		          where 1=1
+        <if test="tchannal != null">
+            AND T_CHANNAL = #{tchannal}
+        </if>
+         <if test="marketSecondCode != null">
+            AND market_second_code = #{marketSecondCode}
+        </if>
+        <if test="cityId != null">
+            AND CITY_ID =  #{cityId}
+        </if>
+        <if test="bossGiftId != null">
+            AND BOSS_GIFT_ID =  #{bossGiftId}
+        </if>
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+  	 -->
+  	 
+  	 <select id="queryBossGiftInfoList" resultMap="bossGiftInfoBean" parameterType="java.util.Map">
+  	 	select t3.boss_gift_id,
+			       t3.market_second_code,
+			       t3.gift_name,
+			       t3.gift_comment,
+			       t3.city_id,
+			       t3.t_channal,
+			       t3.boss_parent_gift_id
+			  from (select t1.boss_gift_id,
+			               t1.market_second_code,
+			               t1.gift_name,
+			               t1.gift_comment,
+			               t1.city_id,
+			               t1.t_channal,
+			               '0' as boss_parent_gift_id
+			          from boss_gift_info t1
+			          where 1=1
+			          <if test="marketSecondCode != null">
+			          and t1.market_second_code = #{marketSecondCode}
+			          </if>
+			          <if test="cityId != null">
+			          and t1.city_id = #{cityId}
+			          </if>
+			        union all
+			        select t2.boss_gift_id,
+			               t2.market_second_code,
+			               t2.gift_name,
+			               t2.gift_comment,
+			               t2.city_id,
+			               t2.t_channal,
+			               t2.boss_parent_gift_id
+			          from boss_gift_info_second t2
+			          where 1=1
+			          <if test="marketSecondCode != null">
+			          and t2.market_second_code = #{marketSecondCode}
+			          </if>
+			          <if test="cityId != null">
+			          and t2.city_id = #{cityId}
+			          </if>
+			          ) t3
+			 start with t3.boss_parent_gift_id = '0'
+			connect by prior t3.boss_gift_id = t3.boss_parent_gift_id
+			order by t3.boss_parent_gift_id,boss_gift_id
+  	 </select>
+  	 
+  	 <select id="selectBySecondPkid" resultMap="bossGiftInfoBean"
+		parameterType="java.util.Map">
+  	 	select tt.*,
+			case
+			when bb.gift_id is not null then
+			'selected'
+			else
+			'unselected'
+			end state
+			from (
+			select t3.boss_gift_id,
+			t3.market_second_code,
+			t3.gift_name,
+			t3.gift_comment,
+			t3.city_id,
+			t3.t_channal,
+			t3.boss_parent_gift_id
+			from (select t1.boss_gift_id,
+			t1.market_second_code,
+			t1.gift_name,
+			t1.gift_comment,
+			t1.city_id,
+			t1.t_channal,
+			'0' as boss_parent_gift_id
+			from boss_gift_info t1
+			where 1=1
+			<if test="marketSecondCode != null">
+				and t1.market_second_code = #{marketSecondCode}
+			</if>
+			<if test="cityId != null">
+				and t1.city_id = #{cityId}
+			</if>
+			union all
+			select t2.boss_gift_id,
+			t2.market_second_code,
+			t2.gift_name,
+			t2.gift_comment,
+			t2.city_id,
+			t2.t_channal,
+			t2.boss_parent_gift_id
+			from boss_gift_info_second t2
+			where 1=1
+			<if test="marketSecondCode != null">
+				and t2.market_second_code = #{marketSecondCode}
+			</if>
+			<if test="cityId != null">
+				and t2.city_id = #{cityId}
+			</if>
+			) t3
+			start with t3.boss_parent_gift_id = '0'
+			connect by prior t3.boss_gift_id = t3.boss_parent_gift_id)tt
+			left join (select *
+			from jsmss_gift_info aa
+			where 1 = 1 and aa.market_second_pkid = #{marketSecondPkid}) bb
+			
+			on bb.boss_gift_id = tt.boss_gift_id
+			order by tt.boss_parent_gift_id,tt.boss_gift_id
+  	 </select>
+  	 
+  	<select id="queryOneBossGiftInfo" resultMap="bossGiftInfoBean" parameterType="java.util.Map">
+  		select b.*
+		  from BOSS_GIFT_INFO b,jsmss_zone_sort z
+		  where  b.boss_gift_id = #{bossGiftId}
+		  and b.city_id=z.org_map_id
+		  and z.boss_code=#{cityId}
+  	</select>
+  	
+  	<insert id="insertGiftSecond" parameterType="com.xwtech.uomp.base.pojo.boss.BossGiftInfoBean" >
+  	 insert into BOSS_GIFT_INFO_SECOND
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	    
+	     <if test="bossParentGiftId != null" >
+	        BOSS_PARENT_GIFT_ID,
+	      </if>
+	      <if test="bossGiftId != null" >
+	        BOSS_GIFT_ID,
+	      </if>
+	      <if test="cityId != null" >
+	        CITY_ID,
+	      </if>
+	      <if test="marketSecondCode != null" >
+	        MARKET_SECOND_CODE,
+	      </if>
+	      <if test="giftName != null" >
+	        GIFT_NAME,
+	      </if>
+	      <if test="giftComment != null" >
+	        GIFT_COMMENT,
+	      </if>
+	      <if test="tchannal != null" >
+	        T_CHANNAL,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="bossParentGiftId != null" >
+	        #{bossParentGiftId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="bossGiftId != null" >
+	        #{bossGiftId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="cityId != null" >
+	        (select org_map_id from jsmss_zone_sort where boss_code=#{cityId}),
+	      </if>
+	      <if test="marketSecondCode != null" >
+	        #{marketSecondCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="giftName != null" >
+	        #{giftName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="giftComment != null" >
+	        #{giftComment,jdbcType=VARCHAR},
+	      </if>
+	      <if test="tchannal != null" >
+	        #{tchannal,jdbcType=VARCHAR},
+	      </if>
+	    </trim>
+  	</insert>
+  	<insert id="insert" parameterType="com.xwtech.uomp.base.pojo.boss.BossGiftInfoBean" >
+	    insert into BOSS_GIFT_INFO
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="bossGiftId != null" >
+	        BOSS_GIFT_ID,
+	      </if>
+	      <if test="cityId != null" >
+	        CITY_ID,
+	      </if>
+	      <if test="marketSecondCode != null" >
+	        MARKET_SECOND_CODE,
+	      </if>
+	      <if test="giftName != null" >
+	        GIFT_NAME,
+	      </if>
+	      <if test="giftComment != null" >
+	        GIFT_COMMENT,
+	      </if>
+	      <if test="tchannal != null" >
+	        T_CHANNAL,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="bossGiftId != null" >
+	        #{bossGiftId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="cityId != null" >
+	        (select org_map_id from jsmss_zone_sort where boss_code=#{cityId}),
+	      </if>
+	      <if test="marketSecondCode != null" >
+	        #{marketSecondCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="giftName != null" >
+	        #{giftName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="giftComment != null" >
+	        #{giftComment,jdbcType=VARCHAR},
+	      </if>
+	      <if test="tchannal != null" >
+	        #{tchannal,jdbcType=VARCHAR},
+	      </if>
+	    </trim>
+  	</insert>
+  	
+  	<update id="update" parameterType="com.xwtech.uomp.base.pojo.boss.BossGiftInfoBean" >
+	    update BOSS_GIFT_INFO
+	    <set >
+	      <if test="giftName != null" >
+	        GIFT_NAME = #{giftName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="giftComment != null" >
+	        GIFT_COMMENT = #{giftComment,jdbcType=VARCHAR},
+	      </if>
+	    </set>
+	    where 
+	    BOSS_GIFT_ID = #{bossGiftId,jdbcType=VARCHAR}
+	    	and MARKET_SECOND_CODE = #{marketSecondCode,jdbcType=VARCHAR}
+	      and CITY_ID = (select org_map_id from jsmss_zone_sort where boss_code=#{cityId})
+  </update>
+  <delete id="deleteBossGiftInfo" parameterType="java.lang.String"> 
+  
+	delete from  boss_gift_info g where g.market_second_code in (
+	select a.market_second_code from boss_market_second a where a.market_first_code=#{marketFirstCode})
+	  
+  </delete>
+   <delete id="deleteBossGiftInfoSecond" parameterType="java.lang.String"> 
+	  
+	delete from boss_gift_info_second g1 where g1.boss_parent_gift_id in (
+	select g.boss_gift_id from boss_gift_info g where g.market_second_code in (
+	select a.market_second_code from boss_market_second a where a.market_first_code=#{marketFirstCode}))
+	   
+  </delete>
+</mapper>

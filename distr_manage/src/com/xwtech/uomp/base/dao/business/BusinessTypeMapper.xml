@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.BusinessTypeMapper" >
+  <resultMap id="businessTypeBean" type="com.xwtech.uomp.base.pojo.business.BusinessTypeBean" >
+    <result column="F_BUSI_TYPE_NUM" property="busiTypeNum" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TYPE_NAME" property="busiTypeName" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TYPE_ICON" property="busiTypeIcon" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TYPE_ICON2" property="busiTypeIcon2" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TYPE_ICON3" property="busiTypeIcon3" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TYPE_ICON4" property="busiTypeIcon4" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TYPE_ICON5" property="busiTypeIcon5" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TYPE_ICON6" property="busiTypeIcon6" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TYPE_ICON7" property="busiTypeIcon7" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TYPE_ICON8" property="busiTypeIcon8" jdbcType="VARCHAR" />
+    <result column="F_LOAD_TYPE" property="loadType" jdbcType="DECIMAL" />
+    <result column="F_SHOW_XH" property="showXh" jdbcType="DECIMAL" />
+    <result column="F_JB_NUM" property="jbNum" jdbcType="VARCHAR" />
+    <result column="F_JB" property="jb" jdbcType="DECIMAL" />
+    <result column="F_MJ" property="mj" jdbcType="DECIMAL" />
+    <result column="F_BZ" property="bz" jdbcType="VARCHAR" />
+    <result column="F_APD_ATTRIB1" property="apdAttrib1" jdbcType="VARCHAR" />
+    <result column="F_APD_ATTRIB2" property="apdAttrib2" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TYPE_DESC" property="busiTypeDesc" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TYPE_YX" property="busiTypeYx" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="queryBusiType" parameterType="java.util.Map" resultMap="businessTypeBean">
+  		select * from(
+		select rownum row_num, a.*
+		  from (
+		  	select f_busi_type_num,
+               f_busi_type_name,
+               f_busi_type_icon,
+               f_busi_type_icon2,
+               f_busi_type_icon3,
+               f_busi_type_icon4,
+               f_busi_type_icon5,
+               f_busi_type_icon6,
+               f_busi_type_icon7,
+               f_busi_type_icon8,
+               f_load_type,
+               f_show_xh,
+               f_jb_num,
+               f_jb,
+               f_mj,
+               f_bz,
+               f_apd_attrib1,
+               f_apd_attrib2,
+               f_busi_type_desc,
+               f_busi_type_yx,
+               F_CHANNEL_NUM
+          	from t_busi_type_da t where 1=1 
+			   order by t.f_jb,t.f_jb_num,t.f_show_xh
+		   ) a
+          where 1=1
+        <if test="mj != null">
+            AND f_mj = #{mj}
+        </if>
+        <if test="loadType != null">
+            AND F_LOAD_TYPE = #{loadType}
+        </if>
+        <if test="busiTypeName != null">
+            AND f_busi_type_name like '%'||#{busiTypeName}||'%'
+        </if>
+        <if test="jbNum != null">
+            AND f_jb_num like #{jbNum}||'%'
+        </if>
+        <if test="channelNum != null">
+            AND F_CHANNEL_NUM = #{channelNum}
+        </if>
+        <if test="jb != null">
+            AND f_jb in 
+            <foreach collection="jb" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+            </foreach>
+        </if>
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <select id="queryParentBusiType" resultMap="businessTypeBean" parameterType="java.util.Map">
+  	select * from(
+		select rownum row_num, a.*
+		  from (
+		  	select f_busi_type_num,
+			       f_busi_type_name
+				  from t_busi_type_da t where 1=1 
+				  <if test="mj != null">
+			            AND f_mj = #{mj}
+			      </if>
+			     <if test="channelNum != null">
+		        	AND F_CHANNEL_NUM in
+		        	<foreach collection="channelNum" item="item" open="(" separator="," close=")" index="index">
+		            	#{item}
+		            </foreach>
+		        </if>
+				  order by t.f_jb,t.f_jb_num,t.f_show_xh
+		   ) a
+          where 1=1
+        <if test="loadType != null">
+            AND F_LOAD_TYPE = #{loadType}
+        </if>
+        <if test="busiTypeName != null">
+            AND f_busi_type_name like '%'||#{busiTypeName}||'%'
+        </if>
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <select id="queryBusiTypeBykey" parameterType="com.xwtech.uomp.base.pojo.business.BusinessTypeBean" resultMap="businessTypeBean">
+		select f_busi_type_num,
+               f_busi_type_name,
+               f_busi_type_icon,
+               f_busi_type_icon2,
+               f_busi_type_icon3,
+               f_busi_type_icon4,
+               f_busi_type_icon5,
+               f_busi_type_icon6,
+               f_busi_type_icon7,
+               f_busi_type_icon8,
+               f_load_type,
+               f_show_xh,
+               f_jb_num,
+               f_jb,
+               f_mj,
+               f_bz,
+               f_apd_attrib1,
+               f_apd_attrib2,
+               f_busi_type_desc,
+               f_busi_type_yx,
+               F_CHANNEL_NUM
+          from t_busi_type_da
+          where f_busi_type_num = #{busiTypeNum}
+          <if test="channelNum != null">
+            AND F_CHANNEL_NUM = #{channelNum}
+        </if>
+  </select>
+  
+  <select id="getMaxjbNum" parameterType="java.util.Map" resultType="java.lang.String">
+  	select max(t.f_jb_num) from t_busi_type_da t 
+  	where 1=1
+  	<if test="jbNum != null">
+	  	and t.f_jb_num like #{jbNum}||'%' 
+  	</if>
+  	<if test="jb != null">
+	  	and t.f_jb= #{jb}
+  	</if>
+  </select>
+  
+  <update id="updateByBusiTypeNum" parameterType="com.xwtech.uomp.base.pojo.business.BusinessTypeBean" >
+    update t_busi_type_da
+    	set 
+        F_BUSI_TYPE_NAME = #{busiTypeName},
+        F_LOAD_TYPE = #{loadType},
+        F_MJ = #{mj},
+        F_BUSI_TYPE_DESC = #{busiTypeDesc},
+        F_BUSI_TYPE_YX = #{busiTypeYx}
+    where F_BUSI_TYPE_NUM = #{busiTypeNum}
+  </update>
+  
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.business.BusinessTypeBean" >
+    insert into T_BUSI_TYPE_DA (F_BUSI_TYPE_NUM, F_BUSI_TYPE_NAME, F_BUSI_TYPE_ICON, 
+      F_BUSI_TYPE_ICON2, F_BUSI_TYPE_ICON3, F_BUSI_TYPE_ICON4, 
+      F_BUSI_TYPE_ICON5, F_BUSI_TYPE_ICON6, F_BUSI_TYPE_ICON7, 
+      F_BUSI_TYPE_ICON8, F_LOAD_TYPE, F_SHOW_XH, 
+      F_JB_NUM, F_JB, F_MJ, F_BZ, 
+      F_APD_ATTRIB1, F_APD_ATTRIB2, F_BUSI_TYPE_DESC, 
+      F_BUSI_TYPE_YX)
+    values (#{busiTypeNum,jdbcType=VARCHAR}, #{busiTypeName,jdbcType=VARCHAR}, #{busiTypeIcon,jdbcType=VARCHAR}, 
+      #{busiTypeIcon2,jdbcType=VARCHAR}, #{busiTypeIcon3,jdbcType=VARCHAR}, #{busiTypeIcon4,jdbcType=VARCHAR}, 
+      #{busiTypeIcon5,jdbcType=VARCHAR}, #{busiTypeIcon6,jdbcType=VARCHAR}, #{busiTypeIcon7,jdbcType=VARCHAR}, 
+      #{busiTypeIcon8,jdbcType=VARCHAR}, #{loadType,jdbcType=DECIMAL}, #{showXh,jdbcType=DECIMAL}, 
+      #{jbNum,jdbcType=VARCHAR}, #{jb,jdbcType=DECIMAL}, #{mj,jdbcType=DECIMAL}, #{bz,jdbcType=VARCHAR}, 
+      #{apdAttrib1,jdbcType=VARCHAR}, #{apdAttrib2,jdbcType=VARCHAR}, #{busiTypeDesc,jdbcType=VARCHAR}, 
+      #{busiTypeYx,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.business.BusinessTypeBean" >
+    insert into T_BUSI_TYPE_DA
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="busiTypeNum != null" >
+        F_BUSI_TYPE_NUM,
+      </if>
+      <if test="busiTypeName != null" >
+        F_BUSI_TYPE_NAME,
+      </if>
+      <if test="busiTypeIcon != null" >
+        F_BUSI_TYPE_ICON,
+      </if>
+      <if test="busiTypeIcon2 != null" >
+        F_BUSI_TYPE_ICON2,
+      </if>
+      <if test="busiTypeIcon3 != null" >
+        F_BUSI_TYPE_ICON3,
+      </if>
+      <if test="busiTypeIcon4 != null" >
+        F_BUSI_TYPE_ICON4,
+      </if>
+      <if test="busiTypeIcon5 != null" >
+        F_BUSI_TYPE_ICON5,
+      </if>
+      <if test="busiTypeIcon6 != null" >
+        F_BUSI_TYPE_ICON6,
+      </if>
+      <if test="busiTypeIcon7 != null" >
+        F_BUSI_TYPE_ICON7,
+      </if>
+      <if test="busiTypeIcon8 != null" >
+        F_BUSI_TYPE_ICON8,
+      </if>
+      <if test="loadType != null" >
+        F_LOAD_TYPE,
+      </if>
+      <if test="showXh != null" >
+        F_SHOW_XH,
+      </if>
+      <if test="jbNum != null" >
+        F_JB_NUM,
+      </if>
+      <if test="jb != null" >
+        F_JB,
+      </if>
+      <if test="mj != null" >
+        F_MJ,
+      </if>
+      <if test="bz != null" >
+        F_BZ,
+      </if>
+      <if test="apdAttrib1 != null" >
+        F_APD_ATTRIB1,
+      </if>
+      <if test="apdAttrib2 != null" >
+        F_APD_ATTRIB2,
+      </if>
+      <if test="busiTypeDesc != null" >
+        F_BUSI_TYPE_DESC,
+      </if>
+      <if test="busiTypeYx != null" >
+        F_BUSI_TYPE_YX,
+      </if>
+      <if test="channelNum != null">
+        F_CHANNEL_NUM,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="busiTypeNum != null" >
+        #{busiTypeNum,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTypeName != null" >
+        #{busiTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTypeIcon != null" >
+        #{busiTypeIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTypeIcon2 != null" >
+        #{busiTypeIcon2,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTypeIcon3 != null" >
+        #{busiTypeIcon3,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTypeIcon4 != null" >
+        #{busiTypeIcon4,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTypeIcon5 != null" >
+        #{busiTypeIcon5,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTypeIcon6 != null" >
+        #{busiTypeIcon6,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTypeIcon7 != null" >
+        #{busiTypeIcon7,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTypeIcon8 != null" >
+        #{busiTypeIcon8,jdbcType=VARCHAR},
+      </if>
+      <if test="loadType != null" >
+        #{loadType,jdbcType=DECIMAL},
+      </if>
+      <if test="showXh != null" >
+        #{showXh,jdbcType=DECIMAL},
+      </if>
+      <if test="jbNum != null" >
+        #{jbNum,jdbcType=VARCHAR},
+      </if>
+      <if test="jb != null" >
+        #{jb,jdbcType=DECIMAL},
+      </if>
+      <if test="mj != null" >
+        #{mj,jdbcType=DECIMAL},
+      </if>
+      <if test="bz != null" >
+        #{bz,jdbcType=VARCHAR},
+      </if>
+      <if test="apdAttrib1 != null" >
+        #{apdAttrib1,jdbcType=VARCHAR},
+      </if>
+      <if test="apdAttrib2 != null" >
+        #{apdAttrib2,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTypeDesc != null" >
+        #{busiTypeDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTypeYx != null" >
+        #{busiTypeYx,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNum != null">
+        #{channelNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <delete id="deleteBusiType" parameterType="java.lang.String">
+  	delete from T_BUSI_TYPE_DA where f_jb_num like #{jbNum}||'%'
+  </delete>
+</mapper>

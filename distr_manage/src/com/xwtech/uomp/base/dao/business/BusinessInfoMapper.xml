@@ -1,0 +1,1077 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.BusinessInfoMapper" >
+  <resultMap id="businessInfoBean" type="com.xwtech.uomp.base.pojo.business.BusinessInfoBean" >
+    <id column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME" property="busiName" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_EN" property="busiNameEn" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_PYM1" property="busiNamePym1" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_PYM2" property="busiNamePym2" jdbcType="VARCHAR" />
+    <result column="F_BUSI_ICON" property="busiIcon" jdbcType="VARCHAR" />
+    <result column="F_BUSI_MENU_ICON" property="busiMenuIcon" jdbcType="VARCHAR" />
+    <result column="F_BUSI_DESC_ICON" property="busiDescIcon" jdbcType="VARCHAR" />
+    <result column="F_FLASH" property="flash" jdbcType="VARCHAR" />
+    <result column="F_PROCESS_TYPE" property="processType" jdbcType="DECIMAL" />
+    <result column="F_FEE" property="fee" jdbcType="DECIMAL" />
+    <result column="F_FEE_SCORE_M" property="feeScoreM" jdbcType="DECIMAL" />
+    <result column="F_FEE_SCORE_Q" property="feeScoreQ" jdbcType="DECIMAL" />
+    <result column="F_FEE_TYPE" property="feeType" jdbcType="DECIMAL" />
+    <result column="F_COUNT_UNIT" property="countUnit" jdbcType="VARCHAR" />
+    <result column="F_SUPP_PAY_WAY" property="suppPayWay" jdbcType="DECIMAL" />
+    <result column="F_DEDUCT_WAY" property="deductWay" jdbcType="VARCHAR" />
+    <result column="F_STATE" property="state" jdbcType="DECIMAL" />
+    <result column="F_JB_NUM" property="jbNum" jdbcType="VARCHAR" />
+    <result column="F_JB" property="jb" jdbcType="DECIMAL" />
+    <result column="F_MJ" property="mj" jdbcType="DECIMAL" />
+    <result column="F_BZ" property="bz" jdbcType="VARCHAR" />
+    <result column="F_BUSI_PIC_URL" property="busiPicUrl" jdbcType="VARCHAR" />
+    <result column="F_BUSI_CLIENT_URL" property="busiClientUrl" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TRANCNUM" property="busiTrancnum" jdbcType="VARCHAR" />
+    <result column="F_START_TIME" property="startTime" jdbcType="DATE" />
+    <result column="F_END_TIME" property="endTime" jdbcType="DATE" />
+    <result column="F_INTRO" property="intro" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_HTML" property="busiNameHtml" jdbcType="CLOB" />
+    <result column="F_BUSI_DESC" property="busiDesc" jdbcType="CLOB" />
+    <result column="F_BUSI_ADVL" property="busiAdvl" jdbcType="CLOB" />
+    <result column="F_BUSI_EXPL" property="busiExpl" jdbcType="CLOB" />
+    <result column="F_PROMPT" property="prompt" jdbcType="CLOB" />
+    <result column="F_BUSI_FEATURE" property="busiFeature" jdbcType="CLOB" />
+    <result column="F_BUSI_NEST_FT" property="busiNestFt" jdbcType="CLOB" />
+    <result column="F_BUSI_NEST_SD" property="busiNestSd" jdbcType="CLOB" />
+    <result column="F_BUSI_PRIVILEGE" property="busiPrivilege" jdbcType="CLOB" />
+    <collection property="relationBusinessInfoBeans" ofType="com.xwtech.uomp.base.pojo.business.RelationBusinessInfoBean" column="F_BUSI_NUM" resultMap="relationBusinessInfoMap" />
+    <collection property="businessTypeDzBeans" ofType="com.xwtech.uomp.base.pojo.business.BusinessTypeDzBean" column="F_BUSI_NUM" resultMap="businessTypeDzMap" />
+  </resultMap>
+  
+  
+	<resultMap id="relationBusinessInfoMap" type="java.util.Map" >
+	    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+	    <result column="F_RELATIVE_BUSI" property="relativeBusi" jdbcType="VARCHAR" />
+	    <result column="F_PRIORITY" property="priority" jdbcType="DECIMAL" />
+	    <result column="F_BUSI_NAME" property="busiName" jdbcType="VARCHAR" />
+	</resultMap> 
+	
+	<resultMap id="businessTypeDzMap" type="java.util.Map" >
+	    <result column="F_BUSI_TYPE_NUM" property="busiTypeNum" jdbcType="VARCHAR" />
+	    <result column="F_XH" property="xh" jdbcType="DECIMAL" />
+	    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+	    <result column="F_BUSI_TYPE_NAME" property="busiTypeName" jdbcType="VARCHAR" />
+	    <result column="F_JB_NUM" property="jbNum" jdbcType="VARCHAR" />
+	</resultMap>
+ 
+    <resultMap id="busiInfoTreeMap" type="java.util.Map">
+        <result property="id" column="ID"/>
+        <result property="text" column="TEXT"/>
+        <result property="pid" column="PID"/>
+        <result property="mj" column="MJ"/>
+        <result property="funcId" column="F_BUSI_NUM"/>
+        <result property="jb" column="F_JB"/>
+        <result property="jbNum" column="F_JB_NUM"/>
+    </resultMap>
+	
+    <!-- 查询业务信息 -->
+    <select id="queryBusinessInfoList" resultMap="businessInfoBean" parameterType="java.util.Map">
+        select * from(
+		select rownum row_num, a.*
+		  from (select f_busi_num,
+				       f_busi_name,
+				       f_busi_name_en,
+				       f_busi_name_pym1,
+				       f_busi_name_pym2,
+				       f_busi_icon,
+				       f_busi_menu_icon,
+				       f_busi_name_html,
+				       f_busi_desc_icon,
+				       f_busi_desc,
+				       f_busi_advl,
+				       f_busi_expl,
+				       f_prompt,
+				       f_flash,
+				       f_process_type,
+				       f_fee,
+				       f_fee_score_m,
+				       f_fee_score_q,
+				       f_fee_type,
+				       f_count_unit,
+				       f_supp_pay_way,
+				       f_deduct_way,
+				       f_state,
+				       f_jb_num,
+				       f_jb,
+				       f_mj,
+				       f_bz,
+				       f_busi_pic_url,
+				       f_busi_client_url,
+				       f_channel_num,
+				       f_busi_feature,
+				       f_busi_nest_ft,
+				       f_busi_nest_sd,
+				       f_busi_privilege,
+				       f_busi_trancnum,
+				       f_start_time,
+				       f_end_time,
+				       f_intro
+				  from t_busi_info ) a
+		          where 1=1
+        <if test="busiName != null">
+            AND f_busi_name like '%'||#{busiName}||'%'
+        </if>
+         <if test="busiNum != null">
+            AND f_busi_num = #{busiNum}
+        </if>
+         <if test="busiNameJianpin != null">
+            AND f_busi_name_pym2 = #{busiNameJianpin}
+        </if>
+         <if test="state != null">
+            AND f_state = #{state}
+        </if>
+        <if test="channelNum != null">
+            AND f_channel_num = #{channelNum}
+        </if>
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+    
+    <select id="querySingleBusiInfo" parameterType="com.xwtech.uomp.base.pojo.business.BusinessInfoBean" resultMap="businessInfoBean">
+    	select * from t_busi_info
+    	where f_busi_num = #{busiNum}
+    	AND f_channel_num = #{channelNum}
+    </select>
+    
+	<select id="queryBusinessInfoCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT COUNT(*)
+	        FROM t_busi_info
+	        WHERE 1 = 1
+	         <if test="busiName != null">
+	            AND f_busi_name = #{busiName}
+	        </if>
+	         <if test="busiNum != null">
+	            AND f_busi_num = #{busiNum}
+	        </if>
+	         <if test="busiNameJianpin != null">
+	            AND f_busi_name_pym2 = #{busiNameJianpin}
+	        </if>
+	         <if test="state != null">
+	            AND f_state = #{state}
+	        </if>
+	        <if test="channelNum != null">
+	            AND f_channel_num = #{channelNum}
+	        </if>
+	</select>
+	
+	<select id="queryBusiInfoTree" resultMap="busiInfoTreeMap">
+		<![CDATA[
+		SELECT DISTINCT A.F_JB_NUM AS ID,
+                A.f_Busi_Name AS TEXT,
+                (CASE
+                  WHEN B.F_JB_NUM IS NULL THEN
+                   '-1'
+                  ELSE
+                   B.F_JB_NUM
+                END) AS PID,
+                A.F_MJ AS MJ,
+                A.f_Busi_Num,
+                A.F_JB,
+                A.F_JB_NUM
+		  FROM t_busi_info A
+		  LEFT JOIN (SELECT * FROM t_busi_info) B
+		    ON SUBSTR(A.F_JB_NUM, 0, 3 * (A.F_JB - 1)) = B.F_JB_NUM
+		 ORDER BY A.F_JB_NUM ASC
+		 ]]>
+	</select>
+	
+	<select id="queryBusiInfoBynum" parameterType="java.util.Map" resultMap="businessInfoBean">
+		SELECT 
+		INFO.F_BUSI_NUM,
+	    R.F_RELATIVE_BUSI,
+	    R.F_BUSI_NAME,
+	    TY.F_BUSI_TYPE_NAME,
+         TY.F_BUSI_TYPE_NUM,
+         TY.F_JB_NUM
+		 FROM T_BUSI_INFO INFO 
+		LEFT OUTER JOIN (SELECT I.F_BUSI_NAME,RE.F_RELATIVE_BUSI,RE.F_CHANNEL_NUM,RE.F_BUSI_NUM FROM T_BUSI_INFO I,T_RELATIVE_BUSI RE WHERE I.F_BUSI_NUM=RE.F_RELATIVE_BUSI AND I.F_CHANNEL_NUM=RE.F_CHANNEL_NUM) R 
+                   ON INFO.F_BUSI_NUM=R.F_BUSI_NUM AND INFO.F_CHANNEL_NUM=R.F_CHANNEL_NUM
+		LEFT OUTER JOIN (SELECT T.F_BUSI_TYPE_NAME,T.F_JB_NUM, S.*
+                     FROM T_BUSI_SORT_DZ S, T_BUSI_TYPE_DA T
+                    WHERE S.F_BUSI_TYPE_NUM = T.F_BUSI_TYPE_NUM
+                      AND S.F_CHANNEL_NUM = T.F_CHANNEL_NUM) TY
+					    ON INFO.F_BUSI_NUM = TY.F_BUSI_NUM
+					   AND INFO.F_CHANNEL_NUM = TY.F_CHANNEL_NUM
+		WHERE INFO.F_CHANNEL_NUM=#{channelNum} AND INFO.F_BUSI_NUM=#{busiNum}
+	</select>
+	
+	
+	<insert id="insert" parameterType="com.xwtech.uomp.base.pojo.business.BusinessInfoBean" >
+    insert into T_BUSI_INFO (F_BUSI_NUM, F_BUSI_NAME, F_BUSI_NAME_EN, 
+      F_BUSI_NAME_PYM1, F_BUSI_NAME_PYM2, F_BUSI_ICON, 
+      F_BUSI_MENU_ICON, F_BUSI_DESC_ICON, F_FLASH, 
+      F_PROCESS_TYPE, F_FEE, F_FEE_SCORE_M, 
+      F_FEE_SCORE_Q, F_FEE_TYPE, F_COUNT_UNIT, 
+      F_SUPP_PAY_WAY, F_DEDUCT_WAY, F_STATE, 
+      F_JB_NUM, F_JB, F_MJ, F_BZ, 
+      F_BUSI_PIC_URL, F_BUSI_CLIENT_URL, F_CHANNEL_NUM, 
+      F_BUSI_TRANCNUM, F_START_TIME, F_END_TIME, 
+      F_INTRO, F_BUSI_NAME_HTML, F_BUSI_DESC, 
+      F_BUSI_ADVL, F_BUSI_EXPL, F_PROMPT, 
+      F_BUSI_FEATURE, F_BUSI_NEST_FT, F_BUSI_NEST_SD, 
+      F_BUSI_PRIVILEGE)
+    values (#{busiNum,jdbcType=VARCHAR}, #{busiName,jdbcType=VARCHAR}, #{busiNameEn,jdbcType=VARCHAR}, 
+      #{busiNamePym1,jdbcType=VARCHAR}, #{busiNamePym2,jdbcType=VARCHAR}, #{busiIcon,jdbcType=VARCHAR}, 
+      #{busiMenuIcon,jdbcType=VARCHAR}, #{busiDescIcon,jdbcType=VARCHAR}, #{flash,jdbcType=VARCHAR}, 
+      #{processType,jdbcType=DECIMAL}, #{fee,jdbcType=DECIMAL}, #{feeScoreM,jdbcType=DECIMAL}, 
+      #{feeScoreQ,jdbcType=DECIMAL}, #{feeType,jdbcType=DECIMAL}, #{countUnit,jdbcType=VARCHAR}, 
+      #{suppPayWay,jdbcType=DECIMAL}, #{deductWay,jdbcType=VARCHAR}, #{state,jdbcType=DECIMAL}, 
+      #{jbNum,jdbcType=VARCHAR}, #{jb,jdbcType=DECIMAL}, #{mj,jdbcType=DECIMAL}, #{bz,jdbcType=VARCHAR}, 
+      #{busiPicUrl,jdbcType=VARCHAR}, #{busiClientUrl,jdbcType=VARCHAR}, #{channelNum,jdbcType=VARCHAR}, 
+      #{busiTrancnum,jdbcType=VARCHAR}, #{startTime,jdbcType=DATE}, #{endTime,jdbcType=DATE}, 
+      #{intro,jdbcType=VARCHAR}, #{busiNameHtml,jdbcType=CLOB}, #{busiDesc,jdbcType=CLOB}, 
+      #{busiAdvl,jdbcType=CLOB}, #{busiExpl,jdbcType=CLOB}, #{prompt,jdbcType=CLOB}, 
+      #{busiFeature,jdbcType=CLOB}, #{busiNestFt,jdbcType=CLOB}, #{busiNestSd,jdbcType=CLOB}, 
+      #{busiPrivilege,jdbcType=CLOB})
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.business.BusinessInfoBean" >
+    insert into T_BUSI_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        F_BUSI_NUM,
+      </if>
+      <if test="busiName != null" >
+        F_BUSI_NAME,
+      </if>
+      <if test="busiNameEn != null" >
+        F_BUSI_NAME_EN,
+      </if>
+      <if test="busiNamePym1 != null" >
+        F_BUSI_NAME_PYM1,
+      </if>
+      <if test="busiNamePym2 != null" >
+        F_BUSI_NAME_PYM2,
+      </if>
+      <if test="busiIcon != null" >
+        F_BUSI_ICON,
+      </if>
+      <if test="busiMenuIcon != null" >
+        F_BUSI_MENU_ICON,
+      </if>
+      <if test="busiDescIcon != null" >
+        F_BUSI_DESC_ICON,
+      </if>
+      <if test="flash != null" >
+        F_FLASH,
+      </if>
+      <if test="processType != null" >
+        F_PROCESS_TYPE,
+      </if>
+      <if test="fee != null" >
+        F_FEE,
+      </if>
+      <if test="feeScoreM != null" >
+        F_FEE_SCORE_M,
+      </if>
+      <if test="feeScoreQ != null" >
+        F_FEE_SCORE_Q,
+      </if>
+      <if test="feeType != null" >
+        F_FEE_TYPE,
+      </if>
+      <if test="countUnit != null" >
+        F_COUNT_UNIT,
+      </if>
+      <if test="suppPayWay != null" >
+        F_SUPP_PAY_WAY,
+      </if>
+      <if test="deductWay != null" >
+        F_DEDUCT_WAY,
+      </if>
+      <if test="state != null" >
+        F_STATE,
+      </if>
+      <if test="jbNum != null" >
+        F_JB_NUM,
+      </if>
+      <if test="jb != null" >
+        F_JB,
+      </if>
+      <if test="mj != null" >
+        F_MJ,
+      </if>
+      <if test="bz != null" >
+        F_BZ,
+      </if>
+      <if test="busiPicUrl != null" >
+        F_BUSI_PIC_URL,
+      </if>
+      <if test="busiClientUrl != null" >
+        F_BUSI_CLIENT_URL,
+      </if>
+      <if test="channelNum != null" >
+        F_CHANNEL_NUM,
+      </if>
+      <if test="busiTrancnum != null" >
+        F_BUSI_TRANCNUM,
+      </if>
+      <if test="startTime != null" >
+        F_START_TIME,
+      </if>
+      <if test="endTime != null" >
+        F_END_TIME,
+      </if>
+      <if test="intro != null" >
+        F_INTRO,
+      </if>
+      <if test="busiNameHtml != null" >
+        F_BUSI_NAME_HTML,
+      </if>
+      <if test="busiDesc != null" >
+        F_BUSI_DESC,
+      </if>
+      <if test="busiAdvl != null" >
+        F_BUSI_ADVL,
+      </if>
+      <if test="busiExpl != null" >
+        F_BUSI_EXPL,
+      </if>
+      <if test="prompt != null" >
+        F_PROMPT,
+      </if>
+      <if test="busiFeature != null" >
+        F_BUSI_FEATURE,
+      </if>
+      <if test="busiNestFt != null" >
+        F_BUSI_NEST_FT,
+      </if>
+      <if test="busiNestSd != null" >
+        F_BUSI_NEST_SD,
+      </if>
+      <if test="busiPrivilege != null" >
+        F_BUSI_PRIVILEGE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        #{busiNum,jdbcType=VARCHAR},
+      </if>
+      <if test="busiName != null" >
+        #{busiName,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNameEn != null" >
+        #{busiNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNamePym1 != null" >
+        #{busiNamePym1,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNamePym2 != null" >
+        #{busiNamePym2,jdbcType=VARCHAR},
+      </if>
+      <if test="busiIcon != null" >
+        #{busiIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="busiMenuIcon != null" >
+        #{busiMenuIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="busiDescIcon != null" >
+        #{busiDescIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="flash != null" >
+        #{flash,jdbcType=VARCHAR},
+      </if>
+      <if test="processType != null" >
+        #{processType,jdbcType=DECIMAL},
+      </if>
+      <if test="fee != null" >
+        #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="feeScoreM != null" >
+        #{feeScoreM,jdbcType=DECIMAL},
+      </if>
+      <if test="feeScoreQ != null" >
+        #{feeScoreQ,jdbcType=DECIMAL},
+      </if>
+      <if test="feeType != null" >
+        #{feeType,jdbcType=DECIMAL},
+      </if>
+      <if test="countUnit != null" >
+        #{countUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="suppPayWay != null" >
+        #{suppPayWay,jdbcType=DECIMAL},
+      </if>
+      <if test="deductWay != null" >
+        #{deductWay,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="jbNum != null" >
+        #{jbNum,jdbcType=VARCHAR},
+      </if>
+      <if test="jb != null" >
+        #{jb,jdbcType=DECIMAL},
+      </if>
+      <if test="mj != null" >
+        #{mj,jdbcType=DECIMAL},
+      </if>
+      <if test="bz != null" >
+        #{bz,jdbcType=VARCHAR},
+      </if>
+      <if test="busiPicUrl != null" >
+        #{busiPicUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="busiClientUrl != null" >
+        #{busiClientUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNum != null" >
+        #{channelNum,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTrancnum != null" >
+        #{busiTrancnum,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=DATE},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=DATE},
+      </if>
+      <if test="intro != null" >
+        #{intro,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNameHtml != null" >
+        #{busiNameHtml,jdbcType=CLOB},
+      </if>
+      <if test="busiDesc != null" >
+        #{busiDesc,jdbcType=CLOB},
+      </if>
+      <if test="busiAdvl != null" >
+        #{busiAdvl,jdbcType=CLOB},
+      </if>
+      <if test="busiExpl != null" >
+        #{busiExpl,jdbcType=CLOB},
+      </if>
+      <if test="prompt != null" >
+        #{prompt,jdbcType=CLOB},
+      </if>
+      <if test="busiFeature != null" >
+        #{busiFeature,jdbcType=CLOB},
+      </if>
+      <if test="busiNestFt != null" >
+        #{busiNestFt,jdbcType=CLOB},
+      </if>
+      <if test="busiNestSd != null" >
+        #{busiNestSd,jdbcType=CLOB},
+      </if>
+      <if test="busiPrivilege != null" >
+        #{busiPrivilege,jdbcType=CLOB},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateBusinessBean" parameterType="com.xwtech.uomp.base.pojo.business.BusinessInfoBean" >
+    update T_BUSI_INFO
+    <set >
+      <if test="busiName != null" >
+        F_BUSI_NAME = #{busiName,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNameEn != null" >
+        F_BUSI_NAME_EN = #{busiNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNamePym1 != null" >
+        F_BUSI_NAME_PYM1 = #{busiNamePym1,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNamePym2 != null" >
+        F_BUSI_NAME_PYM2 = #{busiNamePym2,jdbcType=VARCHAR},
+      </if>
+      <if test="busiIcon != null" >
+        F_BUSI_ICON = #{busiIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="busiMenuIcon != null" >
+        F_BUSI_MENU_ICON = #{busiMenuIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="busiDescIcon != null" >
+        F_BUSI_DESC_ICON = #{busiDescIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="flash != null" >
+        F_FLASH = #{flash,jdbcType=VARCHAR},
+      </if>
+      <if test="processType != null" >
+        F_PROCESS_TYPE = #{processType,jdbcType=DECIMAL},
+      </if>
+      <if test="fee != null" >
+        F_FEE = #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="feeScoreM != null" >
+        F_FEE_SCORE_M = #{feeScoreM,jdbcType=DECIMAL},
+      </if>
+      <if test="feeScoreQ != null" >
+        F_FEE_SCORE_Q = #{feeScoreQ,jdbcType=DECIMAL},
+      </if>
+      <if test="feeType != null" >
+        F_FEE_TYPE = #{feeType,jdbcType=DECIMAL},
+      </if>
+      <if test="countUnit != null" >
+        F_COUNT_UNIT = #{countUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="suppPayWay != null" >
+        F_SUPP_PAY_WAY = #{suppPayWay,jdbcType=DECIMAL},
+      </if>
+      <if test="deductWay != null" >
+        F_DEDUCT_WAY = #{deductWay,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        F_STATE = #{state,jdbcType=DECIMAL},
+      </if>
+      <if test="jbNum != null" >
+        F_JB_NUM = #{jbNum,jdbcType=VARCHAR},
+      </if>
+      <if test="jb != null" >
+        F_JB = #{jb,jdbcType=DECIMAL},
+      </if>
+      <if test="mj != null" >
+        F_MJ = #{mj,jdbcType=DECIMAL},
+      </if>
+      <if test="bz != null" >
+        F_BZ = #{bz,jdbcType=VARCHAR},
+      </if>
+      <if test="busiPicUrl != null" >
+        F_BUSI_PIC_URL = #{busiPicUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="busiClientUrl != null" >
+        F_BUSI_CLIENT_URL = #{busiClientUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="busiTrancnum != null" >
+        F_BUSI_TRANCNUM = #{busiTrancnum,jdbcType=VARCHAR},
+      </if>
+        F_START_TIME = #{startTime,jdbcType=DATE},
+        F_END_TIME = #{endTime,jdbcType=DATE},
+      <if test="intro != null" >
+        F_INTRO = #{intro,jdbcType=VARCHAR},
+      </if>
+      <if test="busiNameHtml != null" >
+        F_BUSI_NAME_HTML = #{busiNameHtml,jdbcType=CLOB},
+      </if>
+      <if test="busiDesc != null" >
+        F_BUSI_DESC = #{busiDesc,jdbcType=CLOB},
+      </if>
+      <if test="busiAdvl != null" >
+        F_BUSI_ADVL = #{busiAdvl,jdbcType=CLOB},
+      </if>
+      <if test="busiExpl != null" >
+        F_BUSI_EXPL = #{busiExpl,jdbcType=CLOB},
+      </if>
+      <if test="prompt != null" >
+        F_PROMPT = #{prompt,jdbcType=CLOB},
+      </if>
+      <if test="busiFeature != null" >
+        F_BUSI_FEATURE = #{busiFeature,jdbcType=CLOB},
+      </if>
+      <if test="busiNestFt != null" >
+        F_BUSI_NEST_FT = #{busiNestFt,jdbcType=CLOB},
+      </if>
+      <if test="busiNestSd != null" >
+        F_BUSI_NEST_SD = #{busiNestSd,jdbcType=CLOB},
+      </if>
+      <if test="busiPrivilege != null" >
+        F_BUSI_PRIVILEGE = #{busiPrivilege,jdbcType=CLOB},
+      </if>
+    </set>
+    where F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+      and F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+  </update>
+  
+  <delete id="deleteBusinessInfo" parameterType="java.lang.String">
+  	delete from T_BUSI_INFO WHERE F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  </delete>
+  
+  <delete id="deleteBusinessInfos" parameterType="java.util.Map">
+  	delete from T_BUSI_INFO where F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR}
+  	and F_CHANNEL_NUM not in
+  	<foreach collection="channelNum" item="item" open="(" separator="," close=")" index="index">
+    	#{item}
+   	</foreach>
+  </delete>
+  
+  <resultMap id="businessInfoMap" type="java.util.Map" >
+    <result column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME" property="busiName" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_EN" property="busiNameEn" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_PYM1" property="busiNamePym1" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_PYM2" property="busiNamePym2" jdbcType="VARCHAR" />
+    <result column="F_BUSI_ICON" property="busiIcon" jdbcType="VARCHAR" />
+    <result column="F_BUSI_MENU_ICON" property="busiMenuIcon" jdbcType="VARCHAR" />
+    <result column="F_BUSI_DESC_ICON" property="busiDescIcon" jdbcType="VARCHAR" />
+    <result column="F_FLASH" property="flash" jdbcType="VARCHAR" />
+    <result column="F_PROCESS_TYPE" property="processType" jdbcType="DECIMAL" />
+    <result column="F_FEE" property="fee" jdbcType="DECIMAL" />
+    <result column="F_FEE_SCORE_M" property="feeScoreM" jdbcType="DECIMAL" />
+    <result column="F_FEE_SCORE_Q" property="feeScoreQ" jdbcType="DECIMAL" />
+    <result column="F_FEE_TYPE" property="feeType" jdbcType="DECIMAL" />
+    <result column="F_COUNT_UNIT" property="countUnit" jdbcType="VARCHAR" />
+    <result column="F_SUPP_PAY_WAY" property="suppPayWay" jdbcType="DECIMAL" />
+    <result column="F_DEDUCT_WAY" property="deductWay" jdbcType="VARCHAR" />
+    <result column="F_STATE" property="state" jdbcType="DECIMAL" />
+    <result column="F_JB_NUM" property="jbNum" jdbcType="VARCHAR" />
+    <result column="F_JB" property="jb" jdbcType="DECIMAL" />
+    <result column="F_MJ" property="mj" jdbcType="DECIMAL" />
+    <result column="F_BZ" property="bz" jdbcType="VARCHAR" />
+    <result column="F_BUSI_PIC_URL" property="busiPicUrl" jdbcType="VARCHAR" />
+    <result column="F_BUSI_CLIENT_URL" property="busiClientUrl" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="F_BUSI_TRANCNUM" property="busiTrancnum" jdbcType="VARCHAR" />
+    <result column="F_START_TIME" property="startTime" jdbcType="DATE" />
+    <result column="F_END_TIME" property="endTime" jdbcType="DATE" />
+    <result column="F_INTRO" property="intro" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NAME_HTML" property="busiNameHtml" jdbcType="CLOB" />
+    <result column="F_BUSI_DESC" property="busiDesc" jdbcType="CLOB" />
+    <result column="F_BUSI_ADVL" property="busiAdvl" jdbcType="CLOB" />
+    <result column="F_BUSI_EXPL" property="busiExpl" jdbcType="CLOB" />
+    <result column="F_PROMPT" property="prompt" jdbcType="CLOB" />
+    <result column="F_BUSI_FEATURE" property="busiFeature" jdbcType="CLOB" />
+    <result column="F_BUSI_NEST_FT" property="busiNestFt" jdbcType="CLOB" />
+    <result column="F_BUSI_NEST_SD" property="busiNestSd" jdbcType="CLOB" />
+    <result column="F_BUSI_PRIVILEGE" property="busiPrivilege" jdbcType="CLOB" />
+    <result column="PROVERIFYSTATE" property="proVerifyState" /><!-- 省级审核 -->
+    <result column="LOCALVERIFYSTATE" property="localVerifyState" /><!-- 地市审核 -->
+    <result column="BUSI_TEST_STATE" property="busiTestState" /><!-- 测试状态 -->
+    <result column="DESCRIPTION" property="description"/>
+  </resultMap>
+  
+  <select id="selectBusiInfoListForVerify" resultMap="businessInfoMap" parameterType="java.util.Map">
+  	select * from(
+		select rownum row_num, a.*
+		  from (
+			SELECT F_BUSI_NUM,
+		         F_BUSI_NAME,
+		         F_BUSI_NAME_EN,
+		         F_BUSI_NAME_PYM1,
+		         F_BUSI_NAME_PYM2,
+		         F_BUSI_ICON,
+		         F_BUSI_MENU_ICON,
+		         F_BUSI_NAME_HTML,
+		         F_BUSI_DESC_ICON,
+		         F_BUSI_DESC,
+		         F_BUSI_ADVL,
+		         F_BUSI_EXPL,
+		         F_PROMPT,
+		         F_FLASH,
+		         F_PROCESS_TYPE,
+		         F_FEE,
+		         F_FEE_SCORE_M,
+		         F_FEE_SCORE_Q,
+		         F_FEE_TYPE,
+		         F_COUNT_UNIT,
+		         F_SUPP_PAY_WAY,
+		         F_DEDUCT_WAY,
+		         F_STATE,
+		         F_JB_NUM,
+		         F_JB,
+		         F_MJ,
+		         F_BZ,
+		         F_BUSI_PIC_URL,
+		         F_BUSI_CLIENT_URL,
+		         F_CHANNEL_NUM,
+		         F_BUSI_FEATURE,
+		         F_BUSI_NEST_FT,
+		         F_BUSI_NEST_SD,
+		         F_BUSI_PRIVILEGE,
+		         F_BUSI_TRANCNUM,
+		         F_START_TIME,
+		         F_END_TIME,
+		         F_INTRO,
+		         F_PRO_VERIFY_STATE PROVERIFYSTATE,
+                 f_local_verify_state LOCALVERIFYSTATE,
+                 (select s.audit_state from(
+                       select t.*
+                          from t_audit_log t
+                         where t.oper_type = '2'
+                           and t.oper_level = '2'
+                           and t.bisu_id = f_busi_num 
+                           and t.channel_num = f_channel_num
+                           order by t.pkid desc
+                           ) s where rownum=1 and s.bisu_id = f_busi_num 
+                           and s.channel_num = f_channel_num) BUSI_TEST_STATE,
+                           (select s.description from 
+                 (select t.* from t_audit_log t where t.oper_type = '1' and t.bisu_id = f_busi_num 
+                           and t.channel_num = f_channel_num order by t.pkid desc) s where rownum=1 and s.bisu_id = f_busi_num 
+                           and s.channel_num = f_channel_num) DESCRIPTION
+          FROM T_BUSI_INFO
+				 ) a
+		          where 1=1
+			
+		<if test="busiName != null">
+            AND F_BUSI_NAME like #{busiName}||'%'
+        </if>
+        <if test="busiNum != null">
+            AND F_BUSI_NUM like #{busiNum}||'%'
+        </if>
+        <if test="state != null">
+            AND F_STATE in 
+            <foreach collection="state" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+            </foreach>
+        </if>
+        <if test="channelNum != null">
+        	AND F_CHANNEL_NUM in
+        	<foreach collection="channelNum" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+            </foreach>
+        </if>
+        <if test="processType != null">
+        	AND F_PROCESS_TYPE = #{processType}
+        </if>
+        <if test="feeType != null">
+        	AND F_FEE_TYPE = #{feeType}
+        </if>
+        <if test="localVerifyState !=null">
+        	AND LOCALVERIFYSTATE = #{localVerifyState}
+        </if>
+        <if test="proVerifyState !=null">
+        	AND PROVERIFYSTATE = #{proVerifyState}
+        </if>
+        <!-- 
+        <if test="isProUser==1">
+        	AND LOCALVERIFYSTATE = '1'
+        </if>
+         -->
+        <if test="brandNum !=null">
+        	AND F_BUSI_NUM in (select f_busi_num from t_busi_brand_dz b where 
+            <foreach collection="brandNum" item="item" open="" separator="or" close="" index="index">
+            	b.f_brand_num like #{item}||'%' 
+            </foreach>
+            )
+        </if>
+        <if test="city != null and city != 0">
+        	AND
+	       F_BUSI_NUM IN
+	       (SELECT F_BUSI_NUM
+	          FROM T_BUSI_AREA_DZ A
+	         WHERE A.F_AREA_NUM IN
+	               (SELECT F_AREA_NUM FROM T_AREA_DA WHERE F_BOSS_CODE LIKE #{city}||'%'))
+        </if>
+        <if test="busiTypeNum != null">
+        	 AND
+	       F_BUSI_NUM in
+	       (SELECT F_BUSI_NUM FROM T_BUSI_SORT_DZ S WHERE S.F_BUSI_TYPE_NUM=#{busiTypeNum} 
+	               AND S.F_CHANNEL_NUM=F_CHANNEL_NUM
+	       )
+        </if>
+        
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <select id="selectBusiInfoListForVerifyCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+  	select count(1) from (select t.*,
+		         F_PRO_VERIFY_STATE PROVERIFYSTATE,
+                 f_local_verify_state LOCALVERIFYSTATE,
+                 (select s.audit_state from(
+                       select t.*
+                          from t_audit_log t
+                         where t.oper_type = '2'
+                           and t.oper_level = '2'
+                           and t.bisu_id = f_busi_num 
+                           and t.channel_num = f_channel_num
+                           order by t.pkid desc
+                           ) s where rownum=1 and s.bisu_id = f_busi_num 
+                           and s.channel_num = f_channel_num) BUSI_TEST_STATE
+           from T_BUSI_INFO t )
+			WHERE 1=1
+		<if test="busiName != null">
+            AND F_BUSI_NAME like #{busiName}||'%'
+        </if>
+        <if test="busiNum != null">
+            AND F_BUSI_NUM like #{busiNum}||'%'
+        </if>
+        <if test="state != null">
+            AND F_STATE in 
+            <foreach collection="state" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+            </foreach>
+        </if>
+        <if test="channelNum != null">
+        	AND F_CHANNEL_NUM in
+        	<foreach collection="channelNum" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+            </foreach>
+        </if>
+        <if test="processType != null">
+        	AND F_PROCESS_TYPE = #{processType}
+        </if>
+        <if test="feeType != null">
+        	AND F_FEE_TYPE = #{feeType}
+        </if>
+        <if test="localVerifyState !=null">
+        	AND LOCALVERIFYSTATE = #{localVerifyState}
+        </if>
+        <if test="proVerifyState !=null">
+        	AND PROVERIFYSTATE = #{proVerifyState}
+        </if>
+        <if test="isProUser==1">
+        	AND LOCALVERIFYSTATE = '1'
+        </if>
+        <if test="brandNum !=null">
+        	AND F_BUSI_NUM in (select f_busi_num from t_busi_brand_dz b where 
+            <foreach collection="brandNum" item="item" open="" separator="or" close="" index="index">
+            	b.f_brand_num like #{item}||'%' 
+            </foreach>
+            )
+        </if>
+        <if test="city != null">
+        	AND
+	       F_BUSI_NUM IN
+	       (SELECT F_BUSI_NUM
+	          FROM T_BUSI_AREA_DZ A
+	         WHERE A.F_AREA_NUM IN
+	               (SELECT F_AREA_NUM FROM T_AREA_DA WHERE F_BOSS_CODE LIKE #{city}||'%'))
+        </if>
+        <if test="busiTypeNum != null">
+        	 AND
+	       F_BUSI_NUM in
+	       (SELECT F_BUSI_NUM FROM T_BUSI_SORT_DZ S WHERE S.F_BUSI_TYPE_NUM=#{busiTypeNum} 
+	               AND S.F_CHANNEL_NUM=F_CHANNEL_NUM
+	       )
+        </if>
+  </select>
+  
+  <update id="verifyBusinessInfo" parameterType="java.util.Map">
+  	update T_BUSI_INFO
+    <set >
+      <if test="state != null" >
+        F_STATE = #{state},
+      </if>
+      <if test="proVerifyState != null" >
+        F_PRO_VERIFY_STATE = #{proVerifyState},
+      </if>
+      <if test="localVerifyState != null" >
+        f_local_verify_state = #{localVerifyState},
+      </if>
+    </set>
+  	where F_BUSI_NUM = #{busiNum} and F_CHANNEL_NUM = #{channelNum}
+  </update>
+  
+  <select id="selectBusiInfoListForTest" resultMap="businessInfoMap" parameterType="java.util.Map">
+  	select * from(
+		select rownum row_num, a.*
+		  from (
+			SELECT F_BUSI_NUM,
+		         F_BUSI_NAME,
+		         F_BUSI_NAME_EN,
+		         F_BUSI_NAME_PYM1,
+		         F_BUSI_NAME_PYM2,
+		         F_BUSI_ICON,
+		         F_BUSI_MENU_ICON,
+		         F_BUSI_NAME_HTML,
+		         F_BUSI_DESC_ICON,
+		         F_BUSI_DESC,
+		         F_BUSI_ADVL,
+		         F_BUSI_EXPL,
+		         F_PROMPT,
+		         F_FLASH,
+		         F_PROCESS_TYPE,
+		         F_FEE,
+		         F_FEE_SCORE_M,
+		         F_FEE_SCORE_Q,
+		         F_FEE_TYPE,
+		         F_COUNT_UNIT,
+		         F_SUPP_PAY_WAY,
+		         F_DEDUCT_WAY,
+		         F_STATE,
+		         F_JB_NUM,
+		         F_JB,
+		         F_MJ,
+		         F_BZ,
+		         F_BUSI_PIC_URL,
+		         F_BUSI_CLIENT_URL,
+		         F_CHANNEL_NUM,
+		         F_BUSI_FEATURE,
+		         F_BUSI_NEST_FT,
+		         F_BUSI_NEST_SD,
+		         F_BUSI_PRIVILEGE,
+		         F_BUSI_TRANCNUM,
+		         F_START_TIME,
+		         F_END_TIME,
+		         F_INTRO,
+		         F_PRO_VERIFY_STATE PROVERIFYSTATE,
+                 f_local_verify_state LOCALVERIFYSTATE,
+                 (select s.audit_state from(
+                       select t.*
+                          from t_audit_log t
+                         where t.oper_type = '2'
+                           and t.oper_level = '2'
+                           and t.bisu_id = f_busi_num 
+                           and t.channel_num = f_channel_num
+                           order by t.pkid desc
+                           ) s where rownum=1 and s.bisu_id = f_busi_num 
+                           and s.channel_num = f_channel_num) BUSI_TEST_STATE,
+                 (select s.description from 
+                 (select t.* from t_audit_log t where t.oper_type = '2' and t.bisu_id = f_busi_num 
+                           and t.channel_num = f_channel_num order by t.pkid desc) s where rownum=1 and s.bisu_id = f_busi_num 
+                           and s.channel_num = f_channel_num) DESCRIPTION
+          FROM T_BUSI_INFO
+				 ) a
+		          where 1=1
+			
+		<if test="busiName != null">
+            AND F_BUSI_NAME like #{busiName}||'%'
+        </if>
+        <if test="busiNum != null">
+            AND F_BUSI_NUM like #{busiNum}||'%'
+        </if>
+        <if test="state != null">
+            AND F_STATE in 
+            <foreach collection="state" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+            </foreach>
+        </if>
+        <if test="channelNum != null">
+        	AND F_CHANNEL_NUM in
+        	<foreach collection="channelNum" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+            </foreach>
+        </if>
+        <if test="processType != null">
+        	AND F_PROCESS_TYPE = #{processType}
+        </if>
+        <if test="feeType != null">
+        	AND F_FEE_TYPE = #{feeType}
+        </if>
+        <if test="brandNum !=null">
+        	AND F_BUSI_NUM in (select f_busi_num from t_busi_brand_dz b where 
+            <foreach collection="brandNum" item="item" open="" separator="or" close="" index="index">
+            	b.f_brand_num like #{item}||'%' 
+            </foreach>
+            )
+        </if>
+        <if test="city != null">
+        	AND
+	       F_BUSI_NUM IN
+	       (SELECT F_BUSI_NUM
+	          FROM T_BUSI_AREA_DZ A
+	         WHERE A.F_AREA_NUM IN
+	               (SELECT F_AREA_NUM FROM T_AREA_DA WHERE F_BOSS_CODE LIKE #{city}||'%'))
+        </if>
+        <if test="busiTypeNum != null">
+        	 AND
+	       F_BUSI_NUM in
+	       (SELECT F_BUSI_NUM FROM T_BUSI_SORT_DZ S WHERE S.F_BUSI_TYPE_NUM=#{busiTypeNum} 
+	               AND S.F_CHANNEL_NUM=F_CHANNEL_NUM
+	       )
+        </if>
+        
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <select id="selectBusiInfoListForTestCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+  	select count(1) from (select t.*,
+		         F_PRO_VERIFY_STATE PROVERIFYSTATE,
+                 f_local_verify_state LOCALVERIFYSTATE,
+                 (select s.audit_state from(
+                       select t.*
+                          from t_audit_log t
+                         where t.oper_type = '2'
+                           and t.oper_level = '2'
+                           and t.bisu_id = f_busi_num 
+                           and t.channel_num = f_channel_num
+                           order by t.pkid desc
+                           ) s where rownum=1 and s.bisu_id = f_busi_num 
+                           and s.channel_num = f_channel_num) BUSI_TEST_STATE
+           from T_BUSI_INFO t )
+			WHERE 1=1
+		<if test="busiName != null">
+            AND F_BUSI_NAME like #{busiName}||'%'
+        </if>
+        <if test="busiNum != null">
+            AND F_BUSI_NUM like #{busiNum}||'%'
+        </if>
+        <if test="state != null">
+            AND F_STATE in 
+            <foreach collection="state" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+            </foreach>
+        </if>
+        <if test="channelNum != null">
+        	AND F_CHANNEL_NUM in
+        	<foreach collection="channelNum" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+            </foreach>
+        </if>
+        <if test="processType != null">
+        	AND F_PROCESS_TYPE = #{processType}
+        </if>
+        <if test="feeType != null">
+        	AND F_FEE_TYPE = #{feeType}
+        </if>
+        <if test="brandNum !=null">
+        	AND F_BUSI_NUM in (select f_busi_num from t_busi_brand_dz b where 
+            <foreach collection="brandNum" item="item" open="" separator="or" close="" index="index">
+            	b.f_brand_num like #{item}||'%' 
+            </foreach>
+            )
+        </if>
+        <if test="city != null">
+        	AND
+	       F_BUSI_NUM IN
+	       (SELECT F_BUSI_NUM
+	          FROM T_BUSI_AREA_DZ A
+	         WHERE A.F_AREA_NUM IN
+	               (SELECT F_AREA_NUM FROM T_AREA_DA WHERE F_BOSS_CODE LIKE #{city}||'%'))
+        </if>
+        <if test="busiTypeNum != null">
+        	 AND
+	       F_BUSI_NUM in
+	       (SELECT F_BUSI_NUM FROM T_BUSI_SORT_DZ S WHERE S.F_BUSI_TYPE_NUM=#{busiTypeNum} 
+	               AND S.F_CHANNEL_NUM=F_CHANNEL_NUM
+	       )
+        </if>
+  </select>
+  <update id="testBusinessInfo" parameterType="java.util.Map">
+  	update T_BUSI_INFO set F_STATE = #{state} where F_BUSI_NUM = #{busiNum} and F_CHANNEL_NUM = #{channelNum}
+  </update>
+  
+  <select id="queryForSort" resultMap="businessInfoBean" parameterType="java.util.Map">
+  	select 
+  	F_BUSI_NUM,
+  	F_BUSI_NAME
+  	from T_BUSI_INFO 
+  	where 1=1
+  	<if test="jb != null">
+	  	and f_jb = #{jb}
+  	</if>
+  	<if test="jbNum != null">
+	  	and f_jb_num like #{jbNum}||'___'
+  	</if>
+  	<if test="channelNum!=null">
+	  	and F_CHANNEL_NUM = #{channelNum}
+  	</if>
+	<if test="state!=null">
+		and f_state in
+		<foreach collection="state" item="item" open="(" separator="," close=")" index="index">
+        	#{item}
+        </foreach>
+	</if>
+  	<if test="end != null">
+	  	and rownum &lt;= #{end}
+  	</if>
+  	order by f_xh
+  </select>
+  <select id="queryJbNum" parameterType="java.util.Map" resultType="java.lang.String">
+  	select 
+  	F_JB_NUM
+  	from T_BUSI_INFO 
+  	where 1=1
+  	<if test="channelNum!=null">
+	  	and F_CHANNEL_NUM = #{channelNum}
+  	</if>
+  	<if test="busiNum!=null">
+	  	and F_BUSI_NUM = #{busiNum}
+  	</if>
+  	<if test="busiName!=null">
+	  	and F_BUSI_NAME = #{busiName}||'%'
+  	</if>
+  	and rownum=1
+  </select>
+</mapper>

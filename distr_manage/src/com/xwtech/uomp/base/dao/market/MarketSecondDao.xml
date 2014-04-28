@@ -1,0 +1,1304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.market.MarketSecondDao">
+    <resultMap type="com.xwtech.uomp.base.pojo.market.MarketSecondBean" id="marketSecondBean">
+    	<result property="marketSecondPkid" column="MARKET_SECOND_PKID"/>
+        <result property="marketFirstPkid" column="MARKET_FIRST_PKID"/>
+        <result property="marketSecondCode" column="MARKET_SECOND_CODE"/>
+        <result property="marketSecondName" column="MARKET_SECOND_NAME"/>
+        <result property="city" column="CITY"/>
+        <result property="cityName" column="CITY_NAME"/>
+         <result property="viewName" column="VIEW_NAME"/>
+        <result property="imgDir" column="IMG_DIR"/>
+        <result property="flashDir" column="FLASH_DIR"/>
+        <result property="toObject" column="TO_OBJECT"/>
+        <result property="activityComment" column="ACTIVITY_COMMENT"/>
+        <result property="isNeedMoney" column="IS_NEED_MONEY"/>
+        <result property="moneyVal" column="MONEY_VAL"/>
+        
+        <result property="starTime" column="STARTIME"/>
+        <result property="beginTime" column="BEGIN_TIME"/>
+        <result property="endTime" column="END_TIME"/>
+        <result property="isFlashView" column="IS_FLASH_VIEW"/>
+        <result property="isListView" column="IS_LIST_VIEW"/>
+        <result property="viewTemplateId" column="VIEW_TEMPLATE_ID"/>
+        <result property="pactTemplateId" column="PACT_TEMPLATE_ID"/>
+        <result property="state" column="STATE"/>
+        <result property="createTime" column="CREATE_TIME"/>
+         <result property="verifyState" column="VERIFY_STATE"/>
+        <result property="pactTemplateContent" column="PACT_TEMPLATE_CONTENT"/>
+        <result property="giftGetTypes" column="GIFT_GET_TYPES"/>
+        <result property="cfgUserId" column="CFG_USER_ID"/>
+        <result property="notice" column="NOTICE"/>
+        <result property="proVerifyState" column="PRO_VERIFY_STATE"/>
+        
+        <result property="localVerifyState" column="LOCAL_VERIFY_STATE"/>
+        <result property="testOnlineState" column="TEST_ONLINE_STATE"/>
+        <result property="areaName" column="F_AREA_NAME"/>
+        
+        <result property="marketSecondType" column="MARKET_SECOND_TYPE"/>
+        <result property="isInGroup" column="IS_IN_GROUP"/>
+        <result property="fnestificationType" column="F_NESTIFICATION_TYPE"/>
+        <result property="businessNum" column="BUSINESS_NUM"/>
+        <result property="lowestConsumption" column="LOWEST_CONSUMPTION"/>
+        <result property="firstAccount" column="FIRST_ACCOUNT"/>
+        <result property="monthlyRelease" column="MONTHLY_RELEASE"/>
+        <result property="agreementTime" column="AGREEMENT_TIME"/>
+        <result property="firstTop" column="FIRST_TOP"/>
+        <result property="ticketFlag" column="TICKET_FLAG"/>
+        <result property="channalData" column="CHANNAL_DATA"/>
+        <result property="sweetPrompt" column="SWEET_PROMPT"/>
+        <result property="isNeedCashBooks" column="IS_NEED_CASHBOOKS"/>
+        <result property="marketFirstName" column="MARKET_FIRST_NAME"/>
+        
+        
+    <result column="DT_BRAND_ID" property="dtBrandId" jdbcType="VARCHAR" />
+    <result column="DT_CONFIRM_EXTRA_MSG" property="dtConfirmExtraMsg" jdbcType="VARCHAR" />
+    <result column="DT_SP_CODE" property="dtSpCode" jdbcType="VARCHAR" />
+    <result column="DT_SEND_SUCC_MSG_ENABLE" property="dtSendSuccMsgEnable" jdbcType="VARCHAR" />
+    <result column="DT_SUCC_MSG" property="dtSuccMsg" jdbcType="VARCHAR" />
+    <result column="DT_IS_RECOMMEND" property="dtIsRecommend" jdbcType="VARCHAR" />
+    <result column="DT_MUTEX_ENABLE" property="dtMutexEnable" jdbcType="VARCHAR" />
+    <result column="DT_MUTEX_BUSI" property="dtMutexBusi" jdbcType="VARCHAR" />
+    <result column="DT_UNALLOW_BUSI" property="dtUnallowBusi" jdbcType="VARCHAR" />
+    <result column="DT_BEFORE_EFFECT_MSG" property="dtBeforeEffectMsg" jdbcType="VARCHAR" />
+    <result column="DT_EXPIRE_MSG" property="dtExpireMsg" jdbcType="VARCHAR" />
+    <result column="CMD_ENABLE_FLAG" property="cmdEnableFlag" jdbcType="CHAR" />
+    <result column="CMD_COTENT" property="cmdCotent" jdbcType="VARCHAR" />
+    <result column="BUSI_MARKET_SMS" property="busiMarketSms" jdbcType="VARCHAR" />
+    <result column="DT_CONFIGURE_MONEY" property="dtConfigureMoney" jdbcType="VARCHAR" />
+    <result column="DT_IS_IN_GROUP" property="dtIsInGroup" jdbcType="VARCHAR" />
+    <result column="WT_IS_IN_GROUP" property="wtIsInGroup" jdbcType="VARCHAR" />
+    
+    <result column="DT_PRO_VERIFY_STATE" property="dtProVerifyState" jdbcType="VARCHAR" />
+	<result column="DT_LOCAL_VERIFY_STATE" property="dtLocalVerifyState" jdbcType="VARCHAR" />
+	<result column="DT_VERIFY_STATE" property="dtVerifyState" jdbcType="VARCHAR" />
+	
+	<result column="WT_PRO_VERIFY_STATE" property="wtProVerifyState" jdbcType="VARCHAR" />
+	<result column="WT_LOCAL_VERIFY_STATE" property="wtLocalVerifyState" jdbcType="VARCHAR" />
+	<result column="WT_VERIFY_STATE" property="wtVerifyState" jdbcType="VARCHAR" />
+	
+	<result column="DT_TEST_ONLINE_STATE" property="dtTestOnlineState" jdbcType="VARCHAR" />
+	<result column="WT_TEST_ONLINE_STATE" property="wtTestOnlineState" jdbcType="VARCHAR" />
+	
+	<result column="WT_IS_LIST_VIEW" property="wtIsListView" jdbcType="VARCHAR"/>
+	
+	<result column="ZT_MARKET_ORDER" property="ztMarketOrder" jdbcType="VARCHAR"/>
+	<result column="WT_MARKET_ORDER" property="wtMarketOrder" jdbcType="VARCHAR"/>
+    
+        <association property="marketFirstBean" column="MARKET_FIRST_PKID" javaType="com.xwtech.uomp.base.pojo.market.MarketFirstBean" resultMap="marketFirstBeanRf"></association>
+    </resultMap>
+    
+    <resultMap id="marketFirstBeanRf" type="com.xwtech.uomp.base.pojo.market.MarketFirstBean" >
+	    <id column="MARKET_FIRST_PKID" property="marketFirstPkid" jdbcType="DECIMAL" />
+	    <result column="MARKET_FIRST_CODE" property="marketFirstCode" jdbcType="VARCHAR" />
+	    <result column="MARKET_FIRST_NAME" property="marketFirstName" jdbcType="VARCHAR" />
+	    <result column="FIRST_VIEW_NAME" property="viewName" jdbcType="VARCHAR" />
+  	</resultMap>
+    
+	
+    <!-- 查询二级营销案信息 -->
+    <select id="queryMarketSecondList" resultMap="marketSecondBean" parameterType="java.util.Map">
+        select * from(
+		select rownum row_num, a.*
+		  from (select market_second_pkid,
+				       market_first_pkid,
+				       market_second_code,
+				       market_second_name,
+				       city,
+				      (SELECT F_AREA_NAME FROM T_AREA_DA WHERE F_BOSS_CODE=city) AS CITY_NAME,
+				       view_name,
+				       img_dir,
+				       flash_dir,
+				       to_object,
+				       activity_comment,
+				       is_need_money,
+				       money_val,
+				       begin_time,
+				       end_time,
+				       is_flash_view,
+				       is_list_view,
+				       view_template_id,
+				       pact_template_id,
+				       state,
+				       create_time,
+				       verify_state,
+				       pact_template_content,
+				       gift_get_types,
+				       cfg_user_id,
+				       notice,
+				       pro_verify_state,
+				       local_verify_state,
+				       market_second_type,
+				       is_in_group,
+				       f_nestification_type,
+				       business_num,
+				       lowest_consumption,
+				       first_account,
+				       monthly_release,
+				       agreement_time,
+				       first_top,
+				       ticket_flag,
+				       channal_data,
+				       wt_is_list_view
+				  from jsmss_market_second
+				 ) a
+		          where 1=1
+		<if test="channalData != null">
+			AND channal_data like '%'||#{channalData}||'%'
+		</if>
+        <if test="marketFirstPkid != null">
+            AND market_first_pkid = #{marketFirstPkid}
+        </if>
+        <if test="state != null">
+            AND state = #{state}
+        </if>
+        order by market_second_pkid desc
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+    
+    <select id="queryMarketSecondForVerify" resultMap="marketSecondBean" parameterType="java.util.Map">
+    	select * from(
+		select rownum row_num, a.*
+		  from (select s.market_second_pkid,
+				       s.market_first_pkid,
+				       s.market_second_code,
+				       s.market_second_name,
+				       (select t.f_area_name from t_area_da t where t.f_boss_code=s.city) as city,
+				       s.view_name,
+				       s.img_dir,
+				       s.flash_dir,
+				       s.to_object,
+				       s.activity_comment,
+				       s.is_need_money,
+				       s.money_val,
+				       s.begin_time,
+				       s.end_time,
+				       s.is_flash_view,
+				       s.is_list_view,
+				       s.view_template_id,
+				       s.pact_template_id,
+				       s.state,
+				       s.create_time,
+				       s.verify_state,
+				       s.pact_template_content,
+				       s.gift_get_types,
+				       s.cfg_user_id,
+				       s.notice,
+				       s.pro_verify_state,
+				       s.local_verify_state,
+				       s.test_online_state,
+				       s.market_second_type,
+				       s.is_in_group,
+				       s.f_nestification_type,
+				       s.business_num,
+				       s.lowest_consumption,
+				       s.first_account,
+				       s.monthly_release,
+				       s.agreement_time,
+				       s.first_top,
+				       s.ticket_flag,
+				       s.channal_data,
+				       f.view_name as first_view_name,
+				       f.market_first_name,
+				       s.dt_pro_verify_state,
+				       s.dt_local_verify_state,
+				       s.dt_verify_state,
+				       s.wt_pro_verify_state,
+				       s.wt_local_verify_state,
+				       s.wt_verify_state
+				  from jsmss_market_second s
+				  join 
+				  JSMSS_MARKET_FIRST f on s.market_first_pkid=f.market_first_pkid
+				    <if test="marketFirstPkid != null">
+			            AND s.market_first_pkid = #{marketFirstPkid}
+			        </if>
+			        <if test="state != null">
+			            AND s.state = #{state}
+			        </if>
+			        <if test="city != null">
+			            AND s.city like #{city}||'%'
+			        </if>
+			        <if test="viewName != null">
+			            AND s.view_name like #{viewName}||'%'
+			        </if>
+			        <if test="proManager != null">
+			        	<if test="verifyState != null">
+			        		<if test="channalData == 6">
+			            		AND s.dt_pro_verify_state = #{verifyState}
+			            	</if>
+			            	<if test="channalData == 5">
+			            		AND s.pro_verify_state = #{verifyState}
+			            	</if>
+			            	<if test="channalData == 4">
+			            		AND s.wt_pro_verify_state = #{verifyState}
+			            	</if>
+			        	</if>
+			        </if>
+			        <if test="cityManager != null">
+			        	<if test="verifyState != null">
+			        		<if test="channalData == 6">
+			            		AND s.dt_local_verify_state = #{verifyState}
+			            	</if>
+			            	<if test="channalData == 5">
+			            		AND s.local_verify_state = #{verifyState}
+			            	</if>
+			            	<if test="channalData == 4">
+			            		AND s.wt_local_verify_state = #{verifyState}
+			            	</if>
+			            </if>
+			        </if>
+			        <if test="isListView != null">
+			            AND s.is_list_view = #{isListView}
+			        </if>
+			        <if test="beginTime != null">
+			            AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt; to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+			        </if>
+			        <if test="endTime != null">
+			            AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+			        </if>
+			        <if test="channalData != null">
+			        	AND s.CHANNAL_DATA like '%'||#{channalData}||'%'
+			        </if>
+			        order by s.market_second_pkid desc
+				 ) a
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+    <!-- 控制台二级营销案审核列表 -->
+    <select id="queryMarketSecondForVerifyOnConsle" resultMap="marketSecondBean" parameterType="java.util.Map">
+    	select * from(
+		select rownum row_num, a.*
+		  from (select s.market_second_pkid,
+				       s.market_first_pkid,
+				       s.market_second_code,
+				       s.market_second_name,
+				       (select t.f_area_name from t_area_da t where t.f_boss_code=s.city) as city,
+				       (select '['||substr(t.f_area_name,0,instr(t.f_area_name,'地')-1)||']'||s.view_name from t_area_da t where t.f_boss_code=s.city) as view_name,
+				       s.img_dir,
+				       s.flash_dir,
+				       s.to_object,
+				       s.activity_comment,
+				       s.is_need_money,
+				       s.money_val,
+				       s.begin_time,
+				       s.end_time,
+				       s.is_flash_view,
+				       s.is_list_view,
+				       s.view_template_id,
+				       s.pact_template_id,
+				       s.state,
+				       s.create_time,
+				       s.verify_state,
+				       s.pact_template_content,
+				       s.gift_get_types,
+				       s.cfg_user_id,
+				       s.notice,
+				       s.pro_verify_state,
+				       s.local_verify_state,
+				       s.test_online_state,
+				       s.market_second_type,
+				       s.is_in_group,
+				       s.f_nestification_type,
+				       s.business_num,
+				       s.lowest_consumption,
+				       s.first_account,
+				       s.monthly_release,
+				       s.agreement_time,
+				       s.first_top,
+				       s.ticket_flag,
+				       s.channal_data,
+				       f.view_name as first_view_name,
+				       f.market_first_name,
+				       s.wt_pro_verify_state,
+				       s.wt_local_verify_state,
+				       s.dt_pro_verify_state,
+				       s.dt_local_verify_state,
+				       s.wt_verify_state,
+				       s.dt_verify_state
+				  from jsmss_market_second s
+				  join 
+				  JSMSS_MARKET_FIRST f on s.market_first_pkid=f.market_first_pkid
+				    <if test="marketFirstPkid != null">
+			            AND s.market_first_pkid = #{marketFirstPkid}
+			        </if>
+			        <if test="state != null">
+			            AND s.state = #{state}
+			        </if>
+			        <if test="city != null">
+			            AND s.city like #{city}||'%'
+			        </if>
+			        <if test="viewName != null">
+			            AND s.view_name like #{viewName}||'%'
+			        </if>
+			        <if test="proManager != null">
+			        	<if test="verifyState != null">
+			        		<if test="channalData == 6">
+			            		AND s.dt_pro_verify_state = #{verifyState}
+			            	</if>
+			            	<if test="channalData == 5">
+			            		AND s.pro_verify_state = #{verifyState}
+			            	</if>
+			            	<if test="channalData == 4">
+			            		AND s.wt_pro_verify_state = #{verifyState}
+			            	</if>
+			        	</if>
+			        </if>
+			        <if test="cityManager != null">
+			        	<if test="verifyState != null">
+			        		<if test="channalData == 6">
+			            		AND s.dt_local_verify_state = #{verifyState}
+			            	</if>
+			            	<if test="channalData == 5">
+			            		AND s.local_verify_state = #{verifyState}
+			            	</if>
+			            	<if test="channalData == 4">
+			            		AND s.wt_local_verify_state = #{verifyState}
+			            	</if>
+			            </if>
+			        </if>
+			        <if test="isListView != null">
+			            AND s.is_list_view = #{isListView}
+			        </if>
+			        <if test="beginTime != null">
+			            AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt; to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+			        </if>
+			        <if test="endTime != null">
+			            AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+			        </if>
+			        <if test="channalData != null">
+			        	AND s.CHANNAL_DATA like '%'||#{channalData}||'%'
+			        </if>
+			        order by market_second_pkid desc
+				 ) a
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+    
+	<select id="queryMarketSecondCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT COUNT(*)
+	        FROM jsmss_market_second
+	        WHERE 1 = 1
+	        <if test="marketFirstPkid != null">
+            	AND market_first_pkid = #{marketFirstPkid}
+        	</if>
+        	<if test="marketSecondCode != null">
+        		and market_second_code = #{marketSecondCode}
+        	</if>
+	</select>
+	
+	<select id="queryMarketSecondCountForVerify" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT COUNT(*)
+	        FROM 
+	        jsmss_market_second s
+				  join 
+				  JSMSS_MARKET_FIRST f on s.market_first_pkid=f.market_first_pkid
+		          where 1=1
+        <if test="marketFirstPkid != null">
+            AND s.market_first_pkid = #{marketFirstPkid}
+        </if>
+        <if test="state != null">
+            AND s.state = #{state}
+        </if>
+        <if test="city != null">
+            AND s.city like #{city}||'%'
+        </if>
+        <if test="viewName != null">
+            AND s.view_name like #{viewName}||'%'
+        </if>
+		<if test="proManager != null">
+			<if test="verifyState != null">
+				<if test="channalData == 6">
+					AND s.dt_pro_verify_state = #{verifyState}
+				</if>
+				<if test="channelData == 5">
+					AND s.pro_verify_state = #{verifyState}
+				</if>
+				<if test="channelData == 4">
+					AND s.wt_pro_verify_state = #{verifyState}
+				</if>
+			</if>
+		</if>
+		<if test="cityManager != null">
+			<if test="verifyState != null">
+				<if test="channalData == 6">
+					AND s.dt_local_verify_state = #{verifyState}
+				</if>
+				<if test="channelData == 5">
+					AND s.local_verify_state = #{verifyState}
+				</if>
+				<if test="channelData == 4">
+					AND s.wt_local_verify_state = #{verifyState}
+				</if>
+			</if>
+		</if>
+        <if test="isListView != null">
+            AND s.is_list_view = #{isListView}
+        </if>
+        <if test="beginTime != null">
+            AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt; to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+        </if>
+        <if test="endTime != null">
+            AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+        </if>
+        <if test="channalData != null">
+        	AND s.CHANNAL_DATA like '%'||#{channalData}||'%'
+        </if>
+	</select>
+	
+	<select id="queryMarketForTest" resultMap="marketSecondBean" parameterType="java.util.Map" >
+  	select * from(
+		select rownum row_num, a.*
+		  from (
+		  	select s.*,t.f_area_name
+		                  from jsmss_market_second s
+		                  left join t_area_da t
+		                  on t.f_boss_code = s.city
+		                 where 1 = 1
+  	<if test="state != null">
+		AND s.state = #{state}
+    </if>
+      <if test="marketFirstPkid != null">
+            AND market_first_pkid = #{marketFirstPkid}
+        </if>
+	<if test="city != null">
+		AND s.city like #{city}||'%'
+	</if>
+	<if test="viewName != null">
+		AND s.view_name like #{viewName}||'%'
+	</if>
+	
+	<if test="proVerifyState != null">
+		<if test="channalData != null">
+			<choose>
+				<when test="channalData == 6">
+					AND s.dt_pro_verify_state = #{proVerifyState}
+				</when>
+				<when test="channalData == 5">
+					AND s.pro_verify_state = #{proVerifyState}
+				</when>
+				<when test="channalData == 4">
+					AND s.wt_pro_verify_state = #{proVerifyState}
+				</when>
+			</choose>
+		</if>
+	</if>
+	<if test="localVerifyState != null">
+		<if test="channalData != null">
+			<choose>
+				<when test="channalData == 6">
+					AND s.dt_local_verify_state = #{localVerifyState}
+				</when>
+				<when test="channalData == 5">
+					AND s.local_verify_state = #{localVerifyState}
+				</when>
+				<when test="channalData == 4">
+					AND s.wt_local_verify_state = #{localVerifyState}
+				</when>
+			</choose>
+		</if>
+	</if>
+	<if test="isListView != null">
+		AND s.is_list_view = #{isListView}
+	</if>
+	<if test="beginTime != null">
+		AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt;
+		to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="endTime != null">
+		AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;=
+		to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="channalData != null">
+		AND s.CHANNAL_DATA like '%'||#{channalData}||'%'
+	</if>
+	<if test="type != null">
+		AND s.TYPE = #{type}
+	</if>
+	<!-- 
+	<if test="channalData == 6">
+		AND s.dt_pro_verify_state ='1'
+	</if>
+	<if test="channalData == 5">
+		AND s.pro_verify_state = '1'
+	</if>
+	<if test="channalData == 4">
+		AND s.wt_pro_verify_state = '1'
+	</if>
+	 -->
+	 order by s.market_second_pkid desc
+		) a
+     ) 
+     WHERE ROW_NUM &gt; #{start}
+     AND ROW_NUM &lt;= #{end}
+  </select>
+	
+	<select id="queryCountForTest"  resultType="java.lang.Integer" parameterType="java.util.Map" >
+  	select count(*) from jsmss_market_second s
+  	where 1=1
+  	<if test="state != null">
+		AND s.state = #{state}
+    </if>
+	<if test="city != null">
+		AND s.city like #{city}||'%'
+	</if>
+	<if test="viewName != null">
+		AND s.view_name like #{viewName}||'%'
+	</if>
+	<if test="proManager != null">
+			<if test="channalData == 6">
+				AND s.dt_pro_verify_state = #{proVerifyState}
+			</if>
+			<if test="channelData == 5">
+				AND s.pro_verify_state = #{proVerifyState}
+			</if>
+			<if test="channelData == 4">
+				AND s.wt_pro_verify_state = #{proVerifyState}
+			</if>
+	</if>
+	<if test="cityManager != null">
+			<if test="channalData == 6">
+				AND s.dt_local_verify_state = #{localVerifyState}
+			</if>
+			<if test="channelData == 5">
+				AND s.local_verify_state = #{localVerifyState}
+			</if>
+			<if test="channelData == 4">
+				AND s.wt_local_verify_state = #{localVerifyState}
+			</if>
+	</if>
+	<if test="isListView != null">
+		AND s.is_list_view = #{isListView}
+	</if>
+	<if test="beginTime != null">
+		AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt;
+		to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="endTime != null">
+		AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;=
+		to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="channalData != null">
+		AND s.CHANNAL_DATA like '%'||#{channalData}||'%'
+	</if>
+	<if test="type != null">
+		AND s.TYPE = #{type}
+	</if>
+	<if test="testOnlineState != null">
+		AND s.test_online_state = #{testOnlineState}
+	</if>
+  </select>
+	
+	<insert id="addMarketSecondBean">
+	insert into JSMSS_MARKET_SECOND
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="marketSecondPkid != null" >
+        MARKET_SECOND_PKID,
+      </if>
+      <if test="marketFirstPkid != null" >
+        MARKET_FIRST_PKID,
+      </if>
+      <if test="isNeedCashBooks != null" >
+        IS_NEED_CASHBOOKS,
+      </if>
+      
+      <if test="marketSecondCode != null" >
+        MARKET_SECOND_CODE,
+      </if>
+      <if test="marketSecondName != null" >
+        MARKET_SECOND_NAME,
+      </if>
+      <if test="city != null" >
+        CITY,
+      </if>
+      <if test="viewName != null" >
+        VIEW_NAME,
+      </if>
+      <if test="imgDir != null" >
+        IMG_DIR,
+      </if>
+      <if test="flashDir != null" >
+        FLASH_DIR,
+      </if>
+      <if test="toObject != null" >
+        TO_OBJECT,
+      </if>
+      <if test="activityComment != null" >
+        ACTIVITY_COMMENT,
+      </if>
+      <if test="isNeedMoney != null" >
+        IS_NEED_MONEY,
+      </if>
+      <if test="moneyVal != null" >
+        MONEY_VAL,
+      </if>
+      <if test="beginTime != null" >
+        BEGIN_TIME,
+      </if>
+      <if test="endTime != null" >
+        END_TIME,
+      </if>
+      <if test="isFlashView != null" >
+        IS_FLASH_VIEW,
+      </if>
+      <if test="isListView != null" >
+        IS_LIST_VIEW,
+      </if>
+      <if test="viewTemplateId != null" >
+        VIEW_TEMPLATE_ID,
+      </if>
+      <if test="pactTemplateId != null" >
+        PACT_TEMPLATE_ID,
+      </if>
+      <if test="state != null" >
+        STATE,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="verifyState != null" >
+        VERIFY_STATE,
+      </if>
+      <if test="giftGetTypes != null" >
+        GIFT_GET_TYPES,
+      </if>
+      <if test="cfgUserId != null" >
+        CFG_USER_ID,
+      </if>
+      <if test="notice != null" >
+        NOTICE,
+      </if>
+      <if test="proVerifyState != null" >
+        PRO_VERIFY_STATE,
+      </if>
+      <if test="localVerifyState != null" >
+        LOCAL_VERIFY_STATE,
+      </if>
+      <if test="marketSecondType != null" >
+        MARKET_SECOND_TYPE,
+      </if>
+      <if test="isInGroup != null" >
+        IS_IN_GROUP,
+      </if>
+      <if test="fnestificationType != null" >
+        F_NESTIFICATION_TYPE,
+      </if>
+      <if test="businessNum != null" >
+        BUSINESS_NUM,
+      </if>
+      <if test="lowestConsumption != null" >
+        LOWEST_CONSUMPTION,
+      </if>
+      <if test="firstAccount != null" >
+        FIRST_ACCOUNT,
+      </if>
+      <if test="monthlyRelease != null" >
+        MONTHLY_RELEASE,
+      </if>
+      <if test="agreementTime != null" >
+        AGREEMENT_TIME,
+      </if>
+      <if test="firstTop != null" >
+        FIRST_TOP,
+      </if>
+      <if test="ticketFlag != null" >
+        TICKET_FLAG,
+      </if>
+      <if test="channalData != null" >
+        CHANNAL_DATA,
+      </if>
+      <if test="pactTemplateContent != null" >
+        PACT_TEMPLATE_CONTENT,
+      </if>
+      <if test="sweetPrompt != null">
+      	SWEET_PROMPT,
+      </if>
+      
+      <if test="dtBrandId != null" >
+        DT_BRAND_ID,
+      </if>
+      <if test="dtConfirmExtraMsg != null" >
+        DT_CONFIRM_EXTRA_MSG,
+      </if>
+      <if test="dtSpCode != null" >
+        DT_SP_CODE,
+      </if>
+      <if test="dtSendSuccMsgEnable != null" >
+        DT_SEND_SUCC_MSG_ENABLE,
+      </if>
+      <if test="dtSuccMsg != null" >
+        DT_SUCC_MSG,
+      </if>
+      <if test="dtIsRecommend != null" >
+        DT_IS_RECOMMEND,
+      </if>
+      <if test="dtMutexEnable != null" >
+        DT_MUTEX_ENABLE,
+      </if>
+      <if test="dtMutexBusi != null" >
+        DT_MUTEX_BUSI,
+      </if>
+      <if test="dtUnallowBusi != null" >
+        DT_UNALLOW_BUSI,
+      </if>
+      <if test="dtBeforeEffectMsg != null" >
+        DT_BEFORE_EFFECT_MSG,
+      </if>
+      <if test="dtExpireMsg != null" >
+        DT_EXPIRE_MSG,
+      </if>
+      <if test="cmdEnableFlag != null" >
+        CMD_ENABLE_FLAG,
+      </if>
+      <if test="cmdCotent != null" >
+        CMD_COTENT,
+      </if>
+      <if test="busiMarketSms != null" >
+        BUSI_MARKET_SMS,
+      </if>
+      <if test="dtConfigureMoney != null" >
+        DT_CONFIGURE_MONEY,
+      </if>
+      <if test="dtIsInGroup != null" >
+        DT_IS_IN_GROUP,
+      </if>
+       <if test="wtIsInGroup != null" >
+        WT_IS_IN_GROUP,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="marketSecondPkid != null" >
+        #{marketSecondPkid,jdbcType=DECIMAL},
+      </if>
+      <if test="marketFirstPkid != null" >
+        #{marketFirstPkid,jdbcType=DECIMAL},
+      </if>
+      <if test="isNeedCashBooks != null" >
+         #{isNeedCashBooks,jdbcType=VARCHAR},
+      </if>
+      <if test="marketSecondCode != null" >
+        #{marketSecondCode,jdbcType=VARCHAR},
+      </if>
+      <if test="marketSecondName != null" >
+        #{marketSecondName,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=DECIMAL},
+      </if>
+      <if test="viewName != null" >
+        #{viewName,jdbcType=VARCHAR},
+      </if>
+      <if test="imgDir != null" >
+        #{imgDir,jdbcType=VARCHAR},
+      </if>
+      <if test="flashDir != null" >
+        #{flashDir,jdbcType=VARCHAR},
+      </if>
+      <if test="toObject != null" >
+        #{toObject,jdbcType=VARCHAR},
+      </if>
+      <if test="activityComment != null" >
+        #{activityComment,jdbcType=VARCHAR},
+      </if>
+      <if test="isNeedMoney != null" >
+        #{isNeedMoney,jdbcType=CHAR},
+      </if>
+      <if test="moneyVal != null" >
+        #{moneyVal,jdbcType=DECIMAL},
+      </if>
+      <if test="beginTime != null" >
+        #{beginTime,jdbcType=CHAR},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=CHAR},
+      </if>
+      <if test="isFlashView != null" >
+        #{isFlashView,jdbcType=CHAR},
+      </if>
+      <if test="isListView != null" >
+        #{isListView,jdbcType=CHAR},
+      </if>
+      <if test="viewTemplateId != null" >
+        #{viewTemplateId,jdbcType=DECIMAL},
+      </if>
+      <if test="pactTemplateId != null" >
+        #{pactTemplateId,jdbcType=DECIMAL},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=CHAR},
+      </if>
+      <if test="createTime = null" >
+        to_char(SYSDATE,'YYYYMMDDHH24MISS'),
+      </if>
+      <if test="verifyState != null" >
+        #{verifyState,jdbcType=CHAR},
+      </if>
+      <if test="giftGetTypes != null" >
+        #{giftGetTypes,jdbcType=VARCHAR},
+      </if>
+      <if test="cfgUserId != null" >
+        #{cfgUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="notice != null" >
+        #{notice,jdbcType=VARCHAR},
+      </if>
+      <if test="proVerifyState != null" >
+        #{proVerifyState,jdbcType=CHAR},
+      </if>
+      <if test="localVerifyState != null" >
+        #{localVerifyState,jdbcType=CHAR},
+      </if>
+      <if test="marketSecondType != null" >
+        #{marketSecondType,jdbcType=CHAR},
+      </if>
+      <if test="isInGroup != null" >
+        #{isInGroup,jdbcType=CHAR},
+      </if>
+      <if test="fnestificationType != null" >
+        #{fnestificationType,jdbcType=CHAR},
+      </if>
+      <if test="businessNum != null" >
+        #{businessNum,jdbcType=VARCHAR},
+      </if>
+      <if test="lowestConsumption != null" >
+        #{lowestConsumption,jdbcType=VARCHAR},
+      </if>
+      <if test="firstAccount != null" >
+        #{firstAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="monthlyRelease != null" >
+        #{monthlyRelease,jdbcType=VARCHAR},
+      </if>
+      <if test="agreementTime != null" >
+        #{agreementTime,jdbcType=VARCHAR},
+      </if>
+      <if test="firstTop != null" >
+        #{firstTop,jdbcType=CHAR},
+      </if>
+      <if test="ticketFlag != null" >
+        #{ticketFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="channalData != null" >
+        #{channalData,jdbcType=VARCHAR},
+      </if>
+      <if test="pactTemplateContent != null" >
+        #{pactTemplateContent,jdbcType=CLOB},
+      </if>
+      <if test="sweetPrompt != null">
+        #{sweetPrompt,jdbcType=CLOB},
+      </if>
+      <if test="dtBrandId != null" >
+        #{dtBrandId,jdbcType=VARCHAR},
+      </if>
+      <if test="dtConfirmExtraMsg != null" >
+        #{dtConfirmExtraMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="dtSpCode != null" >
+        #{dtSpCode,jdbcType=VARCHAR},
+      </if>
+      <if test="dtSendSuccMsgEnable != null" >
+        #{dtSendSuccMsgEnable,jdbcType=VARCHAR},
+      </if>
+      <if test="dtSuccMsg != null" >
+        #{dtSuccMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="dtIsRecommend != null" >
+        #{dtIsRecommend,jdbcType=VARCHAR},
+      </if>
+      <if test="dtMutexEnable != null" >
+        #{dtMutexEnable,jdbcType=VARCHAR},
+      </if>
+      <if test="dtMutexBusi != null" >
+        #{dtMutexBusi,jdbcType=VARCHAR},
+      </if>
+      <if test="dtUnallowBusi != null" >
+        #{dtUnallowBusi,jdbcType=VARCHAR},
+      </if>
+      <if test="dtBeforeEffectMsg != null" >
+        #{dtBeforeEffectMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="dtExpireMsg != null" >
+        #{dtExpireMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="cmdEnableFlag != null" >
+        #{cmdEnableFlag,jdbcType=CHAR},
+      </if>
+      <if test="cmdCotent != null" >
+        #{cmdCotent,jdbcType=VARCHAR},
+      </if>
+      <if test="busiMarketSms != null" >
+        #{busiMarketSms,jdbcType=VARCHAR},
+      </if>
+      <if test="dtConfigureMoney != null" >
+        #{dtConfigureMoney,jdbcType=VARCHAR},
+      </if>
+      <if test="dtIsInGroup != null" >
+        #{dtIsInGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="wtIsInGroup != null" >
+        #{wtIsInGroup,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+	
+	<update id="updateMarketSecondBean" parameterType="com.xwtech.uomp.base.pojo.market.MarketSecondBean">
+		update jsmss_market_second
+			   <set>
+			   	<if test="marketSecondName != null">
+			       market_second_name = #{marketSecondName,jdbcType=VARCHAR},
+			   	</if>
+			   	<if test="city != null">
+			       city = #{city,jdbcType=DECIMAL},
+			  	</if>
+			   	<if test="viewName != null">
+			       view_name = #{viewName,jdbcType=VARCHAR},
+			    </if>
+			   	<if test="imgDir != null">
+			       img_dir = #{imgDir,jdbcType=VARCHAR},
+		 		</if>
+			   	<if test="flashDir != null">
+			       flash_dir = #{flashDir,jdbcType=VARCHAR},
+			    </if>
+			   	<if test="toObject != null">
+			       to_object = #{toObject,jdbcType=VARCHAR},
+			       </if>
+			   	<if test="activityComment != null">
+			       activity_comment = #{activityComment,jdbcType=VARCHAR},
+			       </if>
+			   	<if test="isNeedMoney != null">
+			       is_need_money = #{isNeedMoney,jdbcType=CHAR},
+			       </if>
+			   	<if test="moneyVal != null">
+			       money_val = #{moneyVal,jdbcType=DECIMAL},
+			       </if>
+			   	<if test="beginTime != null">
+			       begin_time = #{beginTime,jdbcType=CHAR},
+			       </if>
+			   	<if test="endTime != null">
+			       end_time = #{endTime,jdbcType=CHAR},
+			       </if>
+			   	<if test="isFlashView != null">
+			       is_flash_view = #{isFlashView,jdbcType=CHAR},
+			       </if>
+			   	<if test="isListView != null">
+			       is_list_view = #{isListView,jdbcType=CHAR},
+			       </if>
+			   	<if test="viewTemplateId != null">
+			       view_template_id = #{viewTemplateId,jdbcType=DECIMAL},
+			       </if>
+			   	<if test="pactTemplateId != null">
+			       pact_template_id = #{pactTemplateId,jdbcType=DECIMAL},
+			       </if>
+			   	<if test="state != null">
+			       state = #{state,jdbcType=CHAR},
+			       </if>
+			       create_time = to_char(SYSDATE,'YYYYMMDDHH24MISS'),
+			   	<if test="verifyState != null">
+			       verify_state = #{verifyState,jdbcType=CHAR},
+			       </if>
+			   	<if test="pactTemplateContent != null">
+			       pact_template_content = #{pactTemplateContent,jdbcType=CLOB},
+			       </if>
+			   	<if test="giftGetTypes != null">
+			       gift_get_types = #{giftGetTypes,jdbcType=VARCHAR},
+			       </if>
+			   	<if test="cfgUserId != null">
+			       cfg_user_id = #{cfgUserId,jdbcType=VARCHAR},
+			       </if>
+			   	<if test="notice != null">
+			       notice = #{notice,jdbcType=VARCHAR},
+			       </if>
+			   	<if test="proVerifyState != null">
+			       pro_verify_state = #{proVerifyState,jdbcType=CHAR},
+			       </if>
+			   	<if test="localVerifyState != null">
+			       local_verify_state = #{localVerifyState,jdbcType=CHAR},
+			       </if>
+			   	<if test="marketSecondType != null">
+			       market_second_type = #{marketSecondType,jdbcType=CHAR},
+			       </if>
+			   	<if test="isInGroup != null">
+			       is_in_group = #{isInGroup,jdbcType=CHAR},
+			       </if>
+			   	<if test="fnestificationType != null">
+			       f_nestification_type = #{fnestificationType,jdbcType=CHAR},
+			       </if>
+			   	<if test="businessNum != null">
+			       business_num = #{businessNum,jdbcType=VARCHAR},
+			       </if>
+			   	<if test="lowestConsumption != null">
+			       lowest_consumption = #{lowestConsumption,jdbcType=VARCHAR},
+			       </if>
+			   	<if test="firstAccount != null">
+			       first_account = #{firstAccount,jdbcType=VARCHAR},
+			       </if>
+			   	<if test="monthlyRelease != null">
+			       monthly_release = #{monthlyRelease,jdbcType=VARCHAR},
+			       </if>
+			   	<if test="agreementTime != null">
+			       agreement_time = #{agreementTime,jdbcType=VARCHAR},
+			       </if>
+			   	<if test="firstTop != null">
+			       first_top = #{firstTop,jdbcType=CHAR},
+			       </if>
+			   	<if test="ticketFlag != null">
+			       ticket_flag = #{ticketFlag,jdbcType=VARCHAR},
+			       </if>
+			   	<if test="channalData != null">
+			       channal_data = #{channalData,jdbcType=VARCHAR},
+			       </if>
+			      <if test="sweetPrompt != null">
+			        sweet_prompt = #{sweetPrompt,jdbcType=CLOB},
+			      </if>
+			       <if test="isNeedCashBooks != null">
+			        IS_NEED_CASHBOOKS = #{isNeedCashBooks,jdbcType=VARCHAR},
+			      </if>
+			       <if test="dtBrandId != null" >
+       				 DT_BRAND_ID= #{dtBrandId,jdbcType=VARCHAR},
+      			  </if>
+      			   <if test="dtConfirmExtraMsg != null" >
+			        DT_CONFIRM_EXTRA_MSG=#{dtConfirmExtraMsg,jdbcType=VARCHAR},
+			      </if>
+			      <if test="dtSpCode != null" >
+			        DT_SP_CODE=#{dtSpCode,jdbcType=VARCHAR},
+			      </if>
+		      <if test="dtSendSuccMsgEnable != null" >
+		        DT_SEND_SUCC_MSG_ENABLE=#{dtSendSuccMsgEnable,jdbcType=VARCHAR},
+		      </if>
+		      <if test="dtSuccMsg != null" >
+		        DT_SUCC_MSG=#{dtSuccMsg,jdbcType=VARCHAR},
+		      </if>
+		      <if test="dtIsRecommend != null" >
+		        DT_IS_RECOMMEND=#{dtIsRecommend,jdbcType=VARCHAR},
+		      </if>
+		      <if test="dtMutexEnable != null" >
+		        DT_MUTEX_ENABLE=#{dtMutexEnable,jdbcType=VARCHAR},
+		      </if>
+		      <if test="dtMutexBusi != null" >
+		        DT_MUTEX_BUSI=#{dtMutexBusi,jdbcType=VARCHAR},
+		      </if>
+		      <if test="dtUnallowBusi != null" >
+		        DT_UNALLOW_BUSI=#{dtUnallowBusi,jdbcType=VARCHAR},
+		      </if>
+		      <if test="dtBeforeEffectMsg != null" >
+		        DT_BEFORE_EFFECT_MSG=#{dtBeforeEffectMsg,jdbcType=VARCHAR},
+		      </if>
+		      <if test="dtExpireMsg != null" >
+		        DT_EXPIRE_MSG=#{dtExpireMsg,jdbcType=VARCHAR},
+		      </if>
+		       <if test="cmdEnableFlag != null" >
+		        CMD_ENABLE_FLAG=#{cmdEnableFlag,jdbcType=VARCHAR},
+		      </if>
+		      <if test="cmdCotent != null" >
+		        CMD_COTENT=#{cmdCotent,jdbcType=VARCHAR},
+		      </if>
+		      <if test="busiMarketSms != null" >
+		        BUSI_MARKET_SMS=#{busiMarketSms,jdbcType=VARCHAR},
+		      </if>
+		      <if test="dtConfigureMoney != null" >
+		        DT_CONFIGURE_MONEY=#{dtConfigureMoney,jdbcType=VARCHAR},
+		      </if>
+		      <if test="dtIsInGroup != null" >
+		        DT_IS_IN_GROUP=#{dtIsInGroup,jdbcType=VARCHAR},
+		      </if>
+		       <if test="wtIsInGroup != null" >
+		        WT_IS_IN_GROUP=#{wtIsInGroup,jdbcType=VARCHAR},
+		      </if>
+		      
+		     <if test="testOnlineState != null">
+		 		test_online_state = #{testOnlineState},
+	 		</if>
+	 		<if test="dtTestOnlineState != null">
+	 			dt_test_online_state = #{dtTestOnlineState},
+	 		</if>
+	 		<if test="wtTestOnlineState != null">
+	 			wt_test_online_state = #{wtTestOnlineState},
+	 		</if>
+	 		<if test="dtVerifyState != null">
+	 			dt_verify_state = #{dtVerifyState},
+	 		</if>
+	 		<if test="wtVerifyState != null">
+	 			wt_verify_state = #{wtVerifyState},
+	 		</if>
+	 		<if test="dtProVerifyState != null">
+			dt_pro_verify_state = #{dtProVerifyState},
+			</if>
+			<if test="dtLocalVerifyState != null">
+			dt_local_verify_state = #{dtLocalVerifyState},
+			</if>
+			<if test="wtProVerifyState != null">
+			wt_pro_verify_state = #{wtProVerifyState},
+			</if>
+			<if test="wtLocalVerifyState != null">
+			wt_local_verify_state = #{wtLocalVerifyState},
+			</if>
+			 </set>
+			 where market_second_pkid = #{marketSecondPkid}
+	</update>
+	<select id="queryMarketSecondBean" resultMap="marketSecondBean" parameterType="java.lang.String">
+		select t1.market_second_pkid,
+				       t1.market_first_pkid,
+				       t1.market_second_code,
+				       t1.market_second_name,
+				       t1.city,
+				       t1.view_name,
+				       t1.img_dir,
+				       t1.flash_dir,
+				       t1.to_object,
+				       t1.activity_comment,
+				       t1.is_need_money,
+				       t1.money_val,
+				       t1.begin_time,
+				       t1.end_time,
+				       t1.is_flash_view,
+				       t1.is_list_view,
+				       t1.view_template_id,
+				       t1.pact_template_id,
+				       t1.state,
+				       t1.create_time,
+				       t1.verify_state,
+				       t1.pact_template_content,
+				       t1.gift_get_types,
+				       t1.cfg_user_id,
+				       t1.notice,
+				       t1.pro_verify_state,
+				       t1.local_verify_state,
+				       t1.market_second_type,
+				       t1.is_in_group,
+				       t1.f_nestification_type,
+				       t1.business_num,
+				       t1.lowest_consumption,
+				       t1.first_account,
+				       t1.monthly_release,
+				       t1.agreement_time,
+				       t1.first_top,
+				       t1.ticket_flag,
+				       t1.channal_data,
+				       t1.sweet_prompt,
+				       t1.IS_NEED_CASHBOOKS,
+				       t2.MARKET_FIRST_NAME,
+	
+				       	t1.DT_BRAND_ID,
+						t1.DT_CONFIRM_EXTRA_MSG,
+						t1.DT_SP_CODE,
+						t1.DT_SEND_SUCC_MSG_ENABLE,
+						t1.DT_SUCC_MSG,
+						t1.DT_IS_RECOMMEND,
+						t1.DT_MUTEX_ENABLE,
+						t1.DT_MUTEX_BUSI,
+						t1.DT_UNALLOW_BUSI,
+						t1.DT_BEFORE_EFFECT_MSG,
+						t1.DT_EXPIRE_MSG,
+						t1.CMD_ENABLE_FLAG,
+						t1.CMD_COTENT,
+						t1.BUSI_MARKET_SMS,
+						t1.DT_CONFIGURE_MONEY,
+						t1.DT_IS_IN_GROUP,
+						t1.WT_IS_IN_GROUP
+				  from jsmss_market_second t1
+				  left join jsmss_market_first t2
+				  on t1.market_first_pkid = t2.market_first_pkid
+				  where 1=1
+		 and market_second_pkid = #{marketSecondPkid}
+	</select>
+	
+	<update id="deleteMarketSecondBeanByPkid" parameterType="com.xwtech.uomp.base.pojo.market.MarketSecondBean">
+		update jsmss_market_second set state=#{state} where  market_second_pkid = #{marketSecondPkid}
+	</update>
+	
+	<update id="updateMarketSecondForVerify" parameterType="com.xwtech.uomp.base.pojo.market.MarketSecondBean">
+		update jsmss_market_second 
+		<set>
+		<if test="verifyState != null">
+		verify_state=#{verifyState},
+		</if>
+		<if test="proVerifyState != null">
+		pro_verify_state=#{proVerifyState} ,
+		</if>
+		<if test="localVerifyState != null">
+		local_verify_state = #{localVerifyState},
+		</if>
+		<if test="dtProVerifyState != null">
+		dt_pro_verify_state = #{dtProVerifyState},
+		</if>
+		<if test="dtLocalVerifyState != null">
+		dt_local_verify_state = #{dtLocalVerifyState},
+		</if>
+		<if test="wtProVerifyState != null">
+		wt_pro_verify_state = #{wtProVerifyState},
+		</if>
+		<if test="wtLocalVerifyState != null">
+		wt_local_verify_state = #{wtLocalVerifyState},
+		</if>
+		<if test="dtVerifyState != null">
+		dt_verify_state = #{dtVerifyState},
+		</if>
+		<if test="wtVerifyState != null">
+		wt_verify_state = #{wtVerifyState}
+		</if>
+		</set>
+		where  
+		market_second_pkid = #{marketSecondPkid}
+	</update>
+	
+	<update id="updateTestState">
+	 	update JSMSS_MARKET_SECOND
+	 	<set>
+	 		<if test="testOnlineState != null">
+		 		test_online_state = #{testOnlineState},
+	 		</if>
+	 		<if test="dtTestOnlineState != null">
+	 			dt_test_online_state = #{dtTestOnlineState},
+	 		</if>
+	 		<if test="wtTestOnlineState != null">
+	 			wt_test_online_state = #{wtTestOnlineState},
+	 		</if>
+	 		<if test="dtVerifyState != null">
+	 			dt_verify_state = #{dtVerifyState},
+	 		</if>
+	 		<if test="wtVerifyState != null">
+	 			wt_verify_state = #{wtVerifyState},
+	 		</if>
+	 		<if test="verifyState != null">
+	 			verify_state = #{verifyState},
+	 		</if>
+	 	</set>
+	 	where MARKET_SECOND_PKID = #{marketSecondPkid}
+ </update>
+ 
+ 	<!-- 更新二级营销案列表展示状态 -->
+	<update id="updateIsViewListState">
+		UPDATE jsmss_market_second
+		<set>
+			<if test="isListView != null">
+				IS_LIST_VIEW = #{isListView},
+			</if>
+			<if test="wtIsListView != null">
+				WT_IS_LIST_VIEW = #{wtIsListView}
+			</if>
+		</set>
+		WHERE MARKET_SECOND_PKID = #{marketSecondPkid}
+	</update>
+	<select id="queryViewNameOrderByWTMarketOrder" resultMap="marketSecondBean" parameterType="java.lang.String">
+	SELECT S.MARKET_SECOND_PKID,S.VIEW_NAME,S.WT_MARKET_ORDER  FROM  jsmss_market_second S 
+	WHERE S.MARKET_FIRST_PKID=#{marketFirstPKID} 
+	AND STATE = '1'   
+    AND to_char(sysdate,'YYYY-MM-DD') between substr(BEGIN_TIME,0,10) and substr(END_TIME,0,10)
+	ORDER BY S.WT_MARKET_ORDER
+	</select>
+	<select id="queryViewNameOrderByZTMarketOrder" resultMap="marketSecondBean" parameterType="java.lang.String">
+	SELECT S.MARKET_SECOND_PKID,S.VIEW_NAME,S.ZT_MARKET_ORDER  FROM  jsmss_market_second S 
+	WHERE S.MARKET_FIRST_PKID=#{marketFirstPKID} 
+	AND STATE = '1'   
+    AND to_char(sysdate,'YYYY-MM-DD') between substr(BEGIN_TIME,0,10) and substr(END_TIME,0,10)
+	ORDER BY S.ZT_MARKET_ORDER
+	</select>
+	
+</mapper>

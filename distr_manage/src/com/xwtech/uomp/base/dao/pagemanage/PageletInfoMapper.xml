@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.pagemanage.PageletInfoMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.pagemanage.PageletInfo" id="pageletInfo">
+        <result property="pageletNum" column="F_PAGELET_NUM"/>
+        <result property="pageletName" column="F_PAGELET_NAME"/>
+        <result property="version" column="F_VERSION"/>
+        <result property="vmTemplate" column="F_VM_TEMPLATE"/>
+        <result property="step" column="F_STEP"/>
+        <result property="desc" column="F_DESC"/>
+    </resultMap>
+
+    <!-- 查询信息 -->
+    <select id="pagingQueryPageletInfoList" resultMap="pageletInfo" parameterType="java.util.Map">
+        SELECT *
+        FROM (SELECT ROWNUM ROW_NUM, A.*
+        FROM (SELECT F_PAGELET_NUM,
+        F_PAGELET_NAME,
+        F_VERSION,
+        F_VM_TEMPLATE,
+        F_STEP,
+        F_DESC
+        FROM T_PAGELET_INFO
+        WHERE 1 = 1
+        <if test="pageletNum != null">
+            AND F_PAGELET_NUM = #{pageletNum}
+        </if>
+        ORDER BY F_PAGELET_NUM,F_VERSION) A)
+        WHERE ROW_NUM &gt;#{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+
+    <select id="countPageletInfoList" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT COUNT(*)
+        FROM T_PAGELET_INFO
+        WHERE 1 = 1
+        <if test="pageletNum != null">
+            AND F_PAGELET_NUM = #{pageletNum}
+        </if>
+    </select>
+
+    <!-- 根据id查询信息 -->
+    <select id="findOnePageletInfo" resultMap="pageletInfo" parameterType="java.util.Map">
+        SELECT F_PAGELET_NUM,
+        F_PAGELET_NAME,
+        F_VERSION,
+        F_VM_TEMPLATE,
+        F_STEP,
+        F_DESC
+        FROM T_PAGELET_INFO
+         WHERE F_PAGELET_NUM = #{pageletNum}
+               AND F_VERSION = #{version}
+         ORDER BY F_VERSION
+    </select>
+
+    <!-- 添加信息 -->
+    <insert id="savePageletInfo" parameterType="com.xwtech.uomp.base.pojo.pagemanage.PageletInfo">
+        INSERT INTO T_PAGELET_INFO
+          (F_PAGELET_NUM,F_PAGELET_NAME,F_VERSION,F_VM_TEMPLATE,F_STEP,F_DESC)
+        VALUES
+          (#{pageletNum}, #{pageletName}, #{version}, #{vmTemplate}, #{step}, #{desc})
+    </insert>
+
+    <!-- 修改信息 -->
+    <update id="updatePageletInfo" parameterType="com.xwtech.uomp.base.pojo.pagemanage.PageletInfo">
+        UPDATE T_PAGELET_INFO
+           SET F_PAGELET_NAME    = #{pageletName},
+               F_VM_TEMPLATE    = #{vmTemplate},
+               F_STEP   = #{step},
+               F_DESC   = #{desc}
+         WHERE F_PAGELET_NUM = #{pageletNum} AND F_VERSION = #{version}
+    </update>
+
+    <!-- 删除信息 -->
+    <delete id="deletePageletInfo" parameterType="java.util.Map">
+      DELETE FROM T_PAGELET_INFO WHERE F_PAGELET_NUM = #{pageletNum} AND F_VERSION= #{version}
+    </delete>
+</mapper>

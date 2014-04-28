@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.order.MarketOrderMapper" >
+    <resultMap id="marketOrderResultMap" type="com.xwtech.uomp.base.pojo.order.MarketOrderBean" >
+    <id column="MARKET_ORDER_ID" property="marketOrderId" jdbcType="DECIMAL" />
+    <result column="MARKET_FIRST_PKID" property="marketFirstPkid" jdbcType="DECIMAL" />
+    <result column="MARKET_SECOND_PKID" property="marketSecondPkid" jdbcType="DECIMAL" />
+    <result column="BRAND_ID" property="brandId" jdbcType="DECIMAL" />
+    <result column="TEL_NUM" property="telNum" jdbcType="DECIMAL" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="CHAR" />
+    <result column="COMPLETE_TIME" property="completeTime" jdbcType="CHAR" />
+    <result column="PAY_TYPE" property="payType" jdbcType="VARCHAR" />
+    <result column="CITY" property="city" jdbcType="DECIMAL" />
+    <result column="CITY_NAME" property="cityName" jdbcType="VARCHAR" />
+    <result column="SESSIONID" property="sessionid" jdbcType="VARCHAR" />
+    <result column="CHANNEL_TYPE" property="channelType" jdbcType="CHAR" />
+    <result column="CURR_STATE" property="currState" jdbcType="CHAR" />
+    <result column="MARKET_FIRST_NAME" property="marketFirstName" jdbcType="VARCHAR" />
+    <result column="MARKET_SECOND_NAME" property="marketSecondName" jdbcType="VARCHAR" />
+    <result column="PAY_STATUS" property="payStatus" jdbcType="VARCHAR" />
+    <result column="PAY_VAL" property="payVal" jdbcType="VARCHAR" />
+    <result column="PAY_NAME" property="payName" jdbcType="VARCHAR" />
+  </resultMap>
+    <resultMap id="orderCountResultMap" type="java.util.Map" >
+    <result column="MARKET_FIRST_PKID" property="marketFirstPkid" jdbcType="VARCHAR" />
+    <result column="MARKET_SECOND_PKID" property="marketSecondPkid" jdbcType="VARCHAR" />
+    <result column="CITY" property="city" jdbcType="VARCHAR" />
+    <result column="VAL" property="val" jdbcType="VARCHAR" />
+    <result column="COUNT" property="count" jdbcType="VARCHAR" />
+    <result column="SUCCESS" property="success" jdbcType="VARCHAR" />
+    <result column="FAIL" property="fail" jdbcType="VARCHAR" />
+    <result column="MARKET_SECOND_NAME" property="marketSecondName" jdbcType="VARCHAR" />
+    <result column="BEGIN_TIME" property="beginTime" jdbcType="VARCHAR" />
+    <result column="END_TIME" property="endTime" jdbcType="VARCHAR" />
+    <result column="CHANNAL_DATA" property="channalData" jdbcType="VARCHAR" />
+    <result column="MARKET_FIRST_NAME" property="marketFirstName" jdbcType="VARCHAR" />
+    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+  </resultMap>
+  <!-- 营销案订单统计 -->
+  <select id="queryMarketOrderCountList" resultMap="orderCountResultMap"   parameterType="java.util.Map">
+   select * from(
+		select rownum row_num, a.*
+		  from (
+		     	SELECT * FROM ( SELECT JOP.MARKET_SECOND_PKID,
+         	 	SUM(CASE JOP.PAY_STATUS WHEN '1' THEN JOP.PAY_VAL ELSE 0  END)AS VAL,
+        	  	COUNT(*) AS COUNT,
+        		SUM(CASE JOP.PAY_STATUS WHEN '1' THEN '1' ELSE '0'  END) AS SUCCESS,
+         	   	SUM(CASE JOP.PAY_STATUS WHEN '1' THEN '0' ELSE '1'  END) AS FAIL,
+        	   (SELECT F_AREA_NAME FROM T_AREA_DA WHERE F_BOSS_CODE=(SELECT CITY FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  )) CITY,
+        	   (SELECT CITY FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) AS CITY_CODE,
+         	   (SELECT MARKET_SECOND_NAME FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) AS MARKET_SECOND_NAME,
+               (SELECT BEGIN_TIME FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) AS BEGIN_TIME,
+               (SELECT END_TIME FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) AS END_TIME,
+               (SELECT CHANNAL_DATA FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) AS CHANNAL_DATA,
+               (SELECT MARKET_FIRST_PKID FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) AS MARKET_FIRST_PKID,
+               (SELECT MARKET_FIRST_NAME FROM JSMSS_MARKET_FIRST WHERE(SELECT MARKET_FIRST_PKID FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) =MARKET_FIRST_PKID) AS MARKET_FIRST_NAME,
+               (SELECT TYPE FROM JSMSS_MARKET_FIRST WHERE(SELECT MARKET_FIRST_PKID FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) =MARKET_FIRST_PKID) AS TYPE
+               FROM JSMSS_ORDER_PAY JOP  
+               GROUP BY JOP.MARKET_SECOND_PKID) RE WHERE 1=1 and RE.MARKET_FIRST_PKID is not null
+			  <if test="city !=null">
+			   AND RE.CITY_CODE=#{city}
+			  </if>
+			  <if test="type !=null">
+			   AND RE.TYPE=#{type}
+			  </if>
+			   <if test="marketFirstPkid !=null">
+			   AND RE.MARKET_FIRST_PKID=#{marketFirstPkid}
+			  </if>
+			  <if test="marketSecondPkid !=null">
+			   AND RE.MARKET_SECOND_PKID=#{marketSecondPkid}
+			  </if>
+			  <if test="marketSecondName !=null">
+			   AND RE.MARKET_SECOND_NAME like #{marketSecondName}||'%'
+			  </if>
+		  <if test="beginTime != null">
+			AND to_date(RE.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt; to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="endTime != null">
+			AND to_date(RE.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+            <if test="channalData !=null">
+		    AND RE.CHANNAL_DATA IN
+		     <foreach collection="channalData" item="item2" open="(" separator="," close=")" index="index">
+            	#{item2}
+     		  </foreach>
+     		   </if>
+		  
+		   ) a  ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+  <select id="queryMarketOrderCountListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+     SELECT COUNT(*) FROM
+     ( SELECT  
+     			JOP. MARKET_SECOND_PKID,
+     			(SELECT CITY FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) AS CITY_CODE,
+               (SELECT BEGIN_TIME FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) AS BEGIN_TIME,
+               (SELECT END_TIME FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) AS END_TIME,
+               (SELECT CHANNAL_DATA FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) AS CHANNAL_DATA,
+               (SELECT MARKET_FIRST_PKID FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) AS MARKET_FIRST_PKID,
+               (SELECT TYPE FROM JSMSS_MARKET_FIRST WHERE(SELECT MARKET_FIRST_PKID FROM JSMSS_MARKET_SECOND WHERE MARKET_SECOND_PKID=JOP.MARKET_SECOND_PKID  ) =MARKET_FIRST_PKID) AS TYPE
+              
+       FROM JSMSS_ORDER_PAY JOP  
+               GROUP BY JOP.MARKET_SECOND_PKID) RE
+               WHERE 1=1 
+			  <if test="city !=null">
+			   AND RE.CITY_CODE=#{city}
+			  </if>
+			  <if test="type !=null">
+			   AND RE.TYPE=#{type}
+			  </if>
+			   <if test="marketFirstPkid !=null">
+			   AND RE.MARKET_FIRST_PKID=#{marketFirstPkid}
+			  </if>
+			  <if test="marketSecondPkid !=null">
+			   AND RE.MARKET_SECOND_PKID=#{marketSecondPkid}
+			  </if>
+			  <if test="marketSecondName !=null">
+			   AND RE.MARKET_SECOND_NAME like #{marketSecondName}||'%'
+			  </if>
+		  <if test="beginTime != null">
+			AND to_date(RE.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt; to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="endTime != null">
+			AND to_date(RE.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+            <if test="channalData !=null">
+		    AND RE.CHANNAL_DATA IN
+		     <foreach collection="channalData" item="item2" open="(" separator="," close=")" index="index">
+            	#{item2}
+     		  </foreach>
+     		   </if>
+  </select>
+<!-- 营销案订单查询 -->
+<select id="queryMarketOrderList" resultMap="marketOrderResultMap"  parameterType="java.util.Map">
+ select * from(
+		select rownum row_num, a.*
+		  from ( 
+		    select 
+			JMO.MARKET_ORDER_ID, JMO.MARKET_FIRST_PKID,
+			JMF.MARKET_FIRST_NAME,
+			JMO.MARKET_SECOND_PKID, JMS.MARKET_SECOND_NAME,
+			(SELECT F_BRAND_NAME FROM t_brand_da WHERE F_BOSS_CODE=JMO.BRAND_ID) AS BRAND_ID,
+			JBS.BRAND_NAME,
+			 JMO.TEL_NUM,
+			 JMO.CREATE_TIME, JMO.COMPLETE_TIME, 
+			 JMO.PAY_TYPE, 
+			 JOP.PAY_STATUS,
+ 			 JOP.PAY_VAL,
+ 			 JMO.CITY,
+			 (SELECT PAY_NAME FROM JSMSS_PAYTABLE WHERE PAY_ID=JMO.PAY_TYPE) AS PAY_NAME,
+			 ( select F_AREA_NAME from T_AREA_da WHERE JMO.CITY=F_BOSS_CODE ) AS CITY_NAME,
+			 JMO.SESSIONID, JMO.CHANNEL_TYPE, 
+			 JMO.CURR_STATE  FROM JSMSS_MARKET_ORDER JMO 
+			 LEFT JOIN JSMSS_ORDER_PAY JOP ON JOP.ORDER_ID=JMO.MARKET_ORDER_ID
+			  <if test="PayStatus != null">
+              AND JOP.PAY_STATUS IN 
+             <foreach collection="PayStatus" item="item3" open="(" separator="," close=")" index="index">
+            	#{item3}
+             </foreach>
+        	</if>
+			  JOIN JSMSS_BRAND_SORT JBS ON JMO.BRAND_ID=JBS.BOSS_CODE 
+			 <if test="brandId !=null">
+			 AND JBS.PARENT_ID IN
+			  <foreach collection="brandId" item="item1" open="(" separator="," close=")" index="index">
+            	#{item1}
+             </foreach>
+             </if>
+			 JOIN  JSMSS_MARKET_FIRST JMF ON JMO.MARKET_FIRST_PKID=JMF.MARKET_FIRST_PKID 
+			 <if test="type != null">
+            AND JMF.TYPE=#{type}
+        	</if>
+        	<if test="marketFirstName!=null">
+        	AND JMF.MARKET_FIRST_NAME  like #{marketFirstName}||'%'
+        	</if>
+			 JOIN JSMSS_MARKET_SECOND JMS ON JMO.MARKET_SECOND_PKID=JMS.MARKET_SECOND_PKID
+			 <if test="marketSecondName!=null">
+        	AND JMS.MARKET_SECOND_NAME  like #{marketSecondName}||'%'
+        	</if>
+        	<if test="beginTime != null">
+			AND to_date(JMS.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt; to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="endTime != null">
+			AND to_date(JMS.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+		      <if test="channelType !=null">
+		    AND JMO.CHANNEL_TYPE IN
+		     <foreach collection="channelType" item="item2" open="(" separator="," close=")" index="index">
+            	#{item2}
+     		  </foreach>
+     		   </if>
+		    <if test="city!=null">
+		    AND JMO.CITY=#{city}
+		    </if>
+		    <if test="telNum!=null">
+		    AND  JMO.TEL_NUM=#{telNum}
+		    </if>
+	
+		    <if test="payType !=null">
+		    AND  JMO.PAY_TYPE  IN
+		    <foreach collection="payType" item="item4" open="(" separator="," close=")" index="index">
+            	#{item4}
+     		</foreach>
+		    </if>
+		  order by JMO.MARKET_ORDER_ID ) a  ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+</select>
+
+<select id="queryMarketOrderListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+     SELECT COUNT(*)
+     FROM JSMSS_MARKET_ORDER JMO 
+     		LEFT JOIN JSMSS_ORDER_PAY JOP ON JOP.ORDER_ID=JMO.MARKET_ORDER_ID
+			  <if test="PayStatus != null">
+              AND JOP.PAY_STATUS IN 
+             <foreach collection="PayStatus" item="item3" open="(" separator="," close=")" index="index">
+            	#{item3}
+             </foreach>
+        	</if>
+			  JOIN JSMSS_BRAND_SORT JBS ON JMO.BRAND_ID=JBS.BOSS_CODE 
+			 <if test="brandId !=null">
+			 AND JBS.PARENT_ID IN
+			  <foreach collection="brandId" item="item1" open="(" separator="," close=")" index="index">
+            	#{item1}
+             </foreach>
+             </if>
+			 JOIN  JSMSS_MARKET_FIRST JMF ON JMO.MARKET_FIRST_PKID=JMF.MARKET_FIRST_PKID 
+			 <if test="type != null">
+            AND JMF.TYPE=#{type}
+        	</if>
+        	<if test="marketFirstName!=null">
+        	AND JMF.MARKET_FIRST_NAME like #{marketFirstName}||'%'
+        	</if>
+			 JOIN JSMSS_MARKET_SECOND JMS ON JMO.MARKET_SECOND_PKID=JMS.MARKET_SECOND_PKID
+			 <if test="marketSecondName!=null">
+        	AND JMS.MARKET_SECOND_NAME like #{marketSecondName}||'%'
+        	</if>
+        	<if test="beginTime != null">
+			AND to_date(JMS.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt; to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="endTime != null">
+			AND to_date(JMS.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;= to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+		      <if test="channelType !=null">
+		    AND JMO.CHANNEL_TYPE IN
+		     <foreach collection="channelType" item="item2" open="(" separator="," close=")" index="index">
+            	#{item2}
+     		  </foreach>
+     		   </if>
+		    <if test="city!=null">
+		    AND JMO.CITY=#{city}
+		    </if>
+		    <if test="telNum!=null">
+		    AND  JMO.TEL_NUM=#{telNum}
+		    </if>
+	
+		    <if test="payType !=null">
+		    AND  JMO.PAY_TYPE  IN
+		    <foreach collection="payType" item="item4" open="(" separator="," close=")" index="index">
+            	#{item4}
+     		</foreach>
+		    </if>
+</select>
+  <select id="queryMarketOrderSuccess" resultMap="marketOrderResultMap"  >
+    select * from JSMSS_MARKET_ORDER j where j.CURR_STATE =1 
+    and substr(j.CREATE_TIME,1,8) between to_char(sysdate-1, 'yyyymmdd')and to_char(sysdate, 'yyyymmdd')		
+ </select>
+   <select id="queryMarketOrder" resultMap="marketOrderResultMap"  >
+    select * from JSMSS_MARKET_ORDER j where j.CURR_STATE !=1 
+    and substr(j.CREATE_TIME,1,8) between to_char(sysdate-1, 'yyyymmdd')and to_char(sysdate, 'yyyymmdd')		
+ </select>
+  <select id="queryMarketAllOrder" resultMap="marketOrderResultMap"  >
+    select * from JSMSS_MARKET_ORDER j where j.CURR_STATE !=1 
+    	
+ </select>
+</mapper>

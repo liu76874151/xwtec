@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.business.BusiShortAddressMapper" >
+
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.business.BusiShortAddressBean" >
+    <id column="F_SHORT_ID" property="shortId" jdbcType="VARCHAR" />
+    <result column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="F_SHORT_BUSI" property="shortBusi" jdbcType="VARCHAR" />
+    <result column="F_SHORT_CHANNEL" property="shortChannel" jdbcType="VARCHAR" />
+    <result column="F_STATE" property="state" jdbcType="CHAR" />
+    <result column="F_START_TIME" property="startTime" jdbcType="VARCHAR" />
+    <result column="F_END_TIME" property="endTime" jdbcType="VARCHAR" />
+    <result column="F_CREATER" property="creater" jdbcType="VARCHAR" />
+    <result column="F_CREATE_TIME" property="createTime" jdbcType="VARCHAR" />
+    <result column="F_UPDATER" property="updater" jdbcType="VARCHAR" />
+    <result column="F_UPDATE_TIME" property="updateTime" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="BusiShortChannelResultMap" type="com.xwtech.uomp.base.pojo.business.BusiShortChannelBean" >
+    <id column="F_SHORT_CHANNEL" property="shortChannel" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NAME" property="channelName" jdbcType="VARCHAR" />
+    <result column="F_BZ" property="bz" jdbcType="VARCHAR" />
+  </resultMap>
+   <sql id="Base_Column_List" >
+    F_SHORT_ID, F_BUSI_NUM, F_CHANNEL_NUM, F_SHORT_BUSI, F_SHORT_CHANNEL, F_STATE, F_START_TIME, 
+    F_END_TIME, F_CREATER, F_CREATE_TIME, F_UPDATER, F_UPDATE_TIME
+  </sql>
+  
+   <select id="queryBusiShortChannel" resultMap="BusiShortChannelResultMap" parameterType="java.util.Map" >
+      	select * from(
+		select rownum row_num, a.*
+		  from (
+				    select *
+				    from T_BUSI_SHORT_CHANNEL
+      	 	) a
+		        ) 
+		        WHERE ROW_NUM &gt; #{start}
+		        AND ROW_NUM &lt;= #{end}
+  </select>
+  <select id="queryBusiShortAdd" resultMap="BaseResultMap" parameterType="java.util.Map" >
+      	select * from(
+		select rownum row_num, a.*
+		  from (
+				    select 
+				 <include refid="Base_Column_List" />
+				    from T_BUSI_SHORT_ADDRESS
+				    WHERE 1 = 1
+				        <if test="shortBusi != null" >
+				         and F_SHORT_BUSI = #{shortBusi,jdbcType=VARCHAR}
+				      </if>
+				         <if test="channelName != null" >
+				      and F_POSITION_NAME = #{channelName,jdbcType=VARCHAR}
+				      </if>
+				     <if test="channelNum != null" >
+				      and F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+				      </if>
+				      <if test="state != null" >
+				      and F_STATE = #{state,jdbcType=VARCHAR}
+				      </if>
+				      order by F_SHORT_ID
+				      
+      	 	) a
+		        ) 
+		        WHERE ROW_NUM &gt; #{start}
+		        AND ROW_NUM &lt;= #{end}
+  </select>
+  				
+  <select id="queryBusiShortAddcount" resultType="java.lang.Integer" parameterType="java.util.Map">
+      				select 
+					 COUNT(*)
+				    from T_BUSI_SHORT_ADDRESS
+				    WHERE 1 = 1
+				        <if test="shortBusi != null" >
+				         and F_SHORT_BUSI = #{shortBusi,jdbcType=VARCHAR}
+				      </if>
+				         <if test="channelName != null" >
+				      and F_POSITION_NAME = #{channelName,jdbcType=VARCHAR}
+				      </if>
+				     <if test="channelNum != null" >
+				      and F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR}
+				      </if>
+				      <if test="state != null" >
+				      and F_STATE = #{state,jdbcType=VARCHAR}
+				      </if>
+  </select>
+  
+  <insert id="saveBusiShortAdd" parameterType="com.xwtech.uomp.base.pojo.business.BusiShortAddressBean" >
+    insert into T_BUSI_SHORT_ADDRESS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="shortId != null" >
+        F_SHORT_ID,
+      </if>
+      <if test="busiNum != null" >
+        F_BUSI_NUM,
+      </if>
+      <if test="channelNum != null" >
+        F_CHANNEL_NUM,
+      </if>
+      <if test="shortBusi != null" >
+        F_SHORT_BUSI,
+      </if>
+      <if test="shortChannel != null" >
+        F_SHORT_CHANNEL,
+      </if>
+      <if test="state != null" >
+        F_STATE,
+      </if>
+      <if test="startTime != null" >
+        F_START_TIME,
+      </if>
+      <if test="endTime != null" >
+        F_END_TIME,
+      </if>
+      <if test="creater != null" >
+        F_CREATER,
+      </if>
+    
+        F_CREATE_TIME,
+    
+      <if test="updater != null" >
+        F_UPDATER,
+      </if>
+        F_UPDATE_TIME
+   
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="shortId != null" >
+        #{shortId},
+      </if>
+      <if test="busiNum != null" >
+        #{busiNum,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNum != null" >
+        #{channelNum,jdbcType=VARCHAR},
+      </if>
+      <if test="shortBusi != null" >
+        #{shortBusi,jdbcType=VARCHAR},
+      </if>
+      <if test="shortChannel != null" >
+        #{shortChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=CHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creater != null" >
+        #{creater,jdbcType=VARCHAR},
+      </if>
+      SYSDATE,
+      <if test="updater != null" >
+        #{updater,jdbcType=VARCHAR},
+      </if>
+       SYSDATE
+      
+    </trim>
+  </insert>
+  <select id="findOnebusiShortAdd" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select * from T_BUSI_SHORT_ADDRESS where  f_short_id=#{shortId}
+  </select>
+  
+  <update id="updateBusiShortAdd" parameterType="com.xwtech.uomp.base.pojo.business.BusiShortAddressBean" >
+    update T_BUSI_SHORT_ADDRESS
+    <set >
+      <if test="busiNum != null" >
+        F_BUSI_NUM = #{busiNum,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNum != null" >
+        F_CHANNEL_NUM = #{channelNum,jdbcType=VARCHAR},
+      </if>
+      <if test="shortBusi != null" >
+        F_SHORT_BUSI = #{shortBusi,jdbcType=VARCHAR},
+      </if>
+      <if test="shortChannel != null" >
+        F_SHORT_CHANNEL = #{shortChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        F_STATE = #{state,jdbcType=CHAR},
+      </if>
+      <if test="startTime != null" >
+        F_START_TIME = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        F_END_TIME = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updater != null" >
+        F_UPDATER = #{updater,jdbcType=VARCHAR},
+      </if>
+        F_UPDATE_TIME = SYSDATE
+    </set>
+    where F_SHORT_ID = #{shortId}
+  </update>
+  <update id="updateBusiShortAddState" parameterType="java.util.Map">
+    update T_BUSI_SHORT_ADDRESS
+     <set>
+  		<if test="state != null" >
+        F_STATE = #{state,jdbcType=CHAR},
+      </if>
+       </set>
+  where F_SHORT_ID = #{shortId}
+  </update>
+  <delete id="deleteBusiShortAdd"  parameterType="java.lang.String">
+   delete from T_BUSI_SHORT_ADDRESS
+    where F_SHORT_ID = #{shortId}
+  </delete>
+  
+</mapper>

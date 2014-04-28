@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.automated.LoginMapper">
+
+    <resultMap type="com.xwtech.uomp.base.pojo.admin.UserInfoBean" id="userInfoBean">
+        <result property="loginName" column="F_LOGIN_NAME"/>
+        <result property="loginPwd" column="F_LOGIN_PWD"/>
+        <result property="userName" column="F_USER_NAME"/>
+        <result property="userGroup" column="F_USER_GROUP"/>
+        <result property="userState" column="F_USER_STATE"/>
+        <result property="userArea" column="F_USER_AREA"/>
+        <result property="phone" column="F_PHONE"/>
+        <result property="bz" column="F_BZ"/>
+        <result property="userAreaCode" column="F_USER_AREA_CODE"/>
+        <result property="channelNum" column="F_CHANNEL_NUM"/>
+    </resultMap>
+
+    <resultMap type="com.xwtech.uomp.base.pojo.admin.FunInfoBean" id="funInfo">
+        <result property="subSysName" column="F_SUBSYS_NUM"/>
+        <result property="funcId" column="F_FUNC_ID"/>
+        <result property="funcName" column="F_FUNC_NAME"/>
+        <result property="bz" column="F_BZ"/>
+        <result property="funcType" column="F_FUNC_TYPE"/>
+        <result property="funcURI" column="F_FUNC_URI"/>
+        <result property="jbNum" column="F_JB_NUM"/>
+        <result property="jb" column="F_JB"/>
+        <result property="mj" column="F_MJ"/>
+    </resultMap>
+
+    <resultMap type="java.util.Map" id="treeMap">
+        <result property="id" column="F_JB_NUM"/>
+        <result property="text" column="F_FUNC_NAME"/>
+        <result property="pid" column="PID"/>
+        <result property="mj" column="F_MJ"/>
+        <result property="url" column="F_FUNC_URI"/>
+        <result property="subNum" column="F_SUBSYS_NUM"/>
+    </resultMap>
+
+    <resultMap type="com.xwtech.uomp.base.pojo.RequestHandleUrlBean" id="urlBean">
+        <result property="sysNum" column="F_SUBSYS_NUM"/>
+        <result property="handleUrl" column="F_FUNC_URI"/>
+    </resultMap>
+
+    <select id="checkUserInfo" resultMap="userInfoBean" parameterType="java.lang.String">
+		 SELECT F_LOGIN_NAME,F_LOGIN_PWD,F_USER_NAME,F_USER_GROUP,F_USER_STATE,F_PHONE,F_BZ,F_USER_AREA,F_USER_AREA_CODE,F_CHANNEL_NUM FROM T_USER  WHERE F_LOGIN_NAME = #{loginName}
+    </select>
+
+    <select id="findCompletePer" resultType="java.lang.Integer"
+            parameterType="com.xwtech.uomp.base.pojo.RequestHandleUrlBean">
+        SELECT COUNT(*) M_COUNT FROM T_PRM_FUNC A,(
+        SELECT DISTINCT F_JB_NUM, A.F_SUBSYS_NUM FROM T_PRM_FUNC A JOIN (
+        SELECT A.F_FUNC_ID, A.F_SUBSYS_NUM FROM T_FUNC_QX A JOIN(
+        SELECT MAX(F_USER) F_USER, F_FUNC_ID, F_USER_TYPE, F_SUBSYS_NUM
+        FROM T_FUNC_QX WHERE F_USER_TYPE = 0 AND F_USER IN(
+        SELECT F_GROUP_ID FROM T_USER_GROUP A WHERE EXISTS(
+        SELECT * FROM T_USER_GROUP WHERE F_GROUP_ID IN(
+        SELECT F_USER_GROUP FROM T_USER WHERE F_LOGIN_NAME = #{loginName}
+        )AND((SUBSTR(A.F_JB_NUM, 1, 2*A.F_JB) = SUBSTR(F_JB_NUM, 1, 2*A.F_JB) AND F_JB > A.F_JB) OR (A.F_JB_NUM =
+        F_JB_NUM))
+        )
+        ) GROUP BY F_FUNC_ID, F_USER_TYPE, F_SUBSYS_NUM
+        ) B ON (A.F_USER = B.F_USER AND A.F_USER_TYPE = B.F_USER_TYPE AND A.F_FUNC_ID = B.F_FUNC_ID
+        AND A.F_SUBSYS_NUM = B.F_SUBSYS_NUM)
+        WHERE A.F_OPT_TYPE = 0
+        UNION
+        SELECT F_FUNC_ID, F_SUBSYS_NUM FROM T_FUNC_QX WHERE F_USER_TYPE = 1 AND F_USER = #{loginName}
+        AND F_OPT_TYPE = 1
+        MINUS
+        SELECT F_FUNC_ID, F_SUBSYS_NUM FROM T_FUNC_QX WHERE F_USER_TYPE = 1 AND F_USER = #{loginName}
+        AND F_OPT_TYPE = 2
+        ) B ON A.F_FUNC_ID = B.F_FUNC_ID AND A.F_SUBSYS_NUM = B.F_SUBSYS_NUM
+        ) B WHERE A.F_SUBSYS_NUM = B.F_SUBSYS_NUM AND A.F_JB_NUM = B.F_JB_NUM
+        AND A.F_FUNC_URI = #{handleUrl}
+        <!--     AND A.F_SUBSYS_NUM = #{sysNum}  -->
+    </select>
+
+    <select id="existsFuncInfo" resultMap="funInfo" parameterType="com.xwtech.uomp.base.pojo.RequestHandleUrlBean">
+
+        SELECT F_SUBSYS_NUM, F_FUNC_ID, F_FUNC_NAME, F_FUNC_TYPE, F_FUNC_URI, F_JB_NUM, F_JB, F_MJ, F_BZ FROM T_PRM_FUNC
+        TA WHERE TA.F_FUNC_URI = #{handleUrl}
+        <!-- TA.F_SUBSYS_NUM = #{sysNum} AND  -->
+    </select>
+
+    <select id="getFunInfo" resultMap="treeMap" parameterType="java.util.Map">
+		SELECT DISTINCT A.F_FUNC_NAME,A.F_SUBSYS_NUM,
+       DECODE(A.F_FUNC_URI,NULL,NULL,C.F_SUBSYS_URI || A.F_FUNC_URI) F_FUNC_URI,
+       CASE LENGTH(A.F_JB_NUM)WHEN 2 THEN '-1' ELSE SUBSTR(A.F_JB_NUM, 0, 2 * (A.F_JB - 1)) END PID,
+       A.F_JB_NUM,A.F_MJ
+       FROM T_PRM_FUNC A,
+             (SELECT DISTINCT A.F_SUBSYS_NUM, F_JB_NUM FROM T_PRM_FUNC A
+                JOIN (SELECT A.F_FUNC_ID, A.F_SUBSYS_NUM FROM T_FUNC_QX A
+                     JOIN (SELECT MAX(F_USER) F_USER,F_FUNC_ID,F_USER_TYPE,F_SUBSYS_NUM FROM T_FUNC_QX
+                           WHERE F_USER_TYPE = 0 AND F_USER IN
+                             (SELECT F_GROUP_ID FROM T_USER_GROUP A  WHERE EXISTS
+                               (SELECT *FROM T_USER_GROUP WHERE F_GROUP_ID IN
+                                   (SELECT F_USER_GROUP FROM T_USER WHERE F_LOGIN_NAME = #{loginName})
+                                    AND ((SUBSTR(A.F_JB_NUM,1,2 * A.F_JB) = SUBSTR(F_JB_NUM, 1, 2 * A.F_JB) AND F_JB > A.F_JB) OR (A.F_JB_NUM = F_JB_NUM))
+                                  )
+                                )
+                       GROUP BY F_FUNC_ID,F_USER_TYPE,F_SUBSYS_NUM) B 
+                       ON (A.F_USER = B.F_USER AND A.F_USER_TYPE =B.F_USER_TYPE AND
+                        A.F_FUNC_ID =B.F_FUNC_ID AND A.F_SUBSYS_NUM =B.F_SUBSYS_NUM)
+                  WHERE A.F_OPT_TYPE = 0
+               UNION
+                  SELECT F_FUNC_ID, F_SUBSYS_NUM FROM T_FUNC_QX WHERE F_USER_TYPE = 1 AND F_USER = #{loginName} AND F_OPT_TYPE = 1
+               MINUS SELECT F_FUNC_ID, F_SUBSYS_NUM FROM T_FUNC_QX WHERE F_USER_TYPE = 1 AND F_USER = #{loginName} AND F_OPT_TYPE = 2) B 
+                   ON A.F_FUNC_ID = B.F_FUNC_ID AND A.F_SUBSYS_NUM =B.F_SUBSYS_NUM) B,T_SUBSYS_DA C
+       WHERE A.F_SUBSYS_NUM = B.F_SUBSYS_NUM
+           AND ((A.F_JB = 1 AND A.F_JB_NUM = SUBSTR(B.F_JB_NUM, 1, 2)) OR
+             (A.F_JB = 2 AND A.F_JB_NUM = SUBSTR(B.F_JB_NUM, 1, 4)) OR
+             (A.F_JB = 3 AND A.F_JB_NUM = SUBSTR(B.F_JB_NUM, 1, 6)))
+            AND A.F_SUBSYS_NUM = C.F_SUBSYS_NUM
+            AND A.F_FUNC_TYPE IN ('0','1')
+       ORDER BY A.F_SUBSYS_NUM,A.F_JB_NUM
+	</select>
+
+    <select id="getNotLoginUrl" resultMap="urlBean" parameterType="java.lang.String">
+		SELECT F_SUBSYS_NUM,F_FUNC_URI FROM T_NOT_CHECK_FUNC WHERE F_SUBSYS_NUM = #{subNum} AND F_FUNC_TYPE IN ('1','3')
+	</select>
+
+    <select id="getNotCheckUrl" resultMap="urlBean" parameterType="java.lang.String">
+		SELECT F_SUBSYS_NUM,F_FUNC_URI FROM T_NOT_CHECK_FUNC WHERE F_SUBSYS_NUM = #{subNum} AND F_FUNC_TYPE IN ('2','3')
+	</select>
+
+
+    <resultMap type="java.util.Map" id="treeMapnum">
+        <result property="id" column="ID"/>
+        <result property="text" column="F_FUNC_NAME"/>
+        <result property="pid" column="PID"/>
+        <result property="mj" column="F_MJ"/>
+        <result property="url" column="F_FUNC_URI"/>
+        <result property="subNum" column="F_SUBSYS_NUM"/>
+    </resultMap>
+    <select id="getCustomFunInfo" resultMap="treeMapnum" parameterType="java.lang.String">
+         SELECT DISTINCT
+	         N.F_FUNC_NAME,
+	         N.F_SUBSYS_NUM,
+	         N.F_LOGIN_USER_CODE, 
+	         N.F_FUNC_URI, 
+	         Y.F_SUBSYS_NUM||N.PID AS PID,
+	         N.ID,
+	         N.F_JB_NUM,
+	         N.F_MJ,
+	         N.F_JB 
+         FROM( SELECT A.F_MOULD_SORT_NAME AS F_FUNC_NAME,
+	              A.F_SUBSYS_NUM,
+	              D.F_SUBSYS_URI || C.F_FUNC_URI  AS F_FUNC_URI,
+	              CASE LENGTH(A.F_JB_NUM)
+	                WHEN 2 THEN
+	                 '-1'
+	                ELSE
+	                 SUBSTR(A.F_JB_NUM, 0, 2 * (A.F_JB - 1))
+	              END PID, 
+	              A.F_SUBSYS_NUM||A.F_JB_NUM AS ID,A.F_JB_NUM,
+	              A.F_MJ,
+	              A.F_LOGIN_USER_CODE,
+	              A.F_JB
+         FROM T_MOULD_USER_DEF A
+             LEFT JOIN T_PRM_FUNC C ON A.F_FUNC_ID = C.F_FUNC_ID  AND A.F_SUBSYS_NUM = C.F_SUBSYS_NUM
+             LEFT JOIN T_SUBSYS_DA D  ON A.F_SUBSYS_NUM = D.F_SUBSYS_NUM
+        WHERE F_LOGIN_USER_CODE = #{loginName}) N
+	         LEFT JOIN (SELECT * FROM T_MOULD_USER_DEF) Y 
+	           ON 
+	        SUBSTR(N.F_JB_NUM, 0, 2 * (N.F_JB - 1)) = 
+        Y.F_JB_NUM WHERE N.F_LOGIN_USER_CODE=#{loginName} ORDER BY n.F_JB_NUM ASC  
+	</select>
+
+    <select id="getPermissionList" resultType="java.util.Map"
+            parameterType="com.xwtech.uomp.base.pojo.RequestHandleUrlBean">
+		select h.f_user,h.f_func_id,h.f_subsys_num,m.f_func_uri from 
+		(
+		       select e.f_user,e.f_func_id,e.f_subsys_num from T_FUNC_QX e join
+		       (
+		               select c.f_group_id from T_USER_GROUP c join              
+		               (
+		                      select b.f_jb_num,b.f_jb from T_USER_GROUP b join 
+		                      (
+		                             SELECT F_USER_GROUP FROM T_USER WHERE F_LOGIN_NAME = #{loginName}
+		                      ) a 
+		                      on b.F_GROUP_ID = a.F_USER_GROUP
+		               ) d 
+		               on substr(c.f_jb_num,1,2*c.F_JB)=substr(d.f_jb_num,1,2*c.F_JB) and c.f_jb&lt;=d.f_jb
+		       ) f 
+		       on e.f_user=f.F_GROUP_ID where e.f_opt_type=0 and e.f_user_type=0
+		       union select g.f_user,g.f_func_id,g.f_subsys_num from T_FUNC_QX g where g.f_user=#{loginName} and g.f_opt_type=1 and g.f_user_type=1
+		       minus select g.f_user,g.f_func_id,g.f_subsys_num from T_FUNC_QX g where g.f_user=#{loginName} and g.f_opt_type=2 and g.f_user_type=1
+		) h 
+		join T_PRM_FUNC m on m.f_func_id=h.f_func_id
+	</select>
+
+    <select id="getFuncUrl" resultType="java.lang.String"
+            parameterType="com.xwtech.uomp.base.pojo.RequestHandleUrlBean">
+		select f_func_uri from t_prm_func
+	</select>
+    <!-- 当使用该Mybatis与Spring整合的时候，该文件必须和相应的Mapper接口文件同名，并在同一路径下 -->
+</mapper> 

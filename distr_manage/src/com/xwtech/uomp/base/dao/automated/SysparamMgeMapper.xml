@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.automated.SysparamMgeMapper">
+
+    <resultMap type="com.xwtech.uomp.base.pojo.sysparammge.SysParamBean"
+               id="sysparamMgeResult">
+        <result property="subSysNum" column="F_SUBSYS_NUM"/>
+        <result property="csmc" column="F_CSMC"/>
+        <result property="csz" column="F_CSZ"/>
+        <result property="bz" column="F_BZ"/>
+        <result property="subSysName" column="F_SUBSYS_NAME"/>
+    </resultMap>
+    <resultMap id="treeMap" type="java.util.Map">
+        <result property="sysnum" column="f_subsys_num"/>
+        <result property="sysname" column="f_subsys_name"/>
+    </resultMap>
+
+    <insert id="addSysParms" parameterType="com.xwtech.uomp.base.pojo.sysparammge.SysParamBean">insert into
+		T_SYSTEM(F_SUBSYS_NUM,F_CSMC,F_CSZ,F_BZ)values(#{subSysNum},#{csmc},#{csz},#{bz})
+	</insert>
+    <delete id="delSysParms" parameterType="com.xwtech.uomp.base.pojo.sysparammge.SysParamBean">delete from T_SYSTEM
+		where F_SUBSYS_NUM=#{subSysNum}
+		and F_CSMC=#{csmc}
+	</delete>
+    <update id="modifySysParms" parameterType="com.xwtech.uomp.base.pojo.sysparammge.SysParamBean">
+		update T_SYSTEM set
+		F_CSZ=#{csz},F_BZ=#{bz} where F_SUBSYS_NUM=#{subSysNum}
+		and
+		F_CSMC=#{csmc}
+	</update>
+    <select id="getSysArr" resultMap="treeMap">
+		select
+		t_subsys_da.f_subsys_num,t_subsys_da.f_subsys_name from t_subsys_da
+	</select>
+
+    <select id="getSysParmsById" resultMap="sysparamMgeResult"
+            parameterType="com.xwtech.uomp.base.pojo.sysparammge.SysParamBean">
+		select
+		F_SUBSYS_NUM,F_CSMC,F_CSZ,F_BZ,(select
+		f_subsys_name from
+		t_subsys_da where
+		t_subsys_da.f_subsys_num=T_SYSTEM.F_SUBSYS_NUM)
+		F_SUBSYS_NAME
+		from
+		T_SYSTEM where F_SUBSYS_NUM=#{subSysNum} and F_CSMC=#{csmc}
+	</select>
+
+    <select id="query" resultMap="sysparamMgeResult"
+            parameterType="com.xwtech.uomp.base.pojo.sysparammge.SysParamBean">
+        select F_SUBSYS_NUM,F_CSMC,F_CSZ,F_BZ,(select f_subsys_name from
+        t_subsys_da where t_subsys_da.f_subsys_num=T_SYSTEM.F_SUBSYS_NUM)
+        F_SUBSYS_NAME
+        from T_SYSTEM where 1=1
+        <if test="subSysNum != null">
+            and F_SUBSYS_NUM =#{subSysNum}
+        </if>
+        <if test="csmc != null">
+            and F_CSMC like '%${csmc}%'
+        </if>
+        order by rowid
+    </select>
+    <!-- 当使用该Mybatis与Spring整合的时候，该文件必须和相应的Mapper接口文件同名，并在同一路径下 -->
+</mapper> 

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.area.AreaMapper" >
+  <resultMap id="areaBean" type="com.xwtech.uomp.base.pojo.area.AreaBean" >
+    <result column="F_AREA_NUM" property="areaNum" jdbcType="VARCHAR" />
+    <result column="F_AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+    <result column="F_JB_NUM" property="areaJbNum" jdbcType="VARCHAR" />
+    <result column="F_JB" property="areaJb" jdbcType="DECIMAL" />
+    <result column="F_MJ" property="areaMj" jdbcType="DECIMAL" />
+    <result column="F_BZ" property="areaBz" jdbcType="VARCHAR" />
+    <result column="F_BOSS_CODE" property="areaBossCode" jdbcType="VARCHAR" />
+    <result column="F_BOSS_ORGID" property="areaBossOrgid" jdbcType="VARCHAR" />
+  </resultMap>
+  <!--  -->
+  <select id="isExistAreaJbNum" resultType="java.lang.Integer" parameterType="java.util.Map">
+  select count(*) from T_AREA_DA where F_JB_NUM=#{areaJbNum} 
+  </select>
+    <!-- 查询地区信息 -->
+	<select id="queryCityList" resultMap="areaBean">
+	select * from T_AREA_DA t where length(f_boss_code)&lt;3 order by f_boss_code
+	</select>
+   <!-- 查询地市信息 -->
+     
+   <select id="queryAreaList" resultMap="areaBean" parameterType="java.util.Map">
+     SELECT *
+        FROM (SELECT ROWNUM ROW_NUM, A.*
+        FROM (SELECT F_AREA_NUM,
+        F_AREA_NAME,
+        F_JB_NUM,
+        F_JB,
+        F_MJ,
+        F_BZ,
+        F_BOSS_CODE
+        FROM T_AREA_DA
+        WHERE 1 = 1
+        <if test="areaNum != null" >
+        AND F_AREA_NUM= #{areaNum}
+      </if>
+      <if test="areaJbNum != null" >
+        AND F_JB_NUM  like #{areaJbNum}||'%'
+      </if>
+      <if test="areaName != null" >
+        AND F_AREA_NAME like #{areaName}||'%'
+      </if>
+     <if test="areaJb != null" >
+        AND F_JB = #{areaJb}
+      </if>
+      <if test="areaBossCode != null" >
+        AND F_BOSS_CODE like #{areaBossCode}||'%'
+      </if>
+        ORDER BY  F_JB_NUM) A)
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+   </select>
+   
+       <select id="queryAreaListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT COUNT(*)
+        FROM T_AREA_DA
+        WHERE 1 = 1
+      <if test="areaNum != null" >
+        AND F_AREA_NUM= #{areaNum}
+      </if>
+      <if test="areaJbNum != null" >
+        AND F_JB_NUM  like #{areaJbNum}||'%'
+      </if>
+      <if test="areaName != null" >
+        AND F_AREA_NAME like #{areaName}||'%'
+      </if>
+     <if test="areaJb != null" >
+        AND F_JB = #{areaJb}
+      </if>
+      <if test="areaBossCode != null" >
+        AND F_BOSS_CODE like #{areaBossCode}||'%'
+      </if>
+    </select>
+    
+    <select id="findAreaList" parameterType="java.util.Map" resultMap="areaBean">
+    	SELECT *
+		  FROM (SELECT ROWNUM ROW_NUM, A.*
+		          FROM (SELECT F_AREA_NUM,
+		                       F_AREA_NAME,
+		                       F_JB_NUM,
+		                       F_JB,
+		                       F_MJ,
+		                       F_BZ,
+		                       F_BOSS_CODE
+		                  FROM T_AREA_DA
+		                 WHERE 1 = 1
+		                 ORDER BY F_JB_NUM ASC) A)
+		   WHERE ROW_NUM &lt;= #{end}
+    </select>
+    
+       <!-- 添加地市信息 -->
+    <insert id="saveArea" parameterType="com.xwtech.uomp.base.pojo.area.AreaBean">
+     insert into T_AREA_DA
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="areaNum != null" >
+        F_AREA_NUM,
+      </if>
+      <if test="areaName != null" >
+        F_AREA_NAME,
+      </if>
+      <if test="areaJbNum != null" >
+        F_JB_NUM,
+      </if>
+      <if test="areaJb != null" >
+        F_JB,
+      </if>
+    <if test="areaMj != null" >
+        F_MJ,
+      </if>
+      <if test="areaBz != null" >
+        F_BZ,
+      </if>
+      <if test="areaBossCode != null" >
+        F_BOSS_CODE
+      </if>
+    
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="areaNum != null" >
+        upper(#{areaNum,jdbcType=VARCHAR}),
+      </if>
+      <if test="areaName != null" >
+        #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaJbNum != null" >
+        #{areaJbNum,jdbcType=VARCHAR},
+      </if>
+      <if test="areaJb != null" >
+        #{areaJb,jdbcType=DECIMAL},
+      </if>
+       <if test="areaMj != null" >
+        #{areaMj,jdbcType=VARCHAR},
+      </if>
+      <if test="areaBz != null" >
+        #{areaBz,jdbcType=VARCHAR},
+      </if>
+      <if test="areaBossCode != null" >
+        #{areaBossCode,jdbcType=VARCHAR},
+      </if>
+     
+    </trim>
+        </insert> 
+        
+   <select id="findOneAreaBean" resultMap="areaBean" parameterType="java.util.Map">
+     SELECT *
+        FROM T_AREA_DA
+        WHERE F_AREA_NUM =  #{pkid}
+        
+   </select>
+        
+            <!-- 删除地市信息 -->
+    <delete id="deleteArea" parameterType="java.lang.String">
+      DELETE FROM T_AREA_DA WHERE F_AREA_NUM = #{pkid}
+    </delete>
+        <!-- 修改地市信息 -->
+    <update id="updateArea" parameterType="com.xwtech.uomp.base.pojo.area.AreaBean">
+        UPDATE T_AREA_DA
+        <set>
+        <if test="areaName!=null">
+        F_AREA_NAME    = #{areaName},
+        </if>
+        <if test="areaJbNum !=null">
+           F_JB_NUM    = #{areaJbNum},
+        </if>
+        <if test="areaJb !=null">
+           F_JB    = #{areaJb},
+        </if>
+         <if test="areaBz !=null">
+            F_BZ = #{areaBz},
+        </if>
+         <if test="areaBossCode !=null">
+           F_BOSS_CODE  = #{areaBossCode},
+        </if>
+         <if test="areaMj !=null">
+           F_MJ   =#{areaMj}
+        </if>
+        </set>
+        
+         WHERE F_AREA_NUM = #{areaNum}
+    </update>
+ 
+</mapper>

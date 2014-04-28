@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.console.ConsoleMapper">
+	<resultMap type="com.xwtech.uomp.base.pojo.console.ConsoleBean" id="ConsoleBean">
+		<result property="monthStr" column="monthStr" />
+		<result property="countNum" column="countNum" />
+		<result property="city" column="city" />
+		<result property="areaName" column="f_area_name" />
+		<result property="bossCode" column="f_boss_code" />
+		<result property="sumMoney" column="sumMoney"/>
+	</resultMap>
+
+	<select id="queryOrderNumByMonth" parameterType="java.util.Map" resultMap="ConsoleBean">
+		select monthStr,
+			       case
+			         when countNum is null then
+			          0
+			         else
+			          countNum
+			       end countNum
+			  from (select t1.monthStr, t2.countNum
+			          from (select lpad(level, 2, 0) as monthStr
+			                  from dual
+			                connect by level &lt; 13) t1
+			          left join (select count(*) as countNum, t.monthStr
+			                      from (select market_order_id,
+			                                   market_first_pkid,
+			                                   to_char(to_date(create_time,
+			                                                   'yyyy-mm-dd hh24:mi:ss'),
+			                                           'mm') as monthStr
+			                              from jsmss_market_order
+			                             where CURR_STATE = '1'
+			                             and to_char(to_date(create_time,
+                                                         'yyyy-mm-dd hh24:mi:ss'),
+                                                 'yyyy')= to_char(sysdate,'yyyy')
+			                             <if test="city != null">
+			                               and city like #{city}||'%'
+			                             </if>
+			                               ) t
+			                     group by t.monthStr
+			                     order by monthStr) t2
+			            on t1.monthStr = t2.monthStr
+			         order by monthStr)
+					
+	</select>
+	
+	<select id="queryCountByCity" parameterType="java.util.Map" resultMap="ConsoleBean">
+		select substr(f_area_name,0,instr(f_area_name,'地')-1) as f_area_name,
+			       f_boss_code,
+			       case
+			         when countNum is null then
+			          0
+			         else
+			          countNum
+			       end countNum
+			  from (select t1.f_area_name, t1.f_boss_code, t2.countNum
+			          from t_area_da t1
+			          left join (select count(*) as countNum, city
+			                      from (select market_order_id, market_first_pkid, city
+			                              from jsmss_market_order
+			                             where CURR_STATE = '1'
+			                             <if test="monthStr != null">
+			                             	and to_char(to_date(create_time,'yyyy-mm-dd hh24:mi:ss'),'mm') = #{monthStr}
+			                             </if>
+			                             	and to_char(to_date(create_time, 'yyyy-mm-dd hh24:mi:ss'), 'yyyy')= to_char(sysdate,'yyyy')
+			                                ) t
+			                     group by city) t2
+			            on t1.f_boss_code = t2.city
+			         where t1.f_mj = '0'
+			           and t1.f_jb = '2'
+			         order by t1.f_boss_code)
+					
+	</select>
+	
+	<select id="querySumMoneyByMonth" parameterType="java.util.Map" resultMap="ConsoleBean">
+	
+		select monthStr,
+	       case
+	         when sumMoney is null then
+	          0
+	         else
+	          sumMoney
+	       end sumMoney
+	  from (select a1.monthStr, b1.sumMoney
+	          from (select lpad(level, 2, 0) as monthStr
+	                  from dual
+	                connect by level &lt; 13) a1
+	          left join (select sum(money_val) as sumMoney, monthStr
+	                      from (select t1.market_order_id,
+	                                   t2.money_val,
+	                                   to_char(to_date(t1.create_time,
+	                                                   'yyyy-mm-dd hh24:mi:ss'),
+	                                           'mm') as monthStr
+	                              from jsmss_market_order t1
+	                              left join jsmss_market_second t2
+	                                on t1.market_second_pkid =
+	                                   t2.market_second_pkid
+	                             where t1.CURR_STATE = '1'
+	                               <if test="city != null">
+			                               and t1.city like #{city}||'%'
+			                       </if>
+	                               and to_char(to_date(t1.create_time,
+	                                                   'yyyy-mm-dd hh24:mi:ss'),
+	                                           'yyyy') = to_char(sysdate, 'yyyy'))
+	                     group by monthStr) b1
+	            on b1.monthStr = a1.monthStr
+	         order by monthStr)
+		
+	
+	</select>
+	
+	<select id="querySumMoneyByCity"  parameterType="java.util.Map" resultMap="ConsoleBean">
+		select substr(f_area_name, 0, instr(f_area_name, '地') - 1) as f_area_name,
+			       f_boss_code,
+			       case
+			         when sumMoney is null then
+			          0
+			         else
+			          sumMoney
+			       end sumMoney
+			  from (select t1.f_area_name, t1.f_boss_code, t2.sumMoney
+			          from t_area_da t1
+			          left join (select sum(b1.money_val) as sumMoney, a1.city
+			                      from jsmss_market_order a1
+			                      left join jsmss_market_second b1
+			                        on a1.market_second_pkid = b1.market_second_pkid
+			                     where CURR_STATE = '1'
+			                          <if test="monthStr != null">
+			                          and to_char(to_date(a1.create_time,'yyyy-mm-dd hh24:mi:ss'),'mm') = #{monthStr}
+			                          </if>
+			                       and to_char(to_date(a1.create_time,
+			                                           'yyyy-mm-dd hh24:mi:ss'),
+			                                   'yyyy') = to_char(sysdate, 'yyyy')
+			                     group by a1.city) t2
+			            on t1.f_boss_code = t2.city
+			         where t1.f_mj = '0'
+			           and t1.f_jb = '2'
+			         order by t1.f_boss_code)
+					
+	</select>
+	
+</mapper>

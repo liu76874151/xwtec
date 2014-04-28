@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.brand.BrandMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.brand.BrandBean" id="brandBean">
+        <result property="brandNum" column="F_BRAND_NUM"/>
+        <result property="brandName" column="F_BRAND_NAME"/>
+        <result property="jbNum" column="F_JB_NUM"/>
+        <result property="jb" column="F_JB"/>
+        <result property="memo" column="F_BZ"/>
+        <result property="bossCode" column="F_BOSS_CODE"/>
+        <result property="mj" column="F_MJ"/>
+    </resultMap>
+<!-- 根据brandNUM  查询城市名称 -->
+<select id="queryBrandNameById" resultMap="brandBean" parameterType="java.util.Map">
+select * from t_brand_da where 1=1
+ <if test="bossCodes != null" >
+       AND F_BOSS_CODE in 
+      <foreach collection="bossCodes" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+       </foreach>
+      </if>
+</select>
+    <!-- 查询品牌信息 -->
+    <select id="queryBrandList" resultMap="brandBean" parameterType="java.util.Map">
+        select * from(
+		select rownum row_num, a.*
+		  from (select f_brand_num,
+		               f_brand_name,
+		               f_jb_num,
+		               f_jb,
+		               f_mj,
+		               f_bz,
+		               f_boss_code
+		          from t_brand_da) a
+		          where 1=1
+        <if test="brandName != null">
+            AND F_BRAND_NAME like #{brandName}||'%'
+        </if>
+        <if test="brandNum != null">
+            AND F_BRAND_NUM like #{brandNum}||'%'
+        </if>
+        <if test="jb != null">
+            AND F_JB = #{jb}
+        </if>
+      
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+    
+    
+    
+	<select id="queryBrandCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT COUNT(*)
+	        FROM t_brand_da
+	        WHERE 1 = 1
+	        <if test="brandName != null">
+	            AND F_BRAND_NAME like #{brandName}||'%'
+	        </if>
+	        <if test="jb != null">
+	            AND F_JB = #{jb}
+	        </if>
+	</select>
+	
+	<select id="queryBrandListEx" parameterType="java.util.Map" resultMap="brandBean">
+		select f_brand_num,
+		               f_brand_name,
+		               f_jb_num,
+		               f_jb,
+		               f_mj,
+		               f_bz,
+		               f_boss_code
+		          from t_brand_da
+		where 1=1
+        <if test="brandName != null">
+            AND F_BRAND_NAME like #{brandName}||'%'
+        </if>
+        <if test="brandNum != null">
+            AND F_BRAND_NUM like #{brandNum}||'%'
+        </if>
+        <if test="jb != null">
+            AND F_JB in 
+            <foreach collection="jb" item="item" separator="," open="(" close=")">
+            	#{item}
+            </foreach>
+        </if>
+        order by f_jb,f_jb_num asc
+	</select>
+	
+	<select id="queryOneBrand" resultMap="brandBean" parameterType="java.lang.String">
+		select f_brand_num,
+		               f_brand_name,
+		               f_jb_num,
+		               f_jb,
+		               f_mj,
+		               f_bz,
+		               f_boss_code from t_brand_da where 1=1
+		 and f_brand_num = #{pkid}
+	</select>
+	<select id="queryBrandValidate" resultMap="brandBean" parameterType="java.util.Map">
+		select f_brand_num,
+		               f_brand_name,
+		               f_jb_num,
+		               f_jb,
+		               f_mj,
+		               f_bz,
+		               f_boss_code from t_brand_da where 1=1
+		 <if test="brandName != null">
+            AND F_BRAND_NAME like #{brandName}||'%'
+        </if>
+        <if test="brandNum != null">
+            or F_BRAND_NUM like #{brandNum}||'%'
+        </if>
+	</select>
+	
+	<insert id="saveBrand" parameterType="com.xwtech.uomp.base.pojo.brand.BrandBean">
+		insert into t_brand_da
+	  (f_brand_num, f_brand_name, f_jb_num, f_jb, f_mj, f_bz, f_boss_code)
+	values
+	  (#{brandNum}, #{brandName}, #{jbNum}, #{jb}, #{mj}, #{memo}, #{bossCode})
+	</insert>
+	
+	<delete id="deleteBrandbyBrandNum" parameterType="java.lang.String">
+		delete from t_brand_da where f_brand_num = #{brandNum}
+	</delete>
+	
+	<update id="updateBrand" parameterType="com.xwtech.uomp.base.pojo.brand.BrandBean">
+		update t_brand_da
+		   set 
+		   f_brand_name = #{brandName},
+		   f_jb_num = #{jbNum},
+	       f_mj = #{mj},
+	       f_bz = #{memo},
+	       f_boss_code = #{bossCode}
+		 where f_brand_num = #{brandNum}
+	</update>
+	
+	<select id="queryJbNumCount" resultType="int" parameterType="com.xwtech.uomp.base.pojo.brand.BrandBean">
+        SELECT COUNT(*) FROM T_BRAND_DA WHERE 1=1
+        <if test="jbNum != null">
+            AND F_JB_NUM LIKE '${jbNum}__'
+        </if>
+        <if test="jbNum == null">
+            AND F_JB_NUM LIKE '____'
+        </if>
+    </select>
+	
+	<select id="queryNewJbNum" resultType="java.lang.String" parameterType="java.lang.String">
+	    SELECT #{jbNum} || F_NUM AS N_JB_NUM
+            FROM (SELECT MAX(F_NUM) F_NUM
+            FROM (SELECT SUBSTR(F_NUM, LENGTH(F_NUM) - 1, 2) F_NUM
+                    FROM (SELECT '00' ||
+                                 TO_CHAR(TO_NUMBER(SUBSTR(MAX(F_JB_NUM),
+                                                          LENGTH(#{jbNum}) + 1,
+                                                          2)) + 1) F_NUM
+                            FROM T_BRAND_DA
+                           WHERE F_JB_NUM LIKE #{jbNum}||'%'
+                             AND F_JB = LENGTH(#{jbNum}) / 2 + 1
+                             )
+                  UNION
+                  SELECT '01' F_NUM FROM DUAL))
+	</select>
+	
+</mapper>

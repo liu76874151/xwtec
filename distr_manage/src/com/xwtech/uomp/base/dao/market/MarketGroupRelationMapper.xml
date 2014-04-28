@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.market.MarketGroupRelationMapper" >
+
+  <resultMap id="marketGroupRelationBean" type="com.xwtech.uomp.base.pojo.market.MarketGroupRelationBean" >
+    <id column="RELATION_ID" property="relationId" jdbcType="DECIMAL" />
+    <result column="MARKET_SECOND_PKID" property="marketSecondPkid" jdbcType="DECIMAL" />
+    <result column="GROUP_ID" property="groupId" jdbcType="DECIMAL" />
+    <result column="STATE" property="state" jdbcType="CHAR" />
+    <result column="OPT_TIME" property="optTime" jdbcType="CHAR" />
+    <association property="targetGroupInfoBean" column="GROUP_ID" javaType="com.xwtech.uomp.base.pojo.org.TargetGroupInfoBean" resultMap="targetGroupInfoBean"></association>
+  </resultMap>
+  
+  <resultMap id="targetGroupInfoBean" type="com.xwtech.uomp.base.pojo.org.TargetGroupInfoBean" >
+    <result column="GROUP_ID" property="groupId" jdbcType="DECIMAL" />
+    <result column="GROUP_NAME" property="groupName" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="CITY" property="city" jdbcType="DECIMAL" />
+    <result column="STATE" property="state" jdbcType="CHAR" />
+    <result column="GROUP_TYPE" property="groupType" jdbcType="CHAR" />
+  </resultMap>
+  
+  <insert id="batchUpdate" parameterType="java.util.List">
+		insert into jsmss_ms_group_relation(relation_id,
+                               market_second_pkid,
+                               group_id,
+                               state,
+                               opt_time) 
+		 <foreach collection="list" item="item" index="index" separator="union all">
+		 select #{item.relationId}, #{item.marketSecondPkid}, #{item.groupId}, #{item.state}, #{item.optTime} from dual
+		</foreach>
+	</insert>
+	
+	<insert id="insertMarketGroupRelation" parameterType="com.xwtech.uomp.base.pojo.market.MarketGroupRelationBean">
+		insert into jsmss_ms_group_relation(relation_id,market_second_pkid,group_id,state,channel,opt_time)
+		values(#{relationId}, #{marketSecondPkid}, #{groupId}, #{state},#{channel},to_char(SYSDATE,'YYYYMMDDHH24MISS'))
+	</insert>
+	
+	<select id="selectSecondMarketGroups" parameterType="java.util.Map" resultMap="marketGroupRelationBean">
+		select b.group_id, b.group_name, b.description, b.city, b.state,
+		b.group_type from jsmss_ms_group_relation a
+		join
+		jsmss_target_group_info b on a.group_id=b.group_id and
+		a.market_second_pkid=#{marketSecondPkid} and a.state=#{state} and a.channel=#{channel}
+	</select>
+	
+	<delete id="deleteBySecondPkid" parameterType="java.lang.String">
+		delete from jsmss_ms_group_relation where market_second_pkid=#{market_second_pkid}
+	</delete>
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.automated.SubSystemMapper">
+
+    <resultMap type="com.xwtech.uomp.base.pojo.admin.SubSystemBean" id="subSystemMap">
+        <id property="sysNum" column="F_SUBSYS_NUM"/>
+        <result property="sysName" column="F_SUBSYS_NAME"/>
+        <result property="sysTitle" column="F_SUBSYS_TITLE"/>
+        <result property="sysUri" column="F_SUBSYS_URI"/>
+        <result property="xh" column="F_XH"/>
+        <result property="bz" column="F_BZ"/>
+    </resultMap>
+
+    <resultMap id="treeMap" type="java.util.Map">
+        <result property="id" column="ID"/>
+        <result property="text" column="TEXT"/>
+        <result property="pid" column="PID"/>
+        <result property="mj" column="MJ"/>
+        <result property="subSysName" column="F_SUBSYS_NUM"/>
+        <result property="jbNum" column="F_JB_NUM"/>
+    </resultMap>
+
+    <select id="querySubSystemList" resultMap="treeMap">
+    	SELECT F_SUBSYS_NUM AS ID, F_SUBSYS_NAME AS TEXT, '-1' AS PID, 0 AS MJ, F_SUBSYS_NUM AS F_SUBSYS_NUM, -1 AS F_JB_NUM
+		FROM T_SUBSYS_DA ORDER BY F_SUBSYS_NUM
+    </select>
+
+    <select id="querySubsystemByNum" resultMap="subSystemMap" parameterType="java.lang.String">
+		select F_SUBSYS_NUM ,F_SUBSYS_NAME , F_SUBSYS_TITLE ,F_SUBSYS_URI ,F_XH ,F_BZ from T_SUBSYS_DA where F_SUBSYS_NUM like #{sysNum}
+    </select>
+
+    <insert id="addSubSystem" parameterType="com.xwtech.uomp.base.pojo.admin.SubSystemBean">
+		insert into T_SUBSYS_DA(F_SUBSYS_NUM,F_SUBSYS_NAME,F_SUBSYS_TITLE,F_SUBSYS_URI,F_XH,F_BZ) values(#{sysNum},#{sysName},#{sysTitle},#{sysUri},#{xh},#{bz})
+    </insert>
+
+    <delete id="deleteSubSystem" parameterType="java.lang.String">
+        delete from T_SUBSYS_DA where F_SUBSYS_NUM = #{sysNum}
+    </delete>
+
+    <select id="querySubsystemAll" resultMap="subSystemMap">
+        SELECT F_SUBSYS_NUM ,F_SUBSYS_NAME , F_SUBSYS_TITLE ,F_SUBSYS_URI ,F_XH ,F_BZ FROM T_SUBSYS_DA  ORDER BY F_SUBSYS_NUM
+    </select>
+    <update id="updateSubSystem" parameterType="com.xwtech.uomp.base.pojo.admin.SubSystemBean">
+       update T_SUBSYS_DA  set F_SUBSYS_NUM =#{sysNum},F_SUBSYS_NAME =#{sysName},F_SUBSYS_TITLE =#{sysTitle},F_SUBSYS_URI =#{sysUri},F_XH =#{xh},F_BZ =#{bz} where  F_SUBSYS_NUM =#{sysNum}
+    </update>
+    <select id="querySubsystemIshave" parameterType="java.lang.String" resultType="int">
+        SELECT  COUNT(F_SUBSYS_NUM)  FROM T_SUBSYS_DA WHERE F_SUBSYS_NUM =#{sysNum}
+    </select>
+
+    <!-- 当使用该Mybatis与Spring整合的时候，该文件必须和相应的Mapper接口文件同名，并在同一路径下 -->
+</mapper> 

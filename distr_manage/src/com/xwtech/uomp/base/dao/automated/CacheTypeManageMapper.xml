@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.automated.CacheTypeManageMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.memcache.CacheTypeManageBean" id="cacheTypeManageInfo">
+        <result property="typeNum" column="F_MEM_TYPE_NUM"/>
+        <result property="typeName" column="F_MEM_TYPE_NAME"/>
+        <result property="desc" column="F_DESC"/>
+    </resultMap>
+
+    <resultMap type="com.xwtech.uomp.base.pojo.memcache.CacheServiceManageBean" id="cacheServiceManageBean">
+        <result property="num" column="F_MEM_NUM"/>
+        <result property="typeNum" column="F_MEM_TYPE_NUM"/>
+        <result property="servers" column="F_MEM_SERVERS"/>
+        <result property="weights" column="F_MEM_WEIGHTS"/>
+        <result property="initConn" column="F_MEM_INITCONN"/>
+        <result property="minConn" column="F_MEM_MINCONN"/>
+        <result property="maxConn" column="F_MEM_MAXCONN"/>
+        <result property="maxIdle" column="F_MEM_MAXIDLE"/>
+        <result property="mainSleep" column="F_MEM_MAINSLEEP"/>
+        <result property="nagle" column="F_MEM_NAGLE"/>
+        <result property="socketTo" column="F_MEM_SOCKETTO"/>
+        <result property="socketConnectTo" column="F_MEM_SOCKETCONNECTTO"/>
+    </resultMap>
+
+    <!-- 查询所有缓存类型信息 -->
+    <select id="queryCacheTypeManageInfoList" resultMap="cacheTypeManageInfo"
+            parameterType="com.xwtech.uomp.base.pojo.memcache.CacheTypeManageBean">
+        SELECT F_MEM_TYPE_NUM, F_MEM_TYPE_NAME, F_DESC
+        FROM T_MEMCACHED_TYPE_DA WHERE 1=1
+        <if test="typeNum != null">
+            AND F_MEM_TYPE_NUM = #{typeNum}
+        </if>
+        <if test="typeName != null">
+            AND F_MEM_TYPE_NAME = #{typeName}
+        </if>
+    </select>
+
+    <!-- 根据id查询缓存类型信息 -->
+    <select id="queryCacheTypeInfoById" resultMap="cacheTypeManageInfo" parameterType="java.lang.String">
+        SELECT F_MEM_TYPE_NUM, F_MEM_TYPE_NAME, F_DESC FROM T_MEMCACHED_TYPE_DA WHERE F_MEM_TYPE_NUM = #{typeNum}
+    </select>
+
+    <!-- 添加缓存类型信息 -->
+    <insert id="addCacheTypeInfo" parameterType="com.xwtech.uomp.base.pojo.memcache.CacheTypeManageBean">
+        INSERT INTO T_MEMCACHED_TYPE_DA(F_MEM_TYPE_NUM, F_MEM_TYPE_NAME, F_DESC)
+            VALUES(#{typeNum}, #{typeName}, #{desc})
+    </insert>
+
+    <!-- 修改缓存类型 -->
+    <update id="modCacheTypeInfo" parameterType="com.xwtech.uomp.base.pojo.memcache.CacheTypeManageBean">
+        UPDATE T_MEMCACHED_TYPE_DA
+         SET
+            F_MEM_TYPE_NUM = #{typeNum},
+            F_MEM_TYPE_NAME = #{typeName},
+            F_DESC = #{desc}
+         WHERE F_MEM_TYPE_NUM = #{typeNum}
+    </update>
+
+    <!-- 删除缓存类型 -->
+    <delete id="delCacheTypeInfo" parameterType="java.lang.String">
+        DELETE FROM T_MEMCACHED_TYPE_DA WHERE F_MEM_TYPE_NUM = #{typeNum}
+    </delete>
+
+    <!--清除缓存服务信息 -->
+    <select id="queryCacheService" resultMap="cacheServiceManageBean" parameterType="java.util.HashMap">
+        SELECT SERVICEDA.*
+        FROM T_MEMCACHED_SERVICE_DA SERVICEDA, T_MEMCACHED_TYPE_DA TYPEDA
+        WHERE TYPEDA.F_MEM_TYPE_NUM = SERVICEDA.F_MEM_TYPE_NUM
+        <if test="typeNum != null and typeNum != '' ">
+            AND TYPEDA.F_MEM_TYPE_NUM = #{typeNum}
+        </if>
+    </select>
+</mapper>

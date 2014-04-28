@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.xwtech.uomp.base.dao.floor.FloorTemplateMapper">
+	    <resultMap type="com.xwtech.uomp.base.pojo.floor.FloorTemplateBean" id="floorTemplateBean">
+        <result property="tempNum" column="F_TEMP_NUM"/>
+        <result property="channelNum" column="F_CHANNEL_NUM"/>
+        <result property="tempName" column="F_TEMP_NAME"/>
+        <result property="tempImg" column="F_TEMP_IMG"/>
+        <result property="blockNums" column="F_BLOCK_NUMS"/>
+        <result property="state" column="F_STATE"/>
+        <result property="floorComp" column="F_FLOOR_COMP"/>
+        <result property="channelName" column="F_CHANNEL_NAME"/>
+    </resultMap>
+    
+    <!-- 查询楼层模版-分页 -->
+    <select id="queryFloorTemplateList" resultMap="floorTemplateBean" parameterType="java.util.Map">
+	    select *
+		  from (select ROWNUM ROW_NUM,
+		               A.*
+		               from (select t1.*, t2.f_channel_name
+		                  from T_FLOOR_TEMPLATE t1
+		                  left join t_Channel_Da t2
+		                    on t1.f_channel_num = t2.f_channel_num
+		                    where 1=1
+		                    <if test="state != null">
+		                    	and t1.f_state = #{state}
+		                    </if>
+		                    <if test="channelNum != null">
+		                    	and t1.F_CHANNEL_NUM = #{channelNum}
+		                    </if>
+		        ) A)
+				WHERE ROW_NUM &gt;#{start} 
+		 		AND ROW_NUM &lt;= #{end}
+    </select>
+    
+    <!-- 查询楼层模版-不分页 -->
+    <select id="queryFloorTemplateAll" resultMap="floorTemplateBean" parameterType="java.util.Map">
+    	SELECT * FROM T_FLOOR_TEMPLATE
+    	WHERE F_STATE = '0' AND F_CHANNEL_NUM = #{channelNum}
+    </select>
+    
+    <!-- 查询楼层模版个数 -->
+    <select id="queryFloorTemplateCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from T_FLOOR_TEMPLATE
+    	where 1=1
+		 <if test="state != null">
+		 	and f_state = #{state}
+		 </if>
+    </select>
+    
+    <!-- 更新启用状态 -->
+    <select id="updateUseableState">
+    	update T_FLOOR_TEMPLATE set F_STATE = #{state} where F_TEMP_NUM = #{tempNum}
+    </select>
+    
+    <!-- 根据主键查询一个模版 -->
+    <select id="queryFloorTemplateByPk" resultMap="floorTemplateBean" parameterType="java.util.Map">
+    	SELECT * FROM T_FLOOR_TEMPLATE WHERE F_TEMP_NUM = #{tempNum}
+    </select>
+    
+    <!-- 添加新模版 -->
+    <insert id="addFloorTemplate">
+    	INSERT INTO  T_FLOOR_TEMPLATE
+    	(
+    		F_TEMP_NUM,
+    		F_CHANNEL_NUM,
+    		F_TEMP_NAME,
+    		F_BLOCK_NUMS,
+    		F_STATE,
+    		F_FLOOR_COMP
+    	)
+    	VALUES
+    	(
+    		#{tempNum},
+    		#{channelNum},
+    		#{tempName},
+    		#{blockNums},
+    		#{state},
+    		#{floorComp}
+    	)
+    </insert>
+    
+    <!-- 修改模版 -->
+    <update id="updateFloorTemplate">
+    	UPDATE T_FLOOR_TEMPLATE
+    	<set>
+    		<if test="channelNum != null">
+    			F_CHANNEL_NUM = #{channelNum},
+    		</if>
+    		<if test="tempName != null">
+    			F_TEMP_NAME = #{tempName},
+    		</if>
+    		<if test="tempImg != null">
+    			F_TEMP_IMG = #{tempImg},
+    		</if>
+    		<if test="blockNums != null">
+    			F_BLOCK_NUMS = #{blockNums},
+    		</if>
+    		<if test="state != null">
+    			F_STATE = #{state},
+    		</if>
+    		<if test="floorComp != null">
+    			F_FLOOR_COMP = #{floorComp},
+    		</if>
+    	</set>
+    	WHERE F_TEMP_NUM = #{tempNum}
+    </update>
+    
+    <!-- 删除模版 -->
+    <delete id="deleteFloorTemplate">
+    	DELETE FROM T_FLOOR_TEMPLATE WHERE F_TEMP_NUM = #{tempNum}
+    </delete>
+</mapper>

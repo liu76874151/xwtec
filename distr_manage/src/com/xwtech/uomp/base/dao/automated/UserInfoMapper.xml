@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.automated.UserInfoMapper">
+
+    <resultMap type="com.xwtech.uomp.base.pojo.admin.CityInfoBean" id="cityInfo">
+        <result property="areaNum" column="F_AREA_NUM"/>
+        <result property="areaName" column="F_AREA_NAME"/>
+        <result property="f_boss_code" column="F_BOSS_CODE"/>
+        <result property="bz" column="F_BZ"/>
+        <result property="jbNum" column="F_JB_NUM"/>
+        <result property="jb" column="F_JB"/>
+        <result property="mj" column="F_MJ"/>
+    </resultMap>
+
+    <resultMap type="com.xwtech.uomp.base.pojo.admin.UserInfoBean" id="userInfo">
+        <result property="loginName" column="F_LOGIN_NAME"/>
+        <result property="loginPwd" column="F_LOGIN_PWD"/>
+        <result property="userName" column="F_USER_NAME"/>
+        <result property="userGroup" column="F_USER_GROUP"/>
+        <result property="userState" column="F_USER_STATE"/>
+        <result property="phone" column="F_PHONE"/>
+        <result property="bz" column="F_BZ"/>
+        <result property="userAreaCode" column="F_USER_AREA_CODE"/>
+        <result property="channelNum" column="F_CHANNEL_NUM"/>
+    </resultMap>
+
+    <!-- 根据用户组查询所属市区信息 -->
+    <select id="queryAreaNume" resultMap="cityInfo" parameterType="java.lang.String">
+		SELECT * FROM T_AREA_DA WHERE F_AREA_NUM=(SELECT DISTINCT(F_GROUP_AREA) FROM T_USER_GROUP WHERE F_GROUP_ID=#{groupName})
+    </select>
+
+    <!--  查询管理员信息 -->
+    <select id="queryUserInfo" resultMap="userInfo" parameterType="java.util.HashMap">
+        SELECT F_LOGIN_NAME,F_LOGIN_PWD,F_USER_NAME,F_USER_GROUP,F_USER_STATE,F_PHONE,F_BZ FROM T_USER
+        WHERE 1 = 1
+        <if test="userGroup != null and userGroup != '' ">
+            AND F_USER_GROUP = #{userGroup}
+        </if>
+        <if test="userName != null and userName != '' ">
+            AND F_USER_NAME LIKE CONCAT(CONCAT('%', #{userName}),'%')
+        </if>
+    </select>
+    <!--  查询管理员信息 分页-->
+    <select id="queryUserInfoForPage" resultMap="userInfo" parameterType="java.util.HashMap">
+        SELECT * FROM (SELECT ROWNUM ROWNUM_, A.* FROM (
+        SELECT F_LOGIN_NAME,F_LOGIN_PWD,F_USER_NAME,F_USER_GROUP,F_USER_STATE,F_PHONE,F_BZ FROM T_USER
+        WHERE 1 = 1
+        <if test="userGroup != null and userGroup != '' ">
+            AND F_USER_GROUP = #{userGroup}
+        </if>
+        <if test="userName != null and userName != '' ">
+            AND F_USER_NAME LIKE CONCAT(CONCAT('%', #{userName}),'%')
+        </if>
+        ORDER BY F_USER_GROUP
+        ) A
+        <if test="end!=null and end!=''">
+            WHERE ROWNUM &lt;= #{end}
+        </if>
+        ) B
+        <if test="start!=null and start!=''">
+            WHERE B.ROWNUM_ &gt; #{start}
+        </if>
+    </select>
+    <!--  查询管理员信息 总数量分页-->
+    <select id="queryUserInfoForCount" resultType="int" parameterType="java.util.HashMap">
+        SELECT count(*) as count FROM T_USER
+        WHERE 1 = 1
+        <if test="userGroup != null and userGroup != '' ">
+            AND F_USER_GROUP = #{userGroup}
+        </if>
+        <if test="userName != null and userName != '' ">
+            AND F_USER_NAME LIKE CONCAT(CONCAT('%', #{userName}),'%')
+        </if>
+    </select>
+
+    <!-- 查看用户信息 -->
+    <select id="viewUserInfo" resultMap="userInfo" parameterType="java.lang.String">
+		SELECT * FROM T_USER WHERE F_LOGIN_NAME =#{loginName}
+    </select>
+
+    <!-- 查看登录名是否已经存在 -->
+    <select id="findUserInfo" resultType="int" parameterType="java.lang.String">
+		SELECT COUNT(*) AS NUM FROM T_USER WHERE F_LOGIN_NAME =#{loginName}
+    </select>
+
+    <!-- 保存管理员信息 -->
+    <select id="insertUserInfo" parameterType="com.xwtech.uomp.base.pojo.admin.UserInfoBean">
+		 INSERT INTO T_USER (F_LOGIN_NAME, F_LOGIN_PWD, F_USER_NAME,  F_USER_GROUP, F_USER_STATE, F_PHONE, F_BZ, F_USER_AREA, F_USER_AREA_CODE, F_CHANNEL_NUM) 
+		 VALUES( #{loginName}, #{loginPwd}, #{userName},#{userGroup}, #{userState}, #{phone},#{bz}, #{userArea}, #{userAreaCode},#{channelNum})
+    </select>
+
+    <!-- 删除管理员信息 -->
+    <select id="deleteUserInfo" parameterType="java.lang.String">
+		 DELETE FROM T_USER WHERE F_LOGIN_NAME = #{loginName}
+    </select>
+
+    <!-- 根据用户名删除权限 -->
+    <select id="deleteQxByUser" parameterType="java.lang.String">
+		 DELETE FROM T_FUNC_QX WHERE F_USER  = #{loginName}
+    </select>
+
+    <!-- 更新管理员信息 -->
+    <select id="updateUserInfo" parameterType="com.xwtech.uomp.base.pojo.admin.UserInfoBean">
+		 UPDATE T_USER SET F_LOGIN_PWD = #{loginPwd}, F_USER_NAME = #{userName}, F_USER_STATE = #{userState}, 
+		 F_PHONE = #{phone}, F_BZ = #{bz}, F_USER_AREA = #{userArea} WHERE F_LOGIN_NAME = #{loginName}
+    </select>
+
+    <!-- 根据用户组名查询用户个数 -->
+    <select id="sumByGroupId" resultType="int" parameterType="java.lang.String">
+		SELECT COUNT(*) AS NUM FROM T_USER WHERE F_USER_GROUP =#{groupId}
+    </select>
+    <!-- 当使用该Mybatis与Spring整合的时候，该文件必须和相应的Mapper接口文件同名，并在同一路径下 -->
+</mapper> 

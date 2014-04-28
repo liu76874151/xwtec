@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.order.RechargeMktBillMapper" >
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.order.RechargeMktBillBean" >
+    <result column="CITY_ID" property="cityId" jdbcType="VARCHAR" />
+    <result column="MSISDN" property="msisdn" jdbcType="VARCHAR" />
+    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+    <result column="AMOUNT" property="amount" jdbcType="VARCHAR" />
+    <result column="BANK_STATE" property="bankState" jdbcType="VARCHAR" />
+    <result column="BUSI_STATE" property="busiState" jdbcType="VARCHAR" />
+    <result column="BUSI_TIME" property="busiTime" jdbcType="VARCHAR" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+  </resultMap>
+    <resultMap id="orderGiftResultMap" type="com.xwtech.uomp.base.pojo.order.OrderGiftBean" >
+    <id column="PKID" property="pkid" jdbcType="DECIMAL" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+    <result column="MSISDN" property="msisdn" jdbcType="VARCHAR" />
+    <result column="MARKET_FIRST_PKID" property="marketFirstPkid" jdbcType="VARCHAR" />
+    <result column="MARKET_SECOND_PKID" property="marketSecondPkid" jdbcType="VARCHAR" />
+    <result column="GIFT_ID" property="giftId" jdbcType="VARCHAR" />
+    <result column="GIFT_NAME" property="giftName" jdbcType="VARCHAR" />
+    <result column="GIFT_TYPE" property="giftType" jdbcType="VARCHAR" />
+    <result column="GIFT_NUM" property="giftNum" jdbcType="VARCHAR" />
+    <result column="GIFT_PRICE" property="giftPrice" jdbcType="DECIMAL" />
+    <result column="GIFT_TICKET_ID" property="giftTicketId" jdbcType="VARCHAR" />
+    <result column="MOVIE_ID" property="movieId" jdbcType="VARCHAR" />
+    <result column="GIFT_SEND_TYPE" property="giftSendType" jdbcType="VARCHAR" />
+    <result column="GIFT_SEND_STATUS" property="giftSendStatus" jdbcType="CHAR" />
+    <result column="GIFT_SEND_TIME" property="giftSendTime" jdbcType="VARCHAR" />
+    <result column="GIFT_SEND_ERROR" property="giftSendError" jdbcType="VARCHAR" />
+    <result column="ELEC_COUPONS_NUM" property="elecCouponsNum" jdbcType="VARCHAR" />
+    <result column="INTERFACE_CHANEL_NUM" property="interfaceChanelNum" jdbcType="VARCHAR" />
+  </resultMap>
+    <resultMap id="orderPayResultMap" type="com.xwtech.uomp.base.pojo.order.OrderPayBean" >
+    <id column="PKID" property="pkid" jdbcType="DECIMAL" />
+    <result column="MSISDN" property="msisdn" jdbcType="VARCHAR" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+    <result column="SERIAL_ORDER_ID" property="serialOrderId" jdbcType="VARCHAR" />
+    <result column="PAY_URL" property="payUrl" jdbcType="VARCHAR" />
+    <result column="MARKET_FIRST_PKID" property="marketFirstPkid" jdbcType="VARCHAR" />
+    <result column="MARKET_SECOND_PKID" property="marketSecondPkid" jdbcType="VARCHAR" />
+    <result column="PAY_VAL" property="payVal" jdbcType="DECIMAL" />
+    <result column="PAY_TYPE" property="payType" jdbcType="DECIMAL" />
+    <result column="PAY_STATUS" property="payStatus" jdbcType="CHAR" />
+    <result column="PAY_TIME" property="payTime" jdbcType="VARCHAR" />
+    <result column="ERROR_MSG" property="errorMsg" jdbcType="VARCHAR" />
+  </resultMap>
+  
+   
+  <select id="queryRechargeMktBill"  resultMap="BaseResultMap"  >
+   select msisdn, city_id, amount, bank_state, busi_state, order_id, busi_time  
+        from tm_recharge_mkt_bill l where 
+		 l.busi_time between to_char(sysdate-1, 'yyyymmdd')
+		and to_char(sysdate, 'yyyymmdd') 
+
+  </select>
+  <select id="queryRechargeMktAllBill"  resultMap="BaseResultMap"  >
+   select msisdn, city_id, amount, bank_state, busi_state, order_id, busi_time  
+        from tm_recharge_mkt_bill
+  </select>
+  
+  
+    <select id="queryOrderGift"  resultMap="orderGiftResultMap" >
+        select JOG.* from JSMSS_ORDER_GIFT JOG join JSMSS_MARKET_ORDER JOP
+        on JOG.ORDER_ID=JOP.MARKET_ORDER_ID AND JOG.GIFT_SEND_STATUS=0 AND JOP.CURR_STATE=1
+        and (JOG.gift_send_error is null or JOG.gift_send_error !=-1)
+  </select>
+  <update id="updateOrderGift" parameterType="com.xwtech.uomp.base.pojo.order.OrderGiftBean"  >
+  update JSMSS_ORDER_GIFT
+  <set>
+  GIFT_SEND_STATUS=#{giftSendStatus},
+  GIFT_SEND_TIME =to_char(SYSDATE,'YYYYMMDDHH24MISS')
+  <if test="giftSendError != null">
+ 			,GIFT_SEND_ERROR = #{giftSendError}
+ 		</if>
+  <if test="elecCouponsNum != null">
+ 			,ELEC_COUPONS_NUM = #{elecCouponsNum}
+ 		</if>
+  </set>
+    where  ORDER_ID=#{orderId}
+  </update>
+ <select id="queryOrderPay" resultMap="orderPayResultMap"  >
+      select * from JSMSS_ORDER_PAY j where PAY_STATUS !=1 
+      
+       
+ </select>
+ 
+ <select id="queryOrderPaySuccess" resultMap="orderPayResultMap"  >
+     select t1.* from JSMSS_ORDER_PAY t1  join jsmss_market_order t2 on t1.ORDER_ID=t2.MARKET_ORDER_ID
+ 		and t2.CREATE_TIME  between to_char(sysdate-1, 'yyyymmdd') and to_char(sysdate, 'yyyymmdd') 
+ </select>
+ <select id="queryOrderPayAllSuccess" resultMap="orderPayResultMap"  >
+     select t1.* from JSMSS_ORDER_PAY t1  
+ </select>
+</mapper>

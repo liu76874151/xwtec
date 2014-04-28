@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.adv.AdvInfoMapper" >
+
+  <resultMap id="AdvInfoResultMap" type="com.xwtech.uomp.base.pojo.adv.AdvInfoBean" >
+    <id column="F_ADV_NUM" property="advNum" jdbcType="VARCHAR" />
+    <id column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <id column="F_POSITION_NUM" property="positionNum" jdbcType="VARCHAR" />
+    <result column="F_ADV_NAME" property="advName" jdbcType="VARCHAR" />
+    <result column="F_ADV_DESC" property="advDesc" jdbcType="VARCHAR" />
+    <result column="F_ADV_MENU_ICON" property="advMenuIcon" jdbcType="VARCHAR" />
+    <result column="F_ADV_IMG" property="advImg" jdbcType="VARCHAR" />
+    <result column="F_ADV_URI" property="advUri" jdbcType="VARCHAR" />
+    <result column="F_OPEN_URI_TYPE" property="openUriType" jdbcType="DECIMAL" />
+    <result column="F_ADV_IMG_TYPE" property="advImgType" jdbcType="DECIMAL" />
+    <result column="F_SHOW_XH" property="showXh" jdbcType="DECIMAL" />
+    <result column="F_BZ" property="bz" jdbcType="VARCHAR" />
+    <result column="F_USE_STATE" property="useState" jdbcType="CHAR" />
+    <result column="F_ADV_IMG_S" property="advImgS" jdbcType="VARCHAR" />
+    <result column="F_START_TIME" property="startTime" jdbcType="VARCHAR" />
+    <result column="F_END_TIME" property="endTime" jdbcType="VARCHAR" />
+    <result column="F_AUDITER" property="auditer" jdbcType="VARCHAR" />
+    <result column="F_AUDIT_TIME" property="auditTime" jdbcType="VARCHAR" />
+    <result column="F_AUDIT_STATE" property="auditState" jdbcType="CHAR" />
+    </resultMap>
+  <resultMap id="AdvInfoBean" type="com.xwtech.uomp.base.pojo.adv.AdvInfoBean" >
+    <result column="F_ADV_NUM" property="advNum" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="F_POSITION_NUM" property="positionNum" jdbcType="VARCHAR" />
+    <result column="F_ADV_NAME" property="advName" jdbcType="VARCHAR" />
+    <result column="F_ADV_DESC" property="advDesc" jdbcType="VARCHAR" />
+    <result column="F_ADV_MENU_ICON" property="advMenuIcon" jdbcType="VARCHAR" />
+    <result column="F_ADV_IMG" property="advImg" jdbcType="VARCHAR" />
+    <result column="F_ADV_URI" property="advUri" jdbcType="VARCHAR" />
+    <result column="F_OPEN_URI_TYPE" property="openUriType" jdbcType="DECIMAL" />
+    <result column="F_ADV_IMG_TYPE" property="advImgType" jdbcType="DECIMAL" />
+    <result column="F_SHOW_XH" property="showXh" jdbcType="DECIMAL" />
+    <result column="F_BZ" property="bz" jdbcType="VARCHAR" />
+    <result column="F_USE_STATE" property="useState" jdbcType="CHAR" />
+    <result column="F_ADV_IMG_S" property="advImgS" jdbcType="VARCHAR" />
+    <result column="F_START_TIME" property="startTime" jdbcType="VARCHAR" />
+    <result column="F_END_TIME" property="endTime" jdbcType="VARCHAR" />
+    <result column="F_AUDITER" property="auditer" jdbcType="VARCHAR" />
+    <result column="F_AUDIT_TIME" property="auditTime" jdbcType="VARCHAR" />
+    <result column="F_AUDIT_STATE" property="auditState" jdbcType="CHAR" />
+    <!--一对一关联广告位 -->
+	 <association property="advPositionBean" column="F_POSITION_NUM"  resultMap="AdvPositionBean"/>  
+	<!-- 一对多关联地区 -->
+	<collection property="advAreaDzList" column="F_ADV_NUM" javaType="java.util.List" 
+	ofType="com.xwtech.uomp.base.pojo.adv.AdvAreaDzBean" select="getAreaByAdvNum"/>
+	<!-- 一对多关联品牌   -->
+   <collection property="advBrandDzList" column="F_ADV_NUM" javaType="java.util.List" 
+	ofType="com.xwtech.uomp.base.pojo.adv.AdvBrandDzBean" select="getBrandByAdvNum"/>
+  </resultMap>
+  
+  <resultMap id="AdvPositionBean" type="com.xwtech.uomp.base.pojo.adv.AdvPositionBean" >
+    <id column="F_POSITION_NUM" property="positionNum" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+    <result column="F_POSITION_NAME" property="positionName" jdbcType="VARCHAR" />
+    <result column="F_POSITION_TYPE" property="positionType" jdbcType="CHAR" />
+    <result column="F_POSITION_IMAGE" property="positionImage" jdbcType="VARCHAR" />
+    <result column="F_POSITION_DESC" property="positionDesc" jdbcType="VARCHAR" />
+    <result column="F_STATE" property="state" jdbcType="CHAR" />
+  </resultMap>
+  <resultMap id="AdvAreaDzBean" type="com.xwtech.uomp.base.pojo.adv.AdvAreaDzBean" >
+  <id column="F_ADV_NUM" property="advNum" jdbcType="VARCHAR" />
+  <result column="F_AREA_NUM" property="advAreaNum" jdbcType="VARCHAR" />
+  <result column="F_AREA_NAME" property="advAreaName" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="AdvBrandDzBean" type="com.xwtech.uomp.base.pojo.adv.AdvBrandDzBean" >
+   <id column="F_ADV_NUM" property="advNum" jdbcType="VARCHAR" />
+  <result column="F_BRAND_NUM" property="advBrandNum" jdbcType="VARCHAR" />
+  <result column="F_BRAND_NAME" property="advBrandName" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="getPostion"  resultMap="AdvPositionBean" >
+  select * from T_ADV_POSITION where F_POSITION_NUM=#{positionNum}
+  </select>
+      <select id="getAreaByAdvNum" resultMap="AdvAreaDzBean" >  
+        select taad.f_adv_num as F_ADV_NUM,taad.f_area_num as F_AREA_NUM,
+		(select tad.f_area_name  from T_AREA_DA tad where  taad.f_area_num=tad.f_boss_code) as F_AREA_NAME 
+ 		from T_ADV_AREA_DZ  taad where F_ADV_NUM =#{advNum}  
+    </select>  
+    
+     <select id="getBrandByAdvNum" resultMap="AdvBrandDzBean" >  
+        select tabd.f_adv_num as F_ADV_NUM,tabd.f_brand_num as F_BRAND_NUM,
+         (select tbd.f_brand_name from T_BRAND_DA tbd where tabd.f_brand_num=tbd.f_brand_num) as  F_BRAND_NAME 
+         from T_ADV_BRAND_DZ tabd where F_ADV_NUM =#{advNum}  
+  
+    </select> 
+    <select id="queryAdvInfoListOrderShowXh" resultMap="AdvInfoResultMap" parameterType="java.util.Map">
+   				 select F_ADV_NAME,F_ADV_NUM
+   				  from  T_ADV_INFO
+   				  where 1=1
+    					<if test="channelNum != null and channelNum != '' ">
+							 AND F_CHANNEL_NUM = #{channelNum}
+							</if>
+					     <if test="positionNum != null and positionNum != '' ">
+							 AND F_POSITION_NUM = #{positionNum}
+							</if>	
+							order by F_SHOW_XH				
+    </select>
+  <!-- 查询广告信息    -->
+  
+    <select id="queryAdvInfoList" resultMap="AdvInfoBean" parameterType="java.util.Map">
+	    	select * from(
+		select rownum row_num, a.*
+		  from (
+					select 
+						AI.F_ADV_NUM AS F_ADV_NUM, AI.F_CHANNEL_NUM AS F_CHANNEL_NUM , 
+						AI.F_POSITION_NUM AS F_POSITION_NUM, AI.F_ADV_NAME AS F_ADV_NAME, AI.F_ADV_DESC AS F_ADV_DESC, 
+				     	AI.F_ADV_MENU_ICON AS F_ADV_MENU_ICON, AI.F_ADV_IMG AS F_ADV_IMG, AI.F_ADV_URI AS F_ADV_URI , 
+				      	AI.F_OPEN_URI_TYPE AS F_OPEN_URI_TYPE, AI.F_ADV_IMG_TYPE AS F_ADV_IMG_TYPE, AI.F_SHOW_XH AS F_SHOW_XH, 
+				      	AI.F_BZ AS F_BZ, AI.F_USE_STATE AS F_USE_STATE, AI.F_ADV_IMG_S AS F_ADV_IMG_S , 
+				      	AI.F_START_TIME AS F_START_TIME , AI.F_END_TIME AS F_END_TIME, AI.F_AUDITER AS F_AUDITER, 
+				      	AI.F_AUDIT_TIME AS F_AUDIT_TIME , AI.F_AUDIT_STATE AS F_AUDIT_STATE,
+				      	AP.F_POSITION_NAME AS F_POSITION_NAME, AP.F_POSITION_TYPE AS F_POSITION_TYPE, 
+				      	AP.F_POSITION_IMAGE AS F_POSITION_IMAGE, AP.F_POSITION_DESC AS F_POSITION_DESC, AP.F_STATE AS F_STATE
+					 from T_ADV_INFO AI
+					JOIN T_ADV_POSITION AP
+		             ON AI.F_POSITION_NUM = AP.F_POSITION_NUM 
+							<choose>
+							 <when test="advNum != null and advAreaNum==null  and advBrandNum==null ">
+					       		AND AI.F_ADV_NUM =#{advNum}
+					      	</when>
+							<when test="advNum == null and advAreaNum==null and advBrandNum!=null ">
+							AND AI.F_ADV_NUM in (
+							select ABD.F_ADV_NUM from t_adv_brand_dz ABD  WHERE ABD.f_brand_num=#{advBrandNum}
+							)
+							</when>
+							<when test="advNum == null and advAreaNum!=null  and advBrandNum==null">
+							AND AI.F_ADV_NUM in (
+							select AAD.F_ADV_NUM from T_ADV_AREA_DZ AAD  WHERE AAD.f_area_num=#{advAreaNum}
+							)
+							</when>
+							<when test="advNum == null and advAreaNum!=null and advBrandNum !=null">
+							AND AI.F_ADV_NUM in (
+							 select ABD.F_ADV_NUM from t_adv_brand_dz ABD
+       						 JOIN t_adv_area_dz AAD on ABD.f_adv_num=AAD.f_adv_num and ABD.f_brand_num=#{advBrandNum} and AAD.f_area_num=#{advAreaNum}
+							)
+							</when>
+							<when test="advNum != null and advAreaNum!=null and advBrandNum !=null">
+							AND AI.F_ADV_NUM in (
+							 select ABD.F_ADV_NUM from t_adv_brand_dz ABD
+       						 JOIN t_adv_area_dz AAD on ABD.f_adv_num=AAD.f_adv_num and ABD.f_brand_num=#{advBrandNum} and AAD.f_area_num=#{advAreaNum} 
+       						 and ABD.F_ADV_NUM = #{advNum}
+							)
+							</when>
+							<otherwise>
+							</otherwise>
+							</choose>
+					
+						<if test="channelNum != null and channelNum != '' ">
+							 AND AI.F_CHANNEL_NUM like #{channelNum}||'%'
+							</if>
+					     <if test="positionNum != null and positionNum != '' ">
+							 AND AI.F_POSITION_NUM = #{positionNum}
+							</if>
+					      <if test="advName != null and advName != '' ">
+					       AND AI.F_ADV_NAME like '%'||#{advName}||'%'
+					      </if>
+					  
+					      <if test="useState != null and  useState != '' ">
+					       AND AI.F_USE_STATE = #{useState}
+					      </if>
+					      <if test="auditState != null and  auditState != '' ">
+					       AND AI.F_AUDIT_STATE = #{auditState}
+					      </if>
+					      order by AI.F_SHOW_XH
+				 	) a
+		        ) 
+		        WHERE ROW_NUM &gt; #{start}
+		        AND ROW_NUM &lt;= #{end}
+	</select>
+  <!-- 查询广告信息数量 -->
+  <select id="queryAdvInfoCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+				  select  COUNT(*)
+				  from T_ADV_INFO AI
+				      JOIN T_ADV_POSITION AP
+		             ON AI.F_POSITION_NUM = AP.F_POSITION_NUM 
+					    	<choose>
+							 <when test="advNum != null and advAreaNum==null  and advBrandNum==null ">
+					       		AND AI.F_ADV_NUM =#{advNum}
+					      	</when>
+							<when test="advNum == null and advAreaNum==null and advBrandNum!=null ">
+							AND AI.F_ADV_NUM in (
+							select ABD.F_ADV_NUM from t_adv_brand_dz ABD  WHERE ABD.f_brand_num=#{advBrandNum}
+							)
+							</when>
+							<when test="advNum == null and advAreaNum!=null  and advBrandNum==null">
+							AND AI.F_ADV_NUM in (
+							select AAD.F_ADV_NUM from T_ADV_AREA_DZ AAD  WHERE AAD.f_area_num=#{advAreaNum}
+							)
+							</when>
+							<when test="advNum == null and advAreaNum!=null and advBrandNum !=null">
+							AND AI.F_ADV_NUM in (
+							 select ABD.F_ADV_NUM from t_adv_brand_dz ABD
+       						 JOIN t_adv_area_dz AAD on ABD.f_adv_num=AAD.f_adv_num and ABD.f_brand_num=#{advBrandNum} and AAD.f_area_num=#{advAreaNum}
+							)
+							</when>
+							<when test="advNum != null and advAreaNum!=null and advBrandNum !=null">
+							AND AI.F_ADV_NUM in (
+							 select ABD.F_ADV_NUM from t_adv_brand_dz ABD
+       						 JOIN t_adv_area_dz AAD on ABD.f_adv_num=AAD.f_adv_num and ABD.f_brand_num=#{advBrandNum} and AAD.f_area_num=#{advAreaNum} 
+       						 and ABD.F_ADV_NUM = #{advNum}
+							)
+							</when>
+							<otherwise>
+							</otherwise>
+							</choose>
+					   
+					      
+					      <if test="channelNum != null and channelNum != '' ">
+							 AND AI.F_CHANNEL_NUM = #{channelNum}
+							</if>
+					      <if test="positionNum != null and  positionNum != '' ">
+					       AND AI.F_POSITION_NUM = #{positionNum}
+					      </if>
+					      <if test="advName != null and advName != '' ">
+					       AND AI.F_ADV_NAME like '%'||#{advName}||'%'
+					      </if>
+					      <if test="useState != null and  useState != '' ">
+					       AND AI.F_USE_STATE = #{useState}
+					      </if>
+					      <if test="auditState != null and  auditState != '' ">
+					       AND AI.F_AUDIT_STATE = #{auditState}
+					      </if>
+					    
+  </select>
+
+  <select id="findOneAdvInfoBean" resultMap="AdvInfoResultMap" parameterType="java.util.Map">
+  					select * from T_ADV_INFO AI
+						 JOIN T_ADV_POSITION AP
+							ON AI.F_POSITION_NUM=AP.F_POSITION_NUM
+					    JOIN  T_ADV_AREA_DZ AAD 
+					        ON AI.F_ADV_NUM =AAD.F_ADV_NUM 
+					    JOIN  T_ADV_BRAND_DZ ABD
+					    ON AI.F_ADV_NUM =ABD.F_ADV_NUM 
+					      <if test="advNum != null and advNum != '' ">
+					       AND AI.F_ADV_NUM  ='03'
+					      </if>
+					      <if test="advName != null and advName != '' ">
+					       AND AI.F_ADV_NAME like '%'||#{advName}||'%'
+					      </if>
+					      <if test="positionNum != null and  positionNum != '' ">
+					       AND AI.F_POSITION_NUM = #{positionNum}
+					      </if>
+					      <if test="useState != null and  useState != '' ">
+					       AND AI.F_USE_STATE = #{useState}
+					      </if>
+					      <if test="auditState != null and  auditState != '' ">
+					       AND AI.F_AUDIT_STATE = #{auditState}
+					      </if>
+  </select>
+  
+  
+   <insert id="saveAdvInfo" parameterType="com.xwtech.uomp.base.pojo.adv.AdvInfoBean" >
+    insert into T_ADV_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="advNum != null and advNum != '' " >
+        F_ADV_NUM,
+      </if>
+      <if test="channelNum != null and channelNum != '' " >
+        F_CHANNEL_NUM,
+      </if>
+      <if test="positionNum != null and positionNum != '' " >
+        F_POSITION_NUM,
+      </if>
+      <if test="advName != null and advName != '' " >
+        F_ADV_NAME,
+      </if>
+      <if test="advDesc != null" >
+        F_ADV_DESC,
+      </if>
+      <if test="advMenuIcon != null" >
+        F_ADV_MENU_ICON,
+      </if>
+      <if test="advImg != null" >
+        F_ADV_IMG,
+      </if>
+      <if test="advUri != null" >
+        F_ADV_URI,
+      </if>
+      <if test="openUriType != null and openUriType != '' " >
+        F_OPEN_URI_TYPE,
+      </if>
+      <if test="advImgType != null and advImgType != '' " >
+        F_ADV_IMG_TYPE,
+      </if>
+  
+      <if test="bz != null" >
+        F_BZ,
+      </if>
+      <if test="useState != null and useState != '' " >
+        F_USE_STATE,
+      </if>
+      <if test="advImgS != null" >
+        F_ADV_IMG_S,
+      </if>
+      <if test="startTime != null" >
+        F_START_TIME,
+      </if>
+      <if test="endTime != null" >
+        F_END_TIME,
+      </if>
+      <if test="auditer != null" >
+        F_AUDITER,
+      </if>
+      <if test="auditTime != null" >
+        F_AUDIT_TIME,
+      </if>
+      <if test="auditState != null and  auditState != '' " >
+        F_AUDIT_STATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="advNum != null and advNum != '' " >
+        #{advNum,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNum != null and channelNum != '' " >
+        #{channelNum,jdbcType=VARCHAR},
+      </if>
+      <if test="positionNum != null and positionNum != '' " >
+        #{positionNum,jdbcType=VARCHAR},
+      </if>
+      <if test="advName != null and advName != '' " >
+        #{advName,jdbcType=VARCHAR},
+      </if>
+      <if test="advDesc != null" >
+        #{advDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="advMenuIcon != null" >
+        #{advMenuIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="advImg != null" >
+        #{advImg,jdbcType=VARCHAR},
+      </if>
+      <if test="advUri != null" >
+        #{advUri,jdbcType=VARCHAR},
+      </if>
+      <if test="openUriType != null and openUriType != '' " >
+        #{openUriType,jdbcType=DECIMAL},
+      </if>
+      <if test="advImgType != null and advImgType != '' " >
+        #{advImgType,jdbcType=DECIMAL},
+      </if>
+      <if test="bz != null" >
+        #{bz,jdbcType=VARCHAR},
+      </if>
+      <if test="useState != null and useState != '' " >
+        #{useState,jdbcType=CHAR},
+      </if>
+      <if test="advImgS != null" >
+        #{advImgS,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=VARCHAR},
+      </if>
+      <if test="auditer != null" >
+        #{auditer,jdbcType=VARCHAR},
+      </if>
+      <if test="auditTime != null" >
+        #{auditTime,jdbcType=VARCHAR},
+      </if>
+      <if test="auditState != null and auditState != ''" >
+        #{auditState,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  
+   <update id="updateAdvInfo" parameterType="com.xwtech.uomp.base.pojo.adv.AdvInfoBean" >
+    update T_ADV_INFO
+    <set >
+      <if test="advName != null and advName != '' " >
+        F_ADV_NAME = #{advName},
+      </if>
+      <if test="advDesc != null" >
+        F_ADV_DESC = #{advDesc},
+      </if>
+      <if test="advMenuIcon != null and advMenuIcon!='' " >
+        F_ADV_MENU_ICON = #{advMenuIcon},
+      </if>
+      <if test="advImg != null and advImg!='' " >
+        F_ADV_IMG = #{advImg},
+      </if>
+      <if test="advUri != null and advUri!='' " >
+        F_ADV_URI = #{advUri},
+      </if>
+      <if test="openUriType != null and openUriType != ''" >
+        F_OPEN_URI_TYPE = #{openUriType},
+      </if>
+      <if test="advImgType != null and advImgType != ''" >
+        F_ADV_IMG_TYPE = #{advImgType},
+      </if>
+      
+      <if test="bz != null" >
+        F_BZ = #{bz},
+      </if>
+      <if test="useState != null and useState != ''" >
+        F_USE_STATE = #{useState},
+      </if>
+      <if test="advImgS != null and advImgS !=''" >
+        F_ADV_IMG_S = #{advImgS},
+      </if>
+      <if test="startTime != null" >
+        F_START_TIME = #{startTime,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null" >
+        F_END_TIME = #{endTime,jdbcType=VARCHAR},
+      </if>
+      
+    </set>
+    where F_ADV_NUM = #{advNum,jdbcType=VARCHAR}
+     
+  </update>
+  
+    <update id="updateAdvInfoUserState" parameterType="com.xwtech.uomp.base.pojo.adv.AdvInfoBean" >
+    update T_ADV_INFO
+    set
+        F_USE_STATE = #{useState}
+    
+    where F_ADV_NUM = #{advNum,jdbcType=VARCHAR}
+     
+  </update>
+  
+  <update id="verifyAdvInfo" parameterType="java.util.Map" >
+    update T_ADV_INFO
+    <set >
+      <if test="auditState != null and auditState != ''" >
+        F_AUDIT_STATE = #{auditState},
+      </if>
+      
+        F_AUDIT_TIME = to_char(sysdate,'yyyymmddhh24miss'),
+      
+      <if test="auditer != null" >
+        F_AUDITER = #{auditer,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where F_ADV_NUM = #{advNum,jdbcType=VARCHAR}
+  </update>
+  
+   <delete id="deleteAdvInfo" parameterType="java.lang.String" >
+    delete from T_ADV_INFO where F_ADV_NUM=#{advNum}  
+  </delete>
+</mapper>

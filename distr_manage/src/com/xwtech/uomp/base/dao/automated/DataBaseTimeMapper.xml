@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.automated.DataBaseTimeMapper">
+
+    <!-- 查询数据库时间 -->
+    <select id="queryDataBaseTime" resultType="java.lang.String">
+    	SELECT TO_CHAR(SYSDATE,'yyyy-MM-dd HH:mm:ss') DATETIME FROM DUAL
+    </select>
+
+
+    <!-- 当使用该Mybatis与Spring整合的时候，该文件必须和相应的Mapper接口文件同名，并在同一路径下 -->
+</mapper> 

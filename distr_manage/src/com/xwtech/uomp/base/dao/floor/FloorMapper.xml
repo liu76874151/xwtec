@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.xwtech.uomp.base.dao.floor.FloorMapper">
+	    <resultMap type="com.xwtech.uomp.base.pojo.floor.FloorBean" id="floorBean">
+        <result property="floorId" column="F_FLOOR_ID"/>
+        <result property="channelNum" column="F_CHANNEL_NUM"/>
+        <result property="floorNum" column="F_FLOOR_NUM"/>
+        <result property="floorName" column="F_FLOOR_NAME"/>
+        <result property="floorSeq" column="F_FLOOR_SEQ"/>
+        <result property="floorImage" column="F_FLOOR_IMAGE"/>
+        <result property="floorUrl" column="F_FLOOR_URL"/>
+        <result property="tempNum" column="F_TEMP_NUM"/>
+        <result property="floorBz" column="F_FLOOR_BZ"/>
+        <result property="state" column="F_STATE"/>
+        <result property="channelName" column="F_CHANNEL_NAME"/>
+    </resultMap>
+    
+    <!-- 根据条件查询楼层信息列表 -->
+    <select id="queryFloorList" resultMap="floorBean" parameterType="java.util.Map">
+	   select *
+		  from (select ROWNUM ROW_NUM, A.*
+		          from (select t1.*, t2.f_channel_name
+		                  from T_FLOOR_DA t1
+		                  left join T_CHANNEL_DA t2
+		                    on t1.f_channel_num = t2.f_channel_num
+		                  where 1=1
+		                  <if test="floorName != null">
+		                  	and t1.F_FLOOR_NAME like '%'||#{floorName}||'%'
+		                  </if>
+		                  <if test="channelNum != null">
+		                  	and t1.F_CHANNEL_NUM = #{channelNum}
+		                  </if>
+		                  <if test="state != null">
+		                  	and t1.F_STATE = #{state}
+		                  </if>
+		                    ) A)
+		 WHERE ROW_NUM &gt;#{start} 
+		 AND ROW_NUM &lt;= #{end}
+    </select>
+    
+    <!-- 根据条件查询楼层信息条数 -->
+    <select id="queryFloorCount"  resultType="java.lang.Integer" parameterType="java.util.Map">
+    	 select count(*)
+		   from T_FLOOR_DA t1
+		   left join T_CHANNEL_DA t2
+		     on t1.f_channel_num = t2.f_channel_num
+		     where 1=1
+		     	<if test="floorName != null">
+		         	and t1.F_FLOOR_NAME like '%'||#{floorName}||'%'
+		    	</if>
+		     	<if test="channelNum != null">
+		        	and t1.F_CHANNEL_NUM = #{channelNum}
+		    	</if>
+		    	<if test="state != null">
+		        	and t1.F_STATE = #{state}
+		    	</if>
+    </select>
+    
+    <!--查找关联某个模版的楼层数量 -->
+    <select id="queryFloorByTemplate"  resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from T_FLOOR_DA where F_TEMP_NUM = #{tempNum}
+    </select>
+    
+    <!-- 更新展示状态 -->
+    <select id="updateState">
+    	update T_FLOOR_DA set f_state = #{state} where f_floor_id = #{floorId}
+    </select>
+    
+    <select id="getFloorByPKid" resultMap="floorBean"  parameterType="java.util.Map">
+    	select * from T_FLOOR_DA where f_floor_id = #{floorId}
+    </select>
+    
+    <select id="queryFloorByIds" resultMap="floorBean"  parameterType="java.util.Map">
+    	select * from T_FLOOR_DA where f_floor_id in
+    	<foreach collection="floorids" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+       </foreach>
+    </select>
+    
+    <!-- 添加楼层 -->
+    <insert id="addFloorInfo" >
+    	INSERT INTO T_FLOOR_DA
+    	(
+    		F_FLOOR_ID,
+			F_CHANNEL_NUM,
+			F_FLOOR_NUM,
+			F_FLOOR_NAME,
+			F_FLOOR_SEQ,
+			F_FLOOR_IMAGE,
+			F_FLOOR_URL,
+			F_TEMP_NUM,
+			F_FLOOR_BZ,
+			F_STATE
+    	)
+    	VALUES
+    	(
+    		#{floorId,jdbcType=VARCHAR},
+    		#{channelNum,jdbcType=VARCHAR},
+    		#{floorNum,jdbcType=VARCHAR},
+    		#{floorName,jdbcType=VARCHAR},
+    		#{floorSeq,jdbcType=VARCHAR},
+    		#{floorImage,jdbcType=VARCHAR},
+    		#{floorUrl,jdbcType=VARCHAR},
+    		#{tempNum,jdbcType=VARCHAR},
+    		#{floorBz,jdbcType=VARCHAR},
+    		#{state,jdbcType=VARCHAR}
+    	)
+    </insert>
+    
+    <!-- 修改楼层 -->
+    <update id="updateFloorInfo">
+    	UPDATE T_FLOOR_DA
+    	<set> 
+    	<if test="channelNum!=null">
+    	F_CHANNEL_NUM = #{channelNum},
+    	</if>
+    	<if test="floorNum !=null">
+		F_FLOOR_NUM = #{floorNum},
+    	</if>
+		<if test="floorName !=null">
+		F_FLOOR_NAME = #{floorName},
+    	</if>	
+		<if test="floorSeq !=null">
+		F_FLOOR_SEQ = #{floorSeq},
+    	</if>	
+		<if test="floorImage !=null">
+		F_FLOOR_IMAGE = #{floorImage},
+    	</if>		
+		<if test="floorUrl !=null">
+		F_FLOOR_URL = #{floorUrl},
+    	</if>		
+		<if test="tempNum !=null">
+		F_TEMP_NUM = #{tempNum},
+    	</if>		
+		<if test="floorBz !=null">
+		F_FLOOR_BZ = #{floorBz},
+    	</if>		
+		<if test="state !=null">
+		F_STATE = #{state}
+    	</if>		
+			</set>
+			WHERE F_FLOOR_ID = #{floorId}
+    </update>
+    
+    <!-- 删除楼层 -->
+    <delete id="deleteFloorInfo">
+    	DELETE FROM T_FLOOR_DA WHERE F_FLOOR_ID = #{floorId}
+    </delete>
+</mapper>

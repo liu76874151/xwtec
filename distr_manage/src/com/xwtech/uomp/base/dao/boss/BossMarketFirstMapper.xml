@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.boss.BossMarketFirstMapper" >
+  
+  <resultMap id="bossMarketFirstBean" type="com.xwtech.uomp.base.pojo.boss.BossMarketFirstBean" >
+    <result column="MARKET_FIRST_CODE" property="marketFirstCode" jdbcType="VARCHAR" />
+    <result column="CITY_ID" property="cityId" jdbcType="DECIMAL" />
+    <result column="MARKET_FIRST_NAME" property="marketFirstName" jdbcType="VARCHAR" />
+    <result column="START_TIME" property="startTime" jdbcType="CHAR" />
+    <result column="END_TIME" property="endTime" jdbcType="CHAR" />
+    <result column="TYPE" property="type" jdbcType="CHAR" />
+    <result column="T_CHANNAL" property="tchannal" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="queryBossMarketFirstListcount" resultType="java.lang.Integer" parameterType="java.util.Map">
+  select count(*)
+					  from boss_market_first
+					 
+		          where 1=1
+		
+         <if test="marketFirstCode != null">
+            AND MARKET_FIRST_CODE = #{marketFirstCode}
+        </if>
+         <if test="type != null">
+            AND TYPE = #{type}
+        </if>
+        <if test="cityId != null">
+            AND CITY_ID in 
+            <foreach collection="cityId" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+            </foreach>
+        </if>
+  </select>
+  <select id="queryBossMarketFirstList" resultMap="bossMarketFirstBean" parameterType="java.util.Map">
+        select * from(
+		select rownum row_num, a.*
+			  from (select market_first_code,
+					       market_first_name,
+					       start_time,
+					       end_time,
+					       city_id,
+					       type,
+					       t_channal
+					  from boss_market_first
+					
+		     where 1=1
+         <if test="marketFirstCode != null">
+            AND MARKET_FIRST_CODE = #{marketFirstCode}
+        </if>
+         <if test="type != null">
+            AND TYPE = #{type}
+        </if>
+        <if test="cityId != null">
+            AND CITY_ID in 
+            <foreach collection="cityId" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+            </foreach>
+        </if>
+      
+        ) a) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+    
+    <select id="queryOneBossMarketFirstBean" resultMap="bossMarketFirstBean" parameterType="java.util.Map">
+    	select t.*
+		  from BOSS_MARKET_FIRST t,jsmss_zone_sort z
+		 where t.market_first_code = #{marketFirstCode}
+		   and t.city_id = z.org_map_id
+		   and z.boss_code= #{cityId}
+    </select>
+
+	<insert id="insert" parameterType="com.xwtech.uomp.base.pojo.boss.BossMarketFirstBean">
+		insert into BOSS_MARKET_FIRST
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+		 <if test="marketFirstCode != null" >
+		 market_first_code,
+		 </if>
+		  <if test="marketFirstName != null" >
+		 Market_First_Name,
+		 </if>
+		 <if test="startTime != null" >
+       	 	START_TIME,
+     	 </if>
+     	 <if test="endTime != null" >
+       	 	END_TIME,
+     	 </if>
+     	 <if test="cityId != null" >
+       	 	CITY_ID,
+     	 </if>
+     	  <if test="type != null" >
+       	 	TYPE,
+     	 </if>
+		 </trim>
+		  <trim prefix="values (" suffix=")" suffixOverrides="," >
+		   <if test="marketFirstCode != null" >
+        	#{marketFirstCode},
+     		 </if>
+     		 <if test="marketFirstName != null" >
+        	#{marketFirstName},
+     		 </if>
+		    <if test="startTime != null" >
+        	#{startTime},
+     		 </if>
+     		 <if test="endTime != null" >
+       		 #{endTime},
+      		</if>
+      		 <if test="cityId != null" >
+        	(select org_map_id from jsmss_zone_sort where boss_code=#{cityId}),
+     		 </if>
+     		  <if test="type != null" >
+       		 #{type},
+      		</if>
+		  </trim>
+	  	<!--  (market_first_code,
+	   	Market_First_Name,
+	  	START_TIME,
+	   	END_TIME,
+	   	CITY_ID,
+	   	Type,T_CHANNAL)
+		values
+	  	(#{marketFirstCode}, #{marketFirstName}, ' ', ' ', (select org_map_id from jsmss_zone_sort where boss_code=#{cityId}), '0',#{tchannal})-->
+	</insert>
+	<delete id="deleteMarketFirst" parameterType="java.lang.String"> 
+    delete from boss_market_first f where f.market_first_code=#{marketFirstCode}
+	</delete>
+</mapper>

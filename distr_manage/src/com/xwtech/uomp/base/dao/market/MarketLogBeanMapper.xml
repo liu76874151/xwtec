@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.market.MarketLogBeanMapper" >
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.market.MarketLogBean" >
+    <id column="PKID" property="pkid" jdbcType="VARCHAR" />
+    <result column="MARKET_FIRST_PKID" property="marketFirstPkid" jdbcType="VARCHAR" />
+    <result column="MARKET_SECOND_PKID" property="marketSecondPkid" jdbcType="VARCHAR" />
+    <result column="FIRST_CODE" property="firstCode" jdbcType="VARCHAR" />
+    <result column="SECOND_CODE" property="secondCode" jdbcType="VARCHAR" />
+    <result column="CITY" property="city" jdbcType="VARCHAR" />
+    <result column="CASE_LEVEL" property="caseLevel" jdbcType="CHAR" />
+    <result column="TYPE" property="type" jdbcType="CHAR" />
+    <result column="OPT_USER" property="optUser" jdbcType="VARCHAR" />
+    <result column="OPT_TIME" property="optTime" jdbcType="VARCHAR" />
+    <result column="FLAG" property="flag" jdbcType="CHAR" />
+  </resultMap>
+  <update id="updateSyncCache">
+  update JSMSS_MARKET_OPT_LOG 
+  <set>
+  flag=1
+  </set>
+  </update>
+  <insert id="saveMarketLog" parameterType="com.xwtech.uomp.base.pojo.market.MarketLogBean" >
+    insert into JSMSS_MARKET_OPT_LOG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pkid != null" >
+        PKID,
+      </if>
+      <if test="marketFirstPkid != null" >
+        MARKET_FIRST_PKID,
+      </if>
+      <if test="marketSecondPkid != null" >
+        MARKET_SECOND_PKID,
+      </if>
+      <if test="firstCode != null" >
+        FIRST_CODE,
+      </if>
+      <if test="secondCode != null" >
+        SECOND_CODE,
+      </if>
+      <if test="city != null" >
+        CITY,
+      </if>
+      <if test="caseLevel != null" >
+        CASE_LEVEL,
+      </if>
+      <if test="type != null" >
+        TYPE,
+      </if>
+      <if test="optUser != null" >
+        OPT_USER,
+      </if>
+        OPT_TIME,
+      <if test="flag != null" >
+        FLAG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pkid != null" >
+        #{pkid,jdbcType=VARCHAR},
+      </if>
+      <if test="marketFirstPkid != null" >
+        #{marketFirstPkid,jdbcType=VARCHAR},
+      </if>
+      <if test="marketSecondPkid != null" >
+        #{marketSecondPkid,jdbcType=VARCHAR},
+      </if>
+      <if test="firstCode != null" >
+        #{firstCode,jdbcType=VARCHAR},
+      </if>
+      <if test="secondCode != null" >
+        #{secondCode,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="caseLevel != null" >
+        #{caseLevel,jdbcType=CHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=CHAR},
+      </if>
+      <if test="optUser != null" >
+        #{optUser,jdbcType=VARCHAR},
+      </if>
+      to_char(SYSDATE,'YYYYMMDDHH24MISS'),
+      <if test="flag != null" >
+        #{flag,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+ 
+</mapper>

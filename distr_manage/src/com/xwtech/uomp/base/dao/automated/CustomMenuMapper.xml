@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xwtech.uomp.base.dao.automated.CustomMenuMapper">
+
+
+    <resultMap id="viewCustom" type="java.util.Map">
+        <result property="subSysNum" column="F_SUBSYS_NUM"/>
+        <result property="subSysName" column="F_SUBSYS_NAME"/>
+        <result property="funcId" column="F_FUNC_ID"/>
+        <result property="moudleSortName" column="F_MOULD_SORT_NAME"/>
+        <result property="jbNum" column="F_JB_NUM"/>
+        <result property="jb" column="F_JB"/>
+        <result property="mj" column="F_MJ"/>
+        <result property="bz" column="F_BZ"/>
+        <result property="funcName" column="F_FUNC_NAME"/>
+        <result property="funcUri" column="F_FUNC_URI"/>
+    </resultMap>
+    <resultMap id="privilege" type="java.util.Map">
+        <result property="id" column="F_JB_NUM"/>
+        <result property="text" column="F_FUNC_NAME"/>
+        <result property="pid" column="PID"/>
+        <result property="mj" column="F_MJ"/>
+        <result property="subSysNum" column="F_SUBSYS_NUM"/>
+        <result property="subSysName" column="F_SUBSYS_NAME"/>
+        <result property="funcId" column="F_FUNC_ID"/>
+        <result property="checked" column="ISCHECK"/>
+        <result property="funcType" column="F_FUNC_TYPE"/>
+    </resultMap>
+    <resultMap id="treeMapKasi" type="java.util.Map">
+        <result property="id" column="ID"/>
+        <result property="text" column="TEXT"/>
+        <result property="pid" column="PID"/>
+        <result property="mj" column="MJ"/>
+        <result property="jb" column="F_JB"/>
+        <result property="jbNum" column="F_JB_NUM"/>
+        <result property="funcId" column="F_FUNC_ID"/>
+        <result property="subSysNum" column="F_SUBSYS_NUM"/>
+        <result property="loginUserCode" column="F_LOGIN_USER_CODE"/>
+    </resultMap>
+    <select id="queryCustomMenuByUser" resultMap="treeMapKasi" parameterType="java.lang.String">
+	  SELECT DISTINCT A.F_SUBSYS_NUM||A.F_JB_NUM AS ID,A.F_MOULD_SORT_NAME AS TEXT, 
+		     (CASE WHEN B.F_JB_NUM IS NULL THEN '-1' ELSE B.F_SUBSYS_NUM||B.F_JB_NUM END) AS PID, 
+		     A.F_MJ AS MJ, 
+		     A.F_FUNC_ID, 
+		     A.F_JB, 
+		     A.F_SUBSYS_NUM, 
+		     A.F_JB_NUM,
+		     A.F_LOGIN_USER_CODE
+	     FROM T_MOULD_USER_DEF A LEFT JOIN (SELECT * FROM T_MOULD_USER_DEF) B 
+	      ON 
+	      SUBSTR(A.F_JB_NUM, 0, 2 * (A.F_JB - 1)) = 
+	      B.F_JB_NUM where A.F_LOGIN_USER_CODE=#{loginUserCode} ORDER BY A.F_JB_NUM ASC   
+    </select>
+    <select id="viewCustomMenu" resultMap="viewCustom" parameterType="com.xwtech.uomp.base.pojo.admin.CustomMenuBean">
+	    SELECT T.F_SUBSYS_NUM,
+	           T.F_FUNC_ID,
+	           T.F_MOULD_SORT_NAME,
+	           T.F_JB_NUM,
+	           T.F_JB,
+	           T.F_MJ,
+	           T.F_BZ, 
+			   TRF.F_FUNC_NAME,
+			   TRF.F_FUNC_URI,
+			   TSD.F_SUBSYS_NAME 
+			   FROM T_MOULD_USER_DEF T  
+			       LEFT JOIN T_SUBSYS_DA TSD ON T.F_SUBSYS_NUM=TSD.F_SUBSYS_NUM  
+				   LEFT JOIN T_PRM_FUNC TRF ON TRF.F_SUBSYS_NUM = T.F_SUBSYS_NUM 
+				   AND TRF.F_FUNC_ID=T.F_FUNC_ID  
+			   WHERE 1=1 
+			 	 AND T.F_FUNC_ID =#{funcId} 
+			  	 AND T.F_LOGIN_USER_CODE =#{loginUserCode}
+                 AND T.F_JB_NUM = #{jbNum}
+			     AND T.F_SUBSYS_NUM =#{subSysNum}
+    </select>
+    <delete id="deleteCustomMenu" parameterType="com.xwtech.uomp.base.pojo.admin.CustomMenuBean">
+       DELETE FROM T_MOULD_USER_DEF WHERE  
+          F_SUBSYS_NUM =#{subSysNum} AND F_LOGIN_USER_CODE =#{loginUserCode} AND F_JB_NUM =#{jbNum} AND F_FUNC_ID =#{funcId}
+   </delete>
+
+    <update id="updateMjById" parameterType="map">
+        UPDATE T_MOULD_USER_DEF SET F_MJ =1 WHERE F_JB_NUM =#{jbNumsub} AND F_LOGIN_USER_CODE =#{loginUserCode} 
+    </update>
+
+    <select id="queryEqiLevelCountByJbNum" resultType="int" parameterType="map">
+	   SELECT COUNT(*) FROM T_MOULD_USER_DEF T 
+				WHERE 
+				SUBSTR(T.F_JB_NUM, 1, LENGTH(T.F_JB_NUM) - 2) = SUBSTR(#{jbNum}, 1, LENGTH(#{jbNum}) - 2) 
+				AND F_LOGIN_USER_CODE =#{loginUserCode}
+    </select>
+
+
+    <update id="updateCustomMenu" parameterType="java.util.Map">
+        UPDATE T_MOULD_USER_DEF SET F_MOULD_SORT_NAME=#{moudleSortName},F_BZ =#{bz} 
+        WHERE F_SUBSYS_NUM=#{subSysNum} AND F_LOGIN_USER_CODE =#{loginUserCode} AND F_JB_NUM =#{jbNum} AND F_FUNC_ID =#{funcId} 
+    </update>
+
+    <!-- 查询第一级级别信息 -->
+    <select id="queryFirstJbNum" resultType="java.lang.String">
+		SELECT MAX(F_JB_NUM) AS NUM
+ 		  FROM (SELECT SUBSTR(F_NUM, LENGTH(F_NUM) - 1, 2) F_JB_NUM
+          FROM (SELECT '00' || TO_CHAR(TO_NUMBER(MAX(F_JB_NUM)) + 1) F_NUM
+          FROM T_MOULD_USER_DEF
+          WHERE F_JB = 1 AND F_SUBSYS_NUM =#{subSysNum} AND F_LOGIN_USER_CODE =#{loginUserCode})
+        UNION
+        SELECT '01' F_JB_NUM FROM DUAL)
+    </select>
+
+
+    <!-- 保存自定义菜单 -->
+    <select id="insertCustomMenu" parameterType="com.xwtech.uomp.base.pojo.admin.CustomMenuBean">
+		insert into T_MOULD_USER_DEF (F_SUBSYS_NUM, F_LOGIN_USER_CODE, F_FUNC_ID, F_MOULD_SORT_NAME, F_JB_NUM, F_BZ, F_JB, F_MJ)
+	    values (#{subSysNum}, #{loginUserCode}, #{funcId}, #{moudleSortName}, #{jbNum}, #{bz}, #{jb}, #{mj})
+    </select>
+
+
+    <select id="queryPrivilegeInfo" resultMap="privilege" parameterType="map">
+    	<![CDATA[
+
+    	  SELECT A.F_JB_NUM,
+		       A.F_FUNC_NAME,
+		       A.PID,
+		       A.F_MJ,
+		       A.F_SUBSYS_NUM,
+		       A.F_FUNC_ID,
+		       A.ISCHECK,
+		       A.F_FUNC_TYPE,
+		       D.F_SUBSYS_NAME
+		  FROM (SELECT F_SUBSYS_NUM,
+		               0 AS F_JB,
+		               'SUBSYS' || F_SUBSYS_NUM AS F_JB_NUM,
+		               '' AS F_FUNC_ID,
+		               F_SUBSYS_NAME AS F_FUNC_NAME,
+		               0 AS F_MJ,
+		               '' AS ISCHECK,
+		               0 AS F_FUNC_TYPE,
+		               '-1' AS PID
+		          FROM T_SUBSYS_DA T
+		         WHERE F_SUBSYS_NUM IN
+		               (SELECT DISTINCT F_SUBSYS_NUM FROM T_PRM_FUNC)
+		        UNION ALL
+		        SELECT M.F_SUBSYS_NUM,
+		               M.F_JB,
+		               'SUBSYS' || M.F_SUBSYS_NUM || M.F_JB_NUM AS F_JB_NUM,
+		               M.F_FUNC_ID,
+		               M.F_FUNC_NAME,
+		               M.F_MJ,
+		               M.ISCHECK,
+		               M.F_FUNC_TYPE,
+		               (CASE
+		                 WHEN N.F_JB_NUM IS NULL THEN
+		                  'SUBSYS' || M.F_SUBSYS_NUM
+		                 ELSE
+		                  'SUBSYS' || M.F_SUBSYS_NUM || N.F_JB_NUM
+		               END) AS PID
+			       FROM (SELECT DISTINCT A.F_SUBSYS_NUM,
+			                                A.F_JB,
+			                                A.F_JB_NUM,
+			                                A.F_FUNC_ID,
+			                                A.F_FUNC_NAME,
+			                                A.F_MJ,
+			                                CASE
+			                                  WHEN B.F_FUNC_ID IS NOT NULL THEN
+			                                   ''
+			                                  ELSE
+			                                   ''
+			                                END ISCHECK,
+			                                A.F_FUNC_TYPE
+	                  FROM T_PRM_FUNC A
+	                  LEFT JOIN (SELECT A.F_FUNC_ID, A.F_SUBSYS_NUM
+	                              FROM T_FUNC_QX A
+	                              JOIN (SELECT MAX(F_USER) F_USER,
+		                                          F_FUNC_ID,
+		                                          F_USER_TYPE,
+		                                          F_SUBSYS_NUM
+		                                     FROM T_FUNC_QX
+		                                    WHERE F_USER_TYPE = 0
+		                                      AND F_USER IN
+		                                          (SELECT F_GROUP_ID
+		                                             FROM T_USER_GROUP A
+		                                            WHERE EXISTS
+		                                            (SELECT *
+		                                                     FROM T_USER_GROUP
+		                                                    WHERE F_GROUP_ID IN
+		                                                          (SELECT F_USER_GROUP
+		                                                             FROM T_USER
+		                                                            WHERE F_LOGIN_NAME =
+		                                                                  #{userId})
+		                                                      AND ((SUBSTR(A.F_JB_NUM,
+		                                                                   1,
+		                                                                   2 * A.F_JB) =
+		                                                          SUBSTR(F_JB_NUM,
+		                                                                   1,
+		                                                                   2 * A.F_JB) AND
+		                                                          A.F_JB < F_JB) OR
+		                                                          (A.F_JB_NUM =
+		                                                          F_JB_NUM))))
+		                                    GROUP BY F_FUNC_ID,
+		                                             F_USER_TYPE,
+		                                             F_SUBSYS_NUM) B
+		                                ON (A.F_USER = B.F_USER AND
+		                                   A.F_USER_TYPE = B.F_USER_TYPE AND
+		                                   A.F_FUNC_ID = B.F_FUNC_ID AND
+		                                   A.F_SUBSYS_NUM = B.F_SUBSYS_NUM)
+		                             WHERE A.F_OPT_TYPE = 0
+		                            UNION
+		                            SELECT F_FUNC_ID, F_SUBSYS_NUM
+		                              FROM T_FUNC_QX
+		                             WHERE F_USER_TYPE = 1
+		                               AND F_USER = #{userId}
+		                               AND F_OPT_TYPE = 1
+		                            MINUS
+		                            SELECT F_FUNC_ID, F_SUBSYS_NUM
+		                              FROM T_FUNC_QX
+		                             WHERE F_USER_TYPE = 1
+		                               AND F_USER = #{userId}
+		                               AND F_OPT_TYPE = 2) B
+		                    ON A.F_FUNC_ID = B.F_FUNC_ID
+		                   AND A.F_SUBSYS_NUM = B.F_SUBSYS_NUM
+		                 WHERE A.F_FUNC_TYPE IN (0, 1)) M
+		          LEFT JOIN (SELECT * FROM T_PRM_FUNC) N
+		            ON SUBSTR(M.F_JB_NUM, 0, 2 * (M.F_JB - 1)) = N.F_JB_NUM
+		           AND M.F_SUBSYS_NUM = N.F_SUBSYS_NUM
+		         ORDER BY F_JB_NUM) A
+		  LEFT JOIN T_SUBSYS_DA D
+		    ON A.F_SUBSYS_NUM = D.F_SUBSYS_NUM  
+
+        ]]>
+    </select>
+
+    <!-- 根据Id更新末级信息  增加子级别 更改父级别的末级别 -->
+    <select id="updateMjByIdByJbNum" parameterType="map">
+		 UPDATE T_MOULD_USER_DEF SET F_MJ = 0 WHERE F_LOGIN_USER_CODE = #{loginUserCode} and F_JB_NUM = #{jbNum}
+		 and F_FUNC_ID ='TITLE' and F_SUBSYS_NUM ='00'
+    </select>
+
+
+    <!-- 根据fu级别编码查zi级别编码  -->
+    <select id="querySubJbNumFromBYSup" resultType="java.lang.String"
+            parameterType="com.xwtech.uomp.base.pojo.admin.CustomMenuBean">
+	    SELECT #{jbNum}||F_NUM AS N_JB_NUM FROM( SELECT MAX(F_NUM) F_NUM FROM(
+	    	SELECT SUBSTR(F_NUM, LENGTH(F_NUM)-1,2) F_NUM FROM(
+	    	SELECT '00'||TO_CHAR(TO_NUMBER(SUBSTR(MAX(F_JB_NUM),LENGTH(#{jbNum})+1,2))+1) F_NUM 
+	    FROM T_MOULD_USER_DEF  
+	    WHERE 
+	         F_JB_NUM LIKE CONCAT(#{jbNum},'%') 
+	         AND F_JB = LENGTH(#{jbNum})/2+1  
+	         AND F_LOGIN_USER_CODE =#{loginUserCode}   
+	         AND F_SUBSYS_NUM =#{subSysNum}
+	         ) 
+	    UNION SELECT '01' F_NUM FROM DUAL ))
+    </select>
+
+    <!-- 查询是否存在已经保存的数据-->
+    <select id="queryHaveCustomMenu" resultType="java.lang.String" parameterType="java.lang.String">
+	    SELECT 'HAVE'||'-'||A.F_SUBSYS_NUM||'-'||A.F_MOULD_SORT_NAME||'-'||A.F_FUNC_ID AS HAVELIST 
+        FROM T_MOULD_USER_DEF A  WHERE A.F_LOGIN_USER_CODE=#{loginUserCode}
+    </select>
+	
+	<!-- 控制台自定义菜单 -->
+	<select id="queryCustomMenuOnConsole" resultMap="viewCustom" parameterType="java.lang.String">
+		SELECT DISTINCT A.F_SUBSYS_NUM || A.F_JB_NUM AS ID,
+					D.F_SUBSYS_NUM,
+                    D.F_SUBSYS_NAME,
+	                A.F_MOULD_SORT_NAME,
+	                (CASE
+	                  WHEN B.F_JB_NUM IS NULL THEN
+	                   '-1'
+	                  ELSE
+	                   B.F_SUBSYS_NUM || B.F_JB_NUM
+	                END) AS PID,
+	                A.F_MJ AS MJ,
+	                A.F_FUNC_ID,
+	                A.F_JB,
+	                A.F_SUBSYS_NUM,
+	                A.F_JB_NUM,
+	                A.F_LOGIN_USER_CODE,
+	                C.F_FUNC_URI
+	  FROM T_MOULD_USER_DEF A
+	  LEFT JOIN (SELECT * FROM T_MOULD_USER_DEF) B
+	    ON SUBSTR(A.F_JB_NUM, 0, 2 * (A.F_JB - 1)) = B.F_JB_NUM
+	  LEFT JOIN T_PRM_FUNC C
+	    ON C.F_FUNC_ID = A.F_FUNC_ID
+	  LEFT JOIN T_SUBSYS_DA D
+      ON D.F_SUBSYS_NUM = A.F_SUBSYS_NUM
+	 where A.F_LOGIN_USER_CODE = #{loginUserCode}
+	   AND A.F_MJ > 0
+	 ORDER BY A.F_JB_NUM ASC
+	</select>
+
+</mapper> 

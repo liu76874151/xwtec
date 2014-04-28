@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+    <display-name>UOMP</display-name>
+    <description>统一运营管理平台</description>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            /WEB-INF/cfg/applicationContext.xml,
+            /WEB-INF/cfg/applicationContext-*.xml
+        </param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>VisitorLogFilter</filter-name>
+        <filter-class>com.xwtech.uomp.base.web.filter.VisitorLogFilter</filter-class>
+    </filter>
+
+    <filter>
+        <filter-name>SetCharacterEncoding</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+
+    <filter>
+        <filter-name>LoginFilter</filter-name>
+        <filter-class>com.xwtech.uomp.base.web.filter.LoginFilter</filter-class>
+        <init-param>
+            <param-name>excludeURL</param-name>
+            <param-value>
+                /test.jsp;/index.jsp;/page/login_code.jsp;login,loginCheck;login,getLogout;commonQuery,generalQuery;/components/mobile/
+            </param-value>
+        </init-param>
+    </filter>
+
+    <filter>
+        <filter-name>PermissionFilter</filter-name>
+        <filter-class>com.xwtech.uomp.base.web.filter.PermissionFilter</filter-class>
+        <init-param>
+            <param-name>excludeURL</param-name>
+            <param-value>
+                /index.jsp;/page/login_code.jsp;login,loginCheck;/page/frame.jsp;menu,getMenuInfo;login,getLogout;commonQuery,generalQuery
+            </param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>SetCharacterEncoding</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>VisitorLogFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>VisitorLogFilter</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>LoginFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>LoginFilter</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>PermissionFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>PermissionFilter</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+
+    <listener>
+        <listener-class>
+            org.springframework.web.context.ContextLoaderListener
+        </listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>
+            com.xwtech.uomp.base.web.listen.ApplicationContextListener
+        </listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>dispatcherServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>
+                /WEB-INF/cfg/controllers.xml
+            </param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>dispatcherServlet</servlet-name>
+        <url-pattern>*.do</url-pattern>
+    </servlet-mapping>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+    <welcome-file-list>
+        <welcome-file>/index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/404.jsp</location>
+    </error-page>
+
+    <taglib>
+        <taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
+        <taglib-location>/WEB-INF/etc/tld/c.tld</taglib-location>
+    </taglib>
+    <taglib>
+        <taglib-uri>http://java.sun.com/jsp/jstl/fn</taglib-uri>
+        <taglib-location>/WEB-INF/etc/tld/fn.tld</taglib-location>
+    </taglib>
+
+    <taglib>
+        <taglib-uri>http://www.xwtech.com/jsp/jstl/pub</taglib-uri>
+        <taglib-location>/WEB-INF/etc/tld/pub.tld</taglib-location>
+    </taglib>
+</web-app>

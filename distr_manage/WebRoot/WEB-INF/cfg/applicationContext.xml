@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                           http://www.springframework.org/schema/task
+                           http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+    <!--加载配置文件-->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath*:uomp.properties</value>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- SpringMVC上传文件时，需要配置MultipartResolver处理器 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 指定所上传文件的总大小不能超过2M。注意maxUploadSize属性的限制不是针对单个文件，而是所有文件的容量之和 -->
+        <property name="maxUploadSize" value="20000000"/>
+    </bean>
+
+    <!--开启对注解的支持-->
+    <context:annotation-config/>
+
+    <!--启用任务注解-->
+    <task:annotation-driven/>
+
+    <!--扫描Service-->
+    <context:component-scan base-package="com.xwtech.uomp.base.service"/>
+    <context:component-scan base-package="com.xwtech.uomp.base.web.init.*"/>
+    
+
+    <!--扫描Repository DAO-->
+    <context:component-scan base-package="com.xwtech.uomp.base.dao">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+
+    <!--扫描Component-->
+    <context:component-scan base-package="com.xwtech.uomp.base.util.genpage"/>
+    <context:component-scan base-package="com.xwtech.uomp.base.action.handler">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+    </context:component-scan>
+
+    <!--配置线程池-->
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="3"/>
+        <property name="keepAliveSeconds" value="200"/>
+        <property name="maxPoolSize" value="5"/>
+        <property name="queueCapacity" value="1000"/>
+    </bean>
+
+</beans>

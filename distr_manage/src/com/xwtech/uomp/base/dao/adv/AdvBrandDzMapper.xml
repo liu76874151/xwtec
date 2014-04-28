@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.adv.AdvBrandDzMapper" >
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.adv.AdvBrandDzBean" >
+    <id column="F_ADV_NUM" property="advNum" jdbcType="VARCHAR" />
+    <id column="F_BRAND_NUM" property="advBrandNum" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="saveAdvBrandDz" parameterType="com.xwtech.uomp.base.pojo.adv.AdvBrandDzBean">
+    insert into T_ADV_BRAND_DZ
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="advNum != null" >
+        F_ADV_NUM,
+      </if>
+      <if test="advBrandNum != null" >
+        F_BRAND_NUM
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="advNum != null" >
+        #{advNum,jdbcType=VARCHAR},
+      </if>
+	  <if test="advBrandNum != null" >
+        #{advBrandNum,jdbcType=VARCHAR}
+      </if>
+    </trim>
+  </insert>
+    <delete id="deleteAdvBrandDz" parameterType="java.lang.String" >
+    delete from T_ADV_BRAND_DZ where F_ADV_NUM=#{advNum}  
+  </delete>
+
+</mapper>

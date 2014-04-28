@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.boss.BossMarketSecondMapper" >
+  <resultMap id="bossMarketSecondBean" type="com.xwtech.uomp.base.pojo.boss.BossMarketSecondBean" >
+    <result column="MARKET_SECOND_CODE" property="marketSecondCode"  />
+    <result column="CITY_ID" property="cityId"  />
+    <result column="MARKET_FIRST_CODE" property="marketFirstCode" jdbcType="VARCHAR" />
+    <result column="MARKET_SECOND_NAME" property="marketSecondName" jdbcType="VARCHAR" />
+    <result column="START_TIME" property="startTime" jdbcType="CHAR" />
+    <result column="END_TIME" property="endTime" jdbcType="CHAR" />
+    <result column="BRAND_ID" property="brandId" jdbcType="VARCHAR" />
+    <result column="MONEY_VAL" property="moneyVal" jdbcType="DECIMAL" />
+    <result column="T_CHANNAL" property="tchannal" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="bossMarketCodeResultMap" type="java.util.Map" >
+    <result column="MARKET_SECOND_CODE" property="marketSecondCode"  />
+    <result column="CITY_ID" property="cityId"  />
+    <result column="MARKET_FIRST_CODE" property="marketFirstCode" jdbcType="VARCHAR" />
+    <result column="MARKET_SECOND_NAME" property="marketSecondName" jdbcType="VARCHAR" />
+    <result column="START_TIME" property="startTime" jdbcType="CHAR" />
+    <result column="END_TIME" property="endTime" jdbcType="CHAR" />
+    <result column="BRAND_ID" property="brandId" jdbcType="VARCHAR" />
+    <result column="MONEY_VAL" property="moneyVal" jdbcType="DECIMAL" />
+    <result column="T_CHANNAL" property="tchannal" jdbcType="VARCHAR" />
+    <result column="BIZ_CODE" property="bizCode" jdbcType="VARCHAR" />
+    <result column="BIZ_NAME" property="bizName" jdbcType="VARCHAR" />
+    <result column="BOSS_GIFT_ID" property="giftId" jdbcType="VARCHAR" />
+    <result column="GIFT_NAME" property="giftName" jdbcType="VARCHAR" />
+    <result column="MARKET_FIRST_NAME" property="marketFirstName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+    
+  <select id="queryBossMarketSecondList" resultMap="bossMarketSecondBean" parameterType="java.util.Map">
+        select * from(
+		select rownum row_num, a.*
+			  from (select market_second_code,
+				       market_first_code,
+				       market_second_name,
+				       start_time,
+				       end_time,
+				       city_id,
+				       brand_id,
+				       money_val,
+				       t_channal
+				  from boss_market_second
+					) a
+		          where 1=1
+		 <!-- 
+        <if test="tchannal != null">
+            AND T_CHANNAL = #{tchannal}
+        </if>
+         -->
+         <if test="marketFirstCode != null">
+            AND MARKET_FIRST_CODE = #{marketFirstCode}
+        </if>
+        <if test="cityId != null">
+            AND CITY_ID = #{cityId}
+        </if>
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+  <select id="queryBossCodeList" resultMap="bossMarketCodeResultMap" parameterType="java.util.Map">
+  select * from(
+		select rownum row_num, a.*  from (
+  SELECT BBB.BIZ_CODE,BBB.BIZ_NAME, BGI.BOSS_GIFT_ID,BGI.GIFT_NAME,BMF.MARKET_FIRST_NAME,
+  BMS.MARKET_SECOND_CODE,
+  (select zone_name from jsmss_zone_sort where ORG_MAP_ID=BMS.CITY_ID) AS CITY_ID,
+  BMF.MARKET_FIRST_CODE,BMS.MARKET_SECOND_NAME,
+  BMS.START_TIME,BMS.END_TIME,BMS.BRAND_ID||'-123' AS BRAND_ID,BMS.MONEY_VAL,BMS.T_CHANNAL
+   FROM BOSS_MARKET_SECOND BMS 
+ 	RIGHT JOIN BOSS_MARKET_FIRST BMF ON BMS.MARKET_FIRST_CODE=BMF.MARKET_FIRST_CODE
+	LEFT JOIN BOSS_GIFT_INFO BGI ON BMS.MARKET_SECOND_CODE=BGI.MARKET_SECOND_CODE
+	LEFT JOIN BOSS_BIND_BIZ BBB ON BBB.MARKET_SECOND_CODE=BMS.MARKET_SECOND_CODE
+	 where 1=1
+	 <if test="marketFirstCode != null">
+            AND BMS.MARKET_FIRST_CODE = #{marketFirstCode}
+        </if>
+         <if test="marketSecondCode != null">
+            AND BMS.MARKET_SECOND_CODE = #{marketSecondCode}
+        </if>
+        	) a
+        	 ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <select id="queryBossCodeListCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+  
+  SELECT COUNT(*)
+   FROM BOSS_MARKET_SECOND BMS 
+ 	 RIGHT JOIN BOSS_MARKET_FIRST BMF ON BMS.MARKET_FIRST_CODE=BMF.MARKET_FIRST_CODE
+	 LEFT JOIN BOSS_GIFT_INFO BGI ON BMS.MARKET_SECOND_CODE=BGI.MARKET_SECOND_CODE
+	 LEFT JOIN BOSS_BIND_BIZ BBB ON BBB.MARKET_SECOND_CODE=BMS.MARKET_SECOND_CODE
+	 where 1=1
+	 <if test="marketFirstCode != null">
+            AND BMS.MARKET_FIRST_CODE = #{marketFirstCode}
+        </if>
+         <if test="marketSecondCode != null">
+            AND BMS.MARKET_SECOND_CODE = #{marketSecondCode}
+        </if>
+  </select>
+  
+  <select id="queryOneBossMarketSecondBean" resultMap="bossMarketSecondBean" parameterType="java.util.Map">
+  	select t.*
+			  from BOSS_MARKET_SECOND t, jsmss_zone_sort z
+			 where t.market_second_code = #{marketSecondCode}
+			 and t.city_id=z.org_map_id
+			 and z.boss_code=#{cityId}
+  </select>
+  
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.boss.BossMarketSecondBean">
+	insert into BOSS_MARKET_SECOND
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="marketSecondCode != null" >
+        MARKET_SECOND_CODE,
+      </if>
+      <if test="cityId != null" >
+        CITY_ID,
+      </if>
+      <if test="marketFirstCode != null" >
+        MARKET_FIRST_CODE,
+      </if>
+      <if test="marketSecondName != null" >
+        MARKET_SECOND_NAME,
+      </if>
+      <if test="startTime != null" >
+        START_TIME,
+      </if>
+      <if test="endTime != null" >
+        END_TIME,
+      </if>
+      <if test="brandId != null" >
+        BRAND_ID,
+      </if>
+      <if test="moneyVal != null" >
+        MONEY_VAL,
+      </if> 
+      <if test="tchannal != null" >
+        T_CHANNAL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="marketSecondCode != null" >
+        #{marketSecondCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null" >
+        (select org_map_id from jsmss_zone_sort where boss_code=#{cityId}),
+      </if>
+      <if test="marketFirstCode != null" >
+        #{marketFirstCode,jdbcType=VARCHAR},
+      </if>
+      <if test="marketSecondName != null" >
+        #{marketSecondName,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=CHAR},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=CHAR},
+      </if>
+      <if test="brandId != null" >
+        #{brandId,jdbcType=VARCHAR},
+      </if>
+     <if test="moneyVal != null" >
+        #{moneyVal,jdbcType=DECIMAL},
+      </if> 
+      <if test="tchannal != null" >
+        #{tchannal,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <update id="updateBossMarketSecondBean" parameterType="com.xwtech.uomp.base.pojo.boss.BossMarketSecondBean">
+  	update BOSS_MARKET_SECOND
+	    <set >
+	      <if test="marketFirstCode != null" >
+	        MARKET_FIRST_CODE = #{marketFirstCode,jdbcType=VARCHAR},
+	      </if>
+	      <if test="marketSecondName != null" >
+	        MARKET_SECOND_NAME = #{marketSecondName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="startTime != null" >
+	        START_TIME = #{startTime,jdbcType=CHAR},
+	      </if>
+	      <if test="endTime != null" >
+	        END_TIME = #{endTime,jdbcType=CHAR},
+	      </if>
+	      <if test="brandId != null" >
+	        BRAND_ID = #{brandId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="moneyVal != null" >
+	        MONEY_VAL = #{moneyVal,jdbcType=DECIMAL},
+	      </if>
+	      <if test="tchannal != null" >
+	        T_CHANNAL = #{tchannal,jdbcType=VARCHAR},
+	      </if>
+	    </set>
+    where MARKET_SECOND_CODE = #{marketSecondCode,jdbcType=VARCHAR}
+      and CITY_ID = (select org_map_id from jsmss_zone_sort where boss_code=#{cityId})
+  </update>
+  <delete id="deleteMarketSecond" parameterType="java.lang.String"> 
+	delete from boss_market_second s where  s.market_first_code =#{marketFirstCode}
+  </delete>
+</mapper>

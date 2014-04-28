@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.automated.GroupInfoMapper">
+    <resultMap id="treeMap" type="java.util.Map">
+        <result property="id" column="ID"/>
+        <result property="text" column="TEXT"/>
+        <result property="pid" column="PID"/>
+        <result property="mj" column="MJ"/>
+        <result property="groupId" column="F_GROUP_ID"/>
+        <result property="areaNum" column="F_GROUP_AREA"/>
+    </resultMap>
+
+    <resultMap type="com.xwtech.uomp.base.pojo.admin.GroupInfoBean" id="groupInfo">
+        <result property="groupId" column="F_GROUP_ID"/>
+        <result property="groupName" column="F_GROUP_NAME"/>
+        <result property="groupArea" column="F_GROUP_AREA"/>
+        <result property="bz" column="F_BZ"/>
+        <result property="jbNum" column="F_JB_NUM"/>
+        <result property="jb" column="F_JB"/>
+        <result property="mj" column="F_MJ"/>
+        <result property="parentId" column="parentId"/>
+    </resultMap>
+
+    <resultMap type="com.xwtech.uomp.base.pojo.admin.CityInfoBean" id="cityInfo">
+        <result property="areaNum" column="F_AREA_NUM"/>
+        <result property="areaName" column="F_AREA_NAME"/>
+        <result property="f_boss_code" column="F_BOSS_CODE"/>
+        <result property="bz" column="F_BZ"/>
+        <result property="jbNum" column="F_JB_NUM"/>
+        <result property="jb" column="F_JB"/>
+        <result property="mj" column="F_MJ"/>
+    </resultMap>
+
+    <select id="queryGroupInfoByName" resultMap="groupInfo" parameterType="java.lang.String">
+		SELECT A.* FROM T_USER_GROUP A WHERE A.F_GROUP_ID = (SELECT F_USER_GROUP FROM T_USER WHERE F_LOGIN_NAME = #{userName})
+    </select>
+
+    <select id="queryGroupInfo" resultMap="treeMap">
+    	SELECT A.F_GROUP_AREA,A.F_JB_NUM AS ID, A.F_GROUP_NAME AS TEXT, (CASE WHEN B.F_JB_NUM IS NULL THEN '-1' ELSE B.F_JB_NUM END) AS PID, A.F_MJ AS MJ, A.F_GROUP_ID
+		FROM T_USER_GROUP A LEFT JOIN (SELECT * FROM T_USER_GROUP) B ON SUBSTR(A.F_JB_NUM, 0, 2 * (A.F_JB - 1)) = B.F_JB_NUM ORDER BY A.F_JB_NUM ASC
+    </select>
+
+    <select id="queryGroupInfoById" resultMap="groupInfo" parameterType="java.lang.String">
+    	SELECT F_GROUP_ID GROUPID, F_GROUP_NAME GROUPNAME, F_JB_NUM JBNUM, F_JB JB, F_MJ MJ, F_BZ BZ,F_GROUP_AREA GROUPAREA FROM T_USER_GROUP WHERE F_GROUP_ID = #{groupId}
+    </select>
+
+    <!-- 查询第一级级别信息 -->
+    <select id="queryFirstJbNum" resultType="java.lang.String">
+		SELECT MAX(F_JB_NUM) AS NUM FROM(SELECT SUBSTR(F_NUM, LENGTH(F_NUM)-1,2) F_JB_NUM FROM (SELECT '00'||TO_CHAR(TO_NUMBER(MAX(F_JB_NUM))+1) 
+		F_NUM FROM T_USER_GROUP WHERE F_JB = 1 )UNION SELECT '01' F_JB_NUM FROM DUAL)
+    </select>
+
+    <!-- 查询所有区市信息 -->
+    <select id="queryAreaInfo" resultMap="cityInfo">
+		SELECT * FROM T_AREA_DA ORDER BY F_JB_NUM
+    </select>
+
+    <!-- 根据areaNum查询区市信息-->
+    <select id="queryAreaInfoByNum" resultMap="cityInfo" parameterType="java.lang.String">
+		SELECT C.F_AREA_NUM,C.F_AREA_NAME,C.F_JB_NUM,C.F_JB FROM T_AREA_DA C,(SELECT * FROM T_AREA_DA A 
+		WHERE A.F_AREA_NUM = #{areaNum}) B  WHERE B.F_JB_NUM = SUBSTR(C.F_JB_NUM, 0, B.F_JB * 2)
+    </select>
+
+    <!-- 根据子级别编码查父级别编码 -->
+    <select id="querySubJbNumFromSup" resultType="java.lang.String" parameterType="java.lang.String">
+    	SELECT #{supJbNum}||F_NUM AS N_JB_NUM FROM( SELECT MAX(F_NUM) F_NUM FROM(
+		SELECT SUBSTR(F_NUM, LENGTH(F_NUM)-1,2) F_NUM FROM(
+		SELECT '00'||TO_CHAR(TO_NUMBER(SUBSTR(MAX(F_JB_NUM),LENGTH(#{supJbNum})+1,2))+1) F_NUM FROM T_USER_GROUP
+		WHERE F_JB_NUM LIKE CONCAT(#{supJbNum},'%') AND F_JB = LENGTH(#{supJbNum})/2+1) 
+		UNION SELECT '01' F_NUM FROM DUAL ))
+    </select>
+
+    <!-- 保存用户组信息 -->
+    <select id="insertGroupInfo" parameterType="com.xwtech.uomp.base.pojo.admin.GroupInfoBean">
+		 INSERT INTO T_USER_GROUP (F_GROUP_ID, F_GROUP_NAME, F_JB_NUM, F_JB, F_MJ, F_BZ,F_GROUP_AREA) 
+		 VALUES( #{groupId}, #{groupName}, #{jbNum},#{jb}, #{mj}, #{bz}, #{groupArea})
+    </select>
+
+    <!-- 根据Id更新末级信息 -->
+    <select id="updateMjById" parameterType="java.lang.String">
+		 UPDATE T_USER_GROUP SET F_MJ = 0 WHERE F_GROUP_ID = #{supGroupId}
+    </select>
+
+    <!-- 删除用户组信息 -->
+    <select id="deleteGroupInfo" parameterType="java.lang.String">
+		 DELETE FROM T_USER_GROUP WHERE F_GROUP_ID = #{groupId} AND F_MJ = 1
+    </select>
+
+    <!-- 查询同一级别的记录个数 -->
+    <select id="queryEqiLevelCountByJbNum" resultType="int" parameterType="java.lang.String">
+		 SELECT COUNT(*) AS NUM FROM T_USER_GROUP T WHERE 
+		 SUBSTR(T.F_JB_NUM, 1, LENGTH(T.F_JB_NUM) - 2) = SUBSTR(#{jbNum}, 1, LENGTH(#{jbNum}) - 2)
+    </select>
+
+    <!-- 根据级别编号更新末级信息 -->
+    <select id="updateMjByJbNum" parameterType="java.lang.String">
+		UPDATE T_USER_GROUP SET F_MJ = 1 WHERE F_JB_NUM = #{substring}
+    </select>
+
+    <!-- 根据用户组ID删除权限 -->
+    <select id="deleteQxByGroupId" parameterType="java.lang.String">
+		DELETE FROM T_FUNC_QX WHERE F_USER = #{groupId}
+    </select>
+
+    <!-- 更新用户组信息 -->
+    <select id="updateGroupInfo" parameterType="com.xwtech.uomp.base.pojo.admin.GroupInfoBean">
+		UPDATE T_USER_GROUP SET F_GROUP_NAME = #{groupName}, F_BZ = #{bz}, 
+		F_GROUP_AREA=#{groupArea} WHERE F_GROUP_ID = #{groupId}
+    </select>
+
+    <!-- 查询该用户组的级别 -->
+    <select id="queryGroupJb" resultMap="groupInfo" parameterType="java.lang.String">
+		SELECT A.F_JB_NUM F_JB_NUM,A.F_JB F_JB,A.F_GROUP_TYPE FROM T_USER_GROUP A WHERE A.F_GROUP_ID = 
+				(SELECT F_USER_GROUP FROM T_USER WHERE F_LOGIN_NAME = #{loginName})
+    </select>
+
+    <!-- 当使用该Mybatis与Spring整合的时候，该文件必须和相应的Mapper接口文件同名，并在同一路径下 -->
+</mapper> 

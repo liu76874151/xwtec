@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.floor.FloorBlockDaMapper">
+
+ <resultMap id="floorBlockDaResultMap" type="com.xwtech.uomp.base.pojo.floor.FloorBlockDaBean" >
+    <id column="F_BLOCK_ID" property="blockId" jdbcType="DECIMAL" />
+    <result column="F_FLOOR_ID" property="floorId" jdbcType="DECIMAL" />
+    <result column="F_BLOCK_NUM" property="blockNum" jdbcType="VARCHAR" />
+    <result column="F_BLOCK_NAME" property="blockName" jdbcType="VARCHAR" />
+    <result column="F_BLOCK_URL" property="blockUrl" jdbcType="VARCHAR" />
+    <result column="F_BLOCK_DESC" property="blockDesc" jdbcType="VARCHAR" />
+    <result column="F_BEFORE_DS" property="beforeDs" jdbcType="VARCHAR" />
+    <result column="F_AFTER_DS" property="afterDs" jdbcType="VARCHAR" />
+    <result column="F_COLLECT_STATE" property="collectState" jdbcType="CHAR" />
+	<collection property="floorBlockContentList" column="F_BLOCK_ID" javaType="java.util.List" 
+	ofType="com.xwtech.uomp.base.pojo.floor.FloorBlockContentBean" select="getBlockContent"/>
+  </resultMap>
+  
+  	<select id="getBlockContent" resultMap="floorBlockContentBean" >
+	select * from t_floor_block_content where f_block_id = #{blockId}
+	</select>
+	
+  <resultMap type="com.xwtech.uomp.base.pojo.floor.FloorBlockContentBean"
+		id="floorBlockContentBean">
+		<result property="contentId" column="F_CONTENT_ID" />
+		<result property="blockId" column="F_BLOCK_ID" />
+		<result property="contentType" column="F_CONTENT_TYPE" />
+		<result property="contentTitle" column="F_CONTENT_TITLE" />
+		<result property="contentDesc" column="F_CONTENT_DESC" />
+		<result property="contentImg" column="F_CONTENT_IMG" />
+		<result property="contentUrl" column="F_CONTENT_URL" />
+		<result property="busiNum" column="F_BUSI_NUM" />
+		<result property="sortNum" column="F_SORT_NUM" />
+		<result property="state" column="F_STATE" />
+	</resultMap>
+	
+	<resultMap type="com.xwtech.uomp.base.pojo.floor.FloorBlockDaBean"
+		id="floorBlockDaBean">
+		<result property="blockId" column="F_BLOCK_ID" />
+		<result property="floorId" column="F_FLOOR_ID" />
+		<result property="blockNum" column="F_BLOCK_NUM" />
+		<result property="blockName" column="F_BLOCK_NAME" />
+		<result property="blockUrl" column="F_BLOCK_URL" />
+		<result property="blockDesc" column="F_BLOCK_DESC" />
+		<result property="beforeDs" column="F_BEFORE_DS" />
+		<result property="afterDs" column="F_AFTER_DS" />
+		<result property="collectState" column="F_COLLECT_STATE" />
+	</resultMap>
+	
+
+	
+	<resultMap type="java.util.Map" id="blockDaContentMap">
+		<result property="blockId" column="F_BLOCK_ID" />
+		<result property="floorId" column="F_FLOOR_ID" />
+		<result property="blockNum" column="F_BLOCK_NUM" />
+		<result property="blockName" column="F_BLOCK_NAME" />
+		<result property="blockUrl" column="F_BLOCK_URL" />
+		<result property="blockDesc" column="F_BLOCK_DESC" />
+		<result property="beforeDs" column="F_BEFORE_DS" />
+		<result property="afterDs" column="F_AFTER_DS" />
+		<result property="collectState" column="F_COLLECT_STATE" />
+		<result property="contentId" column="F_CONTENT_ID" />
+		<result property="contentType" column="F_CONTENT_TYPE" />
+		<result property="contentTitle" column="F_CONTENT_TITLE" />
+		<result property="contentDesc" column="F_CONTENT_DESC" />
+		<result property="contentImg" column="F_CONTENT_IMG" />
+		<result property="contentUrl" column="F_CONTENT_URL" />
+		<result property="busiNum" column="F_BUSI_NUM" />
+		<result property="sortNum" column="F_SORT_NUM" />
+		<result property="state" column="F_STATE" />
+	</resultMap>
+	
+	<resultMap type="java.util.Map" id="contentIdMap">
+		<result property="contentId" column="F_CONTENT_ID" />
+	</resultMap>
+	
+		<!-- 根据楼层ID获取区块和内容 -->
+	
+
+	<select id="queryBlockDAContentByFloorId" parameterType="java.util.Map" resultMap="floorBlockDaResultMap">
+	select  t1.* from t_floor_block_da t1 where t1.f_floor_id = #{floorId}
+	</select>
+	<!-- 根据楼层ID获取区块 -->
+	<select id="queryBlockByFloorId" parameterType="java.util.Map" resultMap="blockDaContentMap">
+		select  t1.f_block_id,
+			       t1.f_block_num,
+			       t1.f_block_name,
+			       t1.f_block_url,
+			       t1.f_block_desc,
+			       t1.f_before_ds,
+			       t1.f_after_ds,
+			       t2.f_content_id,
+			       t2.f_content_type,
+			       t2.f_content_title,
+			       t2.f_content_desc,
+			       t2.f_content_img,
+			       t2.f_content_url,
+			       t2.f_busi_num,
+			       t2.f_sort_num
+			  from t_floor_block_da t1
+			  left join t_floor_block_content t2
+			    on t1.f_block_id = t2.f_block_id
+			 where t1.f_floor_id = #{floorId}
+	</select>
+	
+	<select id="queryBlockDaByFloorId" parameterType="java.lang.String" resultMap="floorBlockDaBean">
+		select  * from t_floor_block_da where f_floor_id = #{floorId}
+	</select>
+	
+	<!-- 添加区块信息 -->
+	<insert id="addFloorBlockInfo">
+		INSERT INTO T_FLOOR_BLOCK_DA
+		(
+			F_BLOCK_ID,
+			F_FLOOR_ID,
+			F_BLOCK_NUM,
+			F_BLOCK_NAME,
+			F_BLOCK_URL,
+			F_BLOCK_DESC,
+			<if test="beforeDs != null">
+			F_BEFORE_DS,
+			</if>
+			<if test="afterDs != null">
+			F_AFTER_DS,
+			</if>
+			F_COLLECT_STATE
+		)
+		VALUES
+		(
+			#{blockId},
+			#{floorId},
+			#{blockNum},
+			#{blockName},
+			#{blockUrl},
+			#{blockDesc},
+			<if test="beforeDs != null">
+			#{beforeDs},
+			</if>
+			<if test="afterDs != null">
+			#{afterDs},
+			</if>
+			#{collectState}
+		)
+	</insert>
+	
+	<!-- 删除 -->
+	<delete id="deleteFloorBlock" parameterType="java.lang.String">
+		DELETE FROM T_FLOOR_BLOCK_DA WHERE F_FLOOR_ID = #{floorId}
+	</delete>
+	
+</mapper>

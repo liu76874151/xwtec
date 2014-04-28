@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.target.TargetMapper">
+	<resultMap type="com.xwtech.uomp.base.pojo.target.TargetBean"
+		id="targetBean">
+		<result property="id" column="ID" />
+		<result property="status" column="STATUS" />
+		<result property="importCount" column="IMPORT_COUNT" />
+		<result property="importDate" column="IMPORT_DATE" />
+		<result property="importFile" column="IMPORT_FILE" />
+		<result property="projectId" column="PROJECT_ID" />
+		<result property="dataDate" column="DATA_DATE" />
+		<result property="projectName" column="PROJECT_NAME" />
+		<result property="beginTime" column="BEGIN_TIME" />
+		<result property="endTime" column="END_TIME" />
+		<result property="areaName" column="F_AREA_NAME" />
+	</resultMap>
+
+	<select id="queryTargetByPage" resultMap="targetBean"
+		parameterType="java.util.Map">
+		select *
+		  from (select ROWNUM ROW_NUM, A.*
+		          from (
+					select  t1.id,
+						       t1.status,
+						       t1.import_count,
+						       t1.import_date,
+						       t1.import_file,
+						       t2.area_id,
+						       t2.project_name,
+						       t2.begin_time,
+						       t2.end_time,
+						       t3.f_area_name
+						  from dwr_project_rel t1
+						  left join dwr_project_main t2
+						    on t1.project_id = t2.id
+						  left join t_area_da t3
+						    on t2.area_id = t3.f_boss_code
+						  where 1=1
+						  <if test="area != null">
+						  	and t2.area_id = #{area}
+						  </if>
+			    		)A
+			    	)
+			    WHERE ROW_NUM &gt; #{start}
+		   		AND ROW_NUM &lt;= #{end}
+	</select>
+	
+	<select id="queryTargetCount"  resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*)
+		  from dwr_project_rel t1
+	</select>
+</mapper>

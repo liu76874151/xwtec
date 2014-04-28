@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.floor.FloorBlockFaMapper">
+	<resultMap type="com.xwtech.uomp.base.pojo.floor.FloorBlockFaBean"
+		id="floorBlockFaBean">
+		<result property="blockId" column="F_BLOCK_ID" />
+		<result property="floorId" column="F_FLOOR_ID" />
+		<result property="channelNum" column="F_CHANNEL_NUM"/>
+		<result property="floorNum" column="F_FLOOR_NUM"/>
+		<result property="blockNum" column="F_BLOCK_NUM" />
+		<result property="blockName" column="F_BLOCK_NAME" />
+		<result property="blockUrl" column="F_BLOCK_URL" />
+		<result property="blockDesc" column="F_BLOCK_DESC" />
+		<result property="beforeDs" column="F_BEFORE_DS" />
+		<result property="afterDs" column="F_AFTER_DS" />
+		<result property="collectState" column="F_COLLECT_STATE" />
+	</resultMap>
+
+	<select id="batchInsertBlockFa" parameterType="java.util.List">
+		insert into t_floor_block_fa
+		(
+			f_block_id,
+			f_floor_id,
+			f_channel_num,
+			f_floor_num,
+			f_block_num,
+			f_block_name,
+			f_block_url,
+			f_block_desc,
+			
+			f_collect_state
+		)
+		<foreach collection="list" item="item" index="index" separator="union all">
+			select
+			#{item.blockId},
+			#{item.floorId},
+			#{item.channelNum},
+			#{item.floorNum},
+			#{item.blockNum},
+			#{item.blockName},
+			#{item.blockUrl},
+			#{item.blockDesc},
+			
+			#{item.collectState}
+			from dual
+		</foreach>
+	</select>
+	
+	<select id="queryFloorBlockFa" parameterType="java.lang.String" resultMap="floorBlockFaBean">
+		select * from t_floor_block_fa where f_floor_id = #{floorId}
+	</select>
+	
+	<update id="updateCollectState" >
+		update t_floor_block_fa set f_collect_state = #{collectState} where f_block_id = #{blockId}
+	</update>
+
+</mapper>

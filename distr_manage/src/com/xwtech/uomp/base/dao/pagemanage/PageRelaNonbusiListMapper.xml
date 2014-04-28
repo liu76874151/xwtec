@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.pagemanage.PageRelaNonbusiListMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.pagemanage.PageRelaNonbusi" id="pageRelaNonbusi">
+        <result property="nonbusiNum" column="F_NONBUSI_NUM"/>
+        <result property="nonbusiName" column="F_NONBUSI_NAME"/>
+        <result property="pageTmpNum" column="F_PAGE_TMP_NUM"/>
+        <result property="version" column="F_VERSION"/>
+        <result property="isopen" column="F_ISOPEN"/>
+    </resultMap>
+
+    <!-- 查询信息 -->
+    <select id="queryNonbusiUsedList" resultMap="pageRelaNonbusi" parameterType="java.util.Map">
+        select a.f_nonbusi_num,
+               a.f_nonbusi_name,
+               b.f_page_tmp_num,
+               b.f_version,
+               b.f_isopen
+          from T_PAGE_NONBUSIINFO a
+          left join T_PAGE_RELA_NONBUSI_LIST b
+            on a.f_nonbusi_num = b.f_nonbusi_num
+           and b.f_page_tmp_num = #{pageTmpNum}
+           and b.f_version = #{version}
+         order by a.f_nonbusi_num
+    </select>
+
+    <!-- 查询页面模板关联非业务信息列表信息 -->
+    <select id="queryPageRelaNonbusiList" resultMap="pageRelaNonbusi" parameterType="java.util.Map">
+        select a.f_page_tmp_num,
+        a.f_version,
+        a.f_nonbusi_num,
+        a.f_isopen,
+        b.f_nonbusi_name
+        from T_PAGE_RELA_NONBUSI_LIST a
+        left join T_PAGE_NONBUSIINFO b
+        on a.f_nonbusi_num = b.f_nonbusi_num
+        where 1 = 1
+        <if test="pageTmpNum != null">
+            and a.f_page_tmp_num = #{pageTmpNum}
+        </if>
+        <if test="version != null">
+            and a.f_version in ('0',#{version})
+        </if>
+        order by a.f_nonbusi_num, a.f_version
+    </select>
+
+    <!-- 生成页面时，查询已选择的非业务的信息列表信息 -->
+    <select id="queryGeneratePageRelaNonbusiList" resultMap="pageRelaNonbusi" parameterType="java.util.Map">
+        select a.f_page_tmp_num,
+        a.f_version,
+        a.f_nonbusi_num,
+        a.f_isopen,
+        b.f_nonbusi_name
+        from T_PAGE_RELA_NONBUSI_LIST a
+        left join T_PAGE_NONBUSIINFO b
+        on a.f_nonbusi_num = b.f_nonbusi_num
+        where 1 = 1
+        <if test="pageTmpNum != null">
+            and a.f_page_tmp_num = #{pageTmpNum}
+        </if>
+        <if test="version != null">
+            and a.f_version in ('0',#{version})
+        </if>
+        <if test="nonbusiNums != null">
+            and a.f_nonbusi_num in
+            <foreach item="item" index="index" collection="nonbusiNums" open="(" separator="," close=")">#{item}</foreach>
+        </if>
+        order by a.f_page_tmp_num, a.f_version
+    </select>
+
+    <!-- 添加信息 -->
+    <insert id="savePageRelaNonbusiList" parameterType="com.xwtech.uomp.base.pojo.pagemanage.PageRelaNonbusiList">
+    INSERT INTO T_PAGE_RELA_NONBUSI_LIST
+    (F_PAGE_TMP_NUM, F_VERSION, F_NONBUSI_NUM, F_ISOPEN)
+    VALUES
+    (#{pageTmpNum},#{version},#{nonbusiNum},#{isopen})
+    </insert>
+
+    <!-- 删除信息 -->
+    <delete id="deletePageRelaNonbusiList" parameterType="java.util.Map">
+    DELETE FROM T_PAGE_RELA_NONBUSI_LIST WHERE F_PAGE_TMP_NUM = #{pageTmpNum} AND F_VERSION = #{version}
+    </delete>
+</mapper>

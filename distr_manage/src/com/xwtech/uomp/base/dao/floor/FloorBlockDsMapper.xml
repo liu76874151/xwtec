@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.xwtech.uomp.base.dao.floor.FloorBlockDsMapper">
+	<resultMap type="com.xwtech.uomp.base.pojo.floor.FloorBlockDsBean" id="floorBlockDsBean">
+        <result property="dsService" column="F_DS_SERVICE"/>
+        <result property="dsName" column="F_DS_NAME"/>
+        <result property="dsDesc" column="F_DS_DESC"/>
+    </resultMap>      
+    
+    <!-- 获取所有区块数据源 -->
+    <select id="queryBlockDsList" resultMap="floorBlockDsBean">
+    	SELECT * FROM T_FLOOR_BLOCK_DS
+    </select>
+</mapper>  

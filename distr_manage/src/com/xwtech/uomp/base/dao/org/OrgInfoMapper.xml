@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.org.OrgInfoMapper" >
+  <resultMap id="orgInfoBean" type="com.xwtech.uomp.base.pojo.org.OrgInfoBean" >
+    <id column="ORG_CODE" property="orgCode" jdbcType="DECIMAL" />
+    <result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+    <result column="ORG_ADDR" property="orgAddr" jdbcType="VARCHAR" />
+    <result column="LINK_TEL" property="linkTel" jdbcType="VARCHAR" />
+    <result column="CITY_ID" property="cityId" jdbcType="DECIMAL" />
+    <result column="ZONE_ID" property="zoneId" jdbcType="DECIMAL" />
+    <result column="STATE" property="state" jdbcType="CHAR" />
+    <result column="ORG_TYPE" property="orgType" jdbcType="CHAR" />
+    
+    <result column="F_AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+    <result column="ZONE_NAME" property="zoneName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="queryOrgInfo" resultMap="orgInfoBean" parameterType="java.util.Map">
+  	select * from(
+		select rownum row_num, a.*
+			  from (
+			  select t1.org_code,
+				       t1.org_name,
+				       t1.org_addr,
+				       t1.link_tel,
+				       t1.city_id,
+				       t1.zone_id,
+				       t1.state,
+				       t1.org_type,
+				       t2.f_area_name,
+				       t3.zone_name
+				 from jsmss_org_info t1
+				  left join t_area_da t2
+				    on t1.city_id = t2.f_boss_code
+				  left join jsmss_zone_sort t3
+				    on t3.zone_id = t1.zone_id
+					) a
+		          where 1=1
+        <if test="zoneId != null">
+            AND ZONE_ID = #{zoneId}
+        </if>
+        <if test="orgCode != null">
+        	AND org_code = #{orgCode}
+        </if>
+         <if test="orgName != null">
+            AND org_Name like '%'||#{orgName}||'%'
+        </if>
+         <if test="orgType != null">
+            AND org_type = #{orgType}
+        </if>
+        <if test="cityId != null">
+            AND CITY_ID like #{cityId}||'%'
+        </if>
+        ) 
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <select id="queryOrgInfoCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+  		select count(*) from jsmss_org_info
+  		where 1=1
+        <if test="zoneId != null">
+            AND ZONE_ID = #{zoneId}
+        </if>
+         <if test="orgCode != null">
+            AND org_code = #{orgCode}
+        </if>
+        <if test="orgName != null">
+            AND org_Name like '%'||#{orgName}||'%'
+         </if>
+         <if test="orgType != null">
+            AND org_type = #{orgType}
+        </if>
+        <if test="cityId != null">
+            AND CITY_ID like #{cityId}||'%'
+        </if>
+  </select>
+  
+  <select id="queryOrgInfoByPk" resultMap="orgInfoBean" parameterType="java.util.Map">
+  	select * from jsmss_org_info where org_code = #{orgCode}
+  </select>
+  
+  <insert id="addOrgInfo">
+  	insert into jsmss_org_info
+  	(
+  		ORG_CODE,
+		ORG_NAME,
+		ORG_ADDR,
+		LINK_TEL,
+		CITY_ID,
+		ZONE_ID,
+		STATE,
+		ORG_TYPE
+  	)
+  	values
+  	(
+  		#{orgCode},
+  		#{orgName},
+  		#{orgAddr},
+  		#{linkTel},
+  		#{cityId},
+  		#{zoneId},
+  		#{state},
+  		#{orgType}
+  	)
+  </insert>
+  
+  <update id="updateOrgInfo">
+  	update jsmss_org_info
+  	<set>
+  		<if test="orgName != null">
+  			ORG_NAME = #{orgName},
+  		</if>
+  		<if test="orgAddr != null">
+  			ORG_ADDR = #{orgAddr},
+  		</if>
+  		<if test="linkTel != null">
+  			LINK_TEL = #{linkTel},
+  		</if>
+  		<if test="cityId != null">
+  			CITY_ID = #{cityId},
+  		</if>
+  		<if test="zoneId != null">
+  			ZONE_ID = #{zoneId},
+  		</if>
+  		<if test="state != null">
+  			state = #{state},
+  		</if>
+  		<if test="orgType != null">
+  			ORG_TYPE = #{orgType}
+  		</if>
+  	</set>
+  	where org_code = #{orgCode}
+  </update>
+  
+  <update id="updateOrgInfoState">
+  	update jsmss_org_info
+  	set state = #{state}
+  	where org_code = #{orgCode}
+  </update>
+</mapper>

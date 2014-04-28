@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.pagemanage.PageCompInfoMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.pagemanage.PageCompInfo" id="pageCompInfo">
+        <result property="compNum" column="F_COMP_NUM"/>
+        <result property="compName" column="F_COMP_NAME"/>
+        <result property="compType" column="F_COMP_TYPE"/>
+        <result property="compUrl" column="F_COMP_URL"/>
+        <result property="containerId" column="F_CONTAINER_ID"/>
+        <result property="desc" column="F_DESC"/>
+    </resultMap>
+
+    <!-- 查询信息 -->
+    <select id="pagingQueryPageCompInfoList" resultMap="pageCompInfo" parameterType="java.util.Map">
+        SELECT *
+        FROM (SELECT ROWNUM ROW_NUM, A.*
+        FROM (SELECT F_COMP_NUM,
+        F_COMP_NAME,
+        F_COMP_TYPE,
+        F_COMP_URL,
+        F_CONTAINER_ID,
+        F_DESC
+        FROM T_PAGE_COMP_INFO
+        WHERE 1 = 1
+        <if test="compNum != null">
+            AND F_COMP_NUM = #{compNum}
+        </if>
+        <if test="compName != null">
+            AND F_COMP_NAME LIKE '%'||#{compName}||'%'
+        </if>
+        <if test="compType != null">
+            AND F_COMP_TYPE = #{compType}
+        </if>
+        ORDER BY F_COMP_NUM) A)
+        WHERE ROW_NUM &gt;#{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+
+    <select id="countPageCompInfoList" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT COUNT(*)
+        FROM T_PAGE_COMP_INFO
+        WHERE 1 = 1
+        <if test="compNum != null">
+            AND F_COMP_NUM = #{compNum}
+        </if>
+        <if test="compName != null">
+            AND F_COMP_NAME LIKE '%'||#{compName}||'%'
+        </if>
+        <if test="compType != null">
+            AND F_COMP_TYPE = #{compType}
+        </if>
+    </select>
+
+    <!-- 根据id查询信息 -->
+    <select id="findOnePageCompInfo" resultMap="pageCompInfo" parameterType="java.lang.String">
+        SELECT F_COMP_NUM,
+        F_COMP_NAME,
+        F_COMP_TYPE,
+        F_COMP_URL,
+        F_CONTAINER_ID,
+        F_DESC
+        FROM T_PAGE_COMP_INFO
+         WHERE F_COMP_NUM = #{pkid}
+         ORDER BY F_COMP_NUM
+    </select>
+
+	<!-- 根据组件类型查询组建列表 -->
+	<select id="queryPageCompInfoList" resultMap="pageCompInfo" parameterType="java.util.Map">
+		SELECT 
+		F_COMP_NUM,
+        F_COMP_NAME,
+        F_COMP_TYPE,
+        F_COMP_URL,
+        F_CONTAINER_ID,
+        F_DESC
+        FROM T_PAGE_COMP_INFO
+        WHERE 1 = 1
+	<if test="compNum != null">
+            AND F_COMP_NUM = #{compNum}
+        </if>
+        <if test="compName != null">
+            AND F_COMP_NAME LIKE '%'||#{compName}||'%'
+        </if>
+        <if test="compType != null">
+            AND F_COMP_TYPE = #{compType}
+        </if>
+        ORDER BY F_COMP_NUM
+	</select>
+
+    <!-- 添加信息 -->
+    <insert id="savePageCompInfo" parameterType="com.xwtech.uomp.base.pojo.pagemanage.PageCompInfo">
+        INSERT INTO T_PAGE_COMP_INFO
+          (F_COMP_NUM,F_COMP_NAME,F_COMP_TYPE,F_COMP_URL,F_CONTAINER_ID,F_DESC)
+        VALUES
+          (#{compNum}, #{compName}, #{compType}, #{compUrl}, #{containerId}, #{desc})
+    </insert>
+
+    <!-- 修改信息 -->
+    <update id="updatePageCompInfo" parameterType="com.xwtech.uomp.base.pojo.pagemanage.PageCompInfo">
+        UPDATE T_PAGE_COMP_INFO
+           SET F_COMP_NAME    = #{compName},
+               F_COMP_TYPE = #{compType},
+               F_COMP_URL    = #{compUrl},
+               F_CONTAINER_ID   = #{containerId},
+               F_DESC   = #{desc}
+         WHERE F_COMP_NUM = #{compNum}
+    </update>
+
+    <!-- 删除信息 -->
+    <delete id="deletePageCompInfo" parameterType="java.lang.String">
+      DELETE FROM T_PAGE_COMP_INFO WHERE F_COMP_NUM = #{pkid}
+    </delete>
+</mapper>

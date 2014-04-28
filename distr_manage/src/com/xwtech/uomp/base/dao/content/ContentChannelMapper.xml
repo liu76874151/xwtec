@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.content.ContentChannelMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.content.ContentChannelBean" id="contentChannelBean">
+        <result property="chanId" column="F_CHAN_ID"/>
+        <result property="channelNum" column="F_CHANNEL_NUM"/>
+        <result property="chanNum" column="F_CHAN_NUM"/>
+        <result property="chanName" column="f_CHAN_NAME"/>
+        <result property="showName" column="F_SHOW_NAME"/>
+        <result property="parentId" column="F_PARENT_ID"/>
+        <result property="parentName" column="F_PARENT_NAME"/>
+        <result property="logo" column="F_LOGO"/>
+        <result property="type" column="F_TYPE"/>
+        <result property="desc" column="F_DESC"/>
+        <result property="url" column="F_URL"/>
+        <result property="depository" column="F_DEPOSITORY"/>
+        <result property="sortNum" column="F_SORT_NUM"/>
+        <result property="state" column="F_STATE"/>
+        <result property="overviewTmp" column="F_OVERVIEW_TMP"/>
+        <result property="overviewTmp2" column="F_OVERVIEW_TMP2"/>
+        <result property="detailTmp" column="F_DETAIL_TMP"/>
+        <result property="detailTmp2" column="F_DETAIL_TMP2"/>
+        <result property="creater" column="F_CREATER"/>
+        <result property="createTime" column="F_CREATE_TIME"/>
+        <result property="updater" column="F_UPDATER"/>
+        <result property="updateTime" column="F_UPDATE_TIME"/>
+    </resultMap>
+
+    <resultMap id="treeMapKasi" type="java.util.Map">
+        <result property="id" column="ID"/>
+        <result property="text" column="TEXT"/>
+        <result property="pid" column="PID"/>
+        <result property="chanId" column="F_CHAN_ID"/>
+        <result property="channelNum" column="F_CHANNEL_NUM"/>
+        <result property="chanNum" column="F_CHAN_NUM"/>
+        <result property="chanName" column="f_CHAN_NAME"/>
+        <result property="showName" column="F_SHOW_NAME"/>
+        <result property="parentId" column="F_PARENT_ID"/>
+        <result property="parentName" column="F_PARENT_NAME"/>
+        <result property="logo" column="F_LOGO"/>
+        <result property="type" column="F_TYPE"/>
+        <result property="desc" column="F_DESC"/>
+        <result property="url" column="F_URL"/>
+        <result property="depository" column="F_DEPOSITORY"/>
+        <result property="sortNum" column="F_SORT_NUM"/>
+        <result property="state" column="F_STATE"/>
+        <result property="overviewTmp" column="F_OVERVIEW_TMP"/>
+        <result property="overviewTmp2" column="F_OVERVIEW_TMP2"/>
+        <result property="detailTmp" column="F_DETAIL_TMP"/>
+        <result property="detailTmp2" column="F_DETAIL_TMP2"/>
+        <result property="creater" column="F_CREATER"/>
+        <result property="createTime" column="F_CREATE_TIME"/>
+        <result property="updater" column="F_UPDATER"/>
+        <result property="updateTime" column="F_UPDATE_TIME"/>
+    </resultMap>
+    
+        <!-- 查询渠道下的频道信息 -->
+    <select id="querryChannelByChannal" resultMap="treeMapKasi" parameterType="java.lang.String">
+    SELECT DISTINCT  to_char(A.F_CHAN_ID) AS ID,A.F_CHAN_NAME AS TEXT,A.F_CHAN_NUM,
+	to_char(A.F_PARENT_ID) AS PID,to_char(A.F_CHAN_ID) AS chanId, to_char(A.F_PARENT_ID) AS parentId ,A.F_TYPE as type
+	from t_content_channel A LEFT JOIN 
+	(select * from t_content_channel) B ON A.F_PARENT_ID=B.F_CHAN_ID 
+	WHERE A.f_state = '0' and A.F_CHANNEL_NUM=#{channelNum}
+ 	ORDER BY A.F_CHAN_NUM ASC 
+    </select>
+    
+    <!-- 查询频道下所有非链接类子频道信息 -->
+    <select id="queryAllSubChannelList" resultMap="contentChannelBean" parameterType="java.util.Map">
+        select t.*
+          from T_CONTENT_CHANNEL t
+         where t.f_state = '0'
+           and t.f_type != '3'
+         start with t.f_chan_id = #{chanId}
+        connect by t.f_parent_id = PRIOR t.f_chan_id
+         order by t.f_chan_num
+    </select>
+
+    <!-- 查询渠道下所有非链接类频道信息 -->
+    <select id="queryAllChannelList" resultMap="contentChannelBean" parameterType="java.util.Map">
+        select t.*
+          from T_CONTENT_CHANNEL t
+         where t.f_channel_num = #{channelNum}
+           and t.f_state = '0'
+           and t.f_type != '3'
+         order by t.f_chan_num
+    </select>
+		<!-- start -->
+      <!-- 查询所有频道信息 -->
+    <select id="queryAllChannels" resultMap="contentChannelBean" parameterType="java.util.Map" >
+
+              SELECT *
+        FROM (SELECT ROWNUM ROW_NUM, A.*
+        FROM (
+        select t.*,
+        (select f_chan_name from T_CONTENT_CHANNEL  where F_CHAN_ID=t.f_parent_id) 
+         as F_PARENT_NAME 
+          from T_CONTENT_CHANNEL t
+            where t.f_state = '0'
+             <if test="channelNum != null and channelNum != '' " >
+       		 AND t.F_CHANNEL_NUM =#{channelNum}
+     		 </if>
+     		  <if test="parentId != null and parentId!=''" >
+       		 AND t.F_PARENT_ID =#{parentId}
+     		 </if>
+     		  <if test="showName != null" >
+       		 AND t.F_SHOW_NAME =#{showName}
+     		 </if>
+         order by t.f_chan_num) A)
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+    <!-- 统计数量 -->
+    <select id="queryAllChannelsCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+     	select COUNT(*)
+        from T_CONTENT_CHANNEL t
+        where t.f_state = '0'
+          <if test="channelNum != null" >
+           AND F_CHANNEL_NUM =#{channelNum}
+     	</if>
+     	 <if test="parentId != null and parentId!=''" >
+       		 AND t.F_PARENT_ID =#{parentId}
+     		 </if>
+     	<if test="showName != null" >
+       	 AND F_SHOW_NAME =#{showName}
+     	 </if>
+    </select>
+    <!-- 查询子专区频道 -->
+    <select id="querySubchannel" resultMap="contentChannelBean" parameterType="java.lang.String">
+    	select * 
+      	from T_CONTENT_CHANNEL t
+        where t.f_state = '0' and F_PARENT_ID=#{parentId}
+        order by t.F_SORT_NUM
+    </select>
+    
+    <!-- 根据chanId查询一条记录 -->
+    <select id="queryChannelByPkid" resultMap="contentChannelBean" parameterType="java.util.Map">
+     select *
+    from T_CONTENT_CHANNEL
+    where F_CHAN_ID = #{chanId}
+    </select>
+       
+    <!-- 保存 -->
+    <insert id="saveChannel" parameterType="com.xwtech.uomp.base.pojo.content.ContentChannelBean" >
+    insert into T_CONTENT_CHANNEL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="chanId != null" >
+        F_CHAN_ID,
+      </if>
+      <if test="channelNum != null" >
+        F_CHANNEL_NUM,
+      </if>
+      <if test="chanNum != null" >
+        F_CHAN_NUM,
+      </if>
+      <if test="chanName != null" >
+        F_CHAN_NAME,
+      </if>
+      <if test="showName != null" >
+        F_SHOW_NAME,
+      </if>
+      <if test="parentId != null" >
+        F_PARENT_ID,
+      </if>
+      <if test="logo != null" >
+        F_LOGO,
+      </if>
+      <if test="type != null" >
+        F_TYPE,
+      </if>
+      <if test="desc != null" >
+        F_DESC,
+      </if>
+      <if test="url != null" >
+        F_URL,
+      </if>
+      <if test="depository != null" >
+        F_DEPOSITORY,
+      </if>
+      <if test="state != null" >
+        F_STATE,
+      </if>
+      <if test="overviewTmp != null" >
+        F_OVERVIEW_TMP,
+      </if>
+      <if test="detailTmp != null" >
+        F_DETAIL_TMP,
+      </if>
+       <if test="overviewTmp2 != null" >
+        F_OVERVIEW_TMP2,
+      </if>
+      <if test="detailTmp2 != null" >
+        F_DETAIL_TMP2,
+      </if>
+      <if test="creater != null" >
+        F_CREATER,
+      </if>
+        F_CREATE_TIME,
+      <if test="updater != null" >
+        F_UPDATER,
+      </if>
+        F_UPDATE_TIME,
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="chanId != null" >
+        #{chanId},
+      </if>
+      <if test="channelNum != null" >
+        #{channelNum},
+      </if>
+      <if test="chanNum != null" >
+        #{chanNum},
+      </if>
+      <if test="chanName != null" >
+        #{chanName},
+      </if>
+      <if test="showName != null" >
+        #{showName},
+      </if>
+      <if test="parentId != null" >
+        #{parentId},
+      </if>
+      <if test="logo != null" >
+        #{logo},
+      </if>
+      <if test="type != null" >
+        #{type},
+      </if>
+      <if test="desc != null" >
+        #{desc},
+      </if>
+      <if test="url != null" >
+        #{url},
+      </if>
+      <if test="depository != null" >
+        #{depository},
+      </if>
+      <if test="state != null" >
+        #{state},
+      </if>
+      <if test="overviewTmp != null" >
+        #{overviewTmp},
+      </if>
+      <if test="detailTmp != null" >
+        #{detailTmp},
+      </if>
+      <if test="overviewTmp2 != null" >
+        #{overviewTmp2},
+      </if>
+      <if test="detailTmp2 != null" >
+        #{detailTmp2},
+      </if>
+      <if test="creater != null" >
+        #{creater},
+      </if>
+      SYSDATE,
+      <if test="updater != null" >
+        #{updater},
+      </if>
+      SYSDATE
+    </trim>
+  </insert>
+  <!-- 修改 -->
+  <update id="updateByPrimaryKey" parameterType="com.xwtech.uomp.base.pojo.content.ContentChannelBean">
+  update T_CONTENT_CHANNEL
+    <set >
+      <if test="channelNum != null and channelNum!='' " >
+        F_CHANNEL_NUM = #{channelNum},
+      </if>
+        <if test="chanNum != null and chanNum !=''" >
+        F_CHAN_NUM = #{chanNum},
+      </if>
+      <if test="chanName != null and chanName!=''" >
+        F_CHAN_NAME = #{chanName},
+      </if>
+      <if test="showName != null" >
+        F_SHOW_NAME = #{showName},
+      </if>
+      <if test="parentId != null and parentId!='' " >
+        F_PARENT_ID = #{parentId},
+      </if>
+      <if test="logo != null" >
+        F_LOGO = #{logo},
+      </if>
+      <if test="type != null and type!='' " >
+        F_TYPE = #{type},
+      </if>
+      <if test="desc != null" >
+        F_DESC = #{desc},
+      </if>
+      <if test="url != null" >
+        F_URL = #{url},
+      </if>
+      <if test="depository != null" >
+        F_DEPOSITORY = #{depository},
+      </if>
+      <if test="state != null" >
+        F_STATE = #{state},
+      </if>
+      <if test="overviewTmp != null" >
+        F_OVERVIEW_TMP = #{overviewTmp},
+      </if>
+      <if test="detailTmp != null" >
+        F_DETAIL_TMP = #{detailTmp},
+      </if>
+      <if test="updater != null" >
+        F_UPDATER = #{updater},
+      </if>
+        F_UPDATE_TIME = SYSDATE
+    </set>
+    where F_CHAN_ID = #{chanId}
+  </update>
+</mapper>

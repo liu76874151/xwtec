@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xwtech.uomp.base.dao.demo.StudentMapper">
+    <resultMap type="com.xwtech.uomp.base.pojo.demo.StudentBean" id="studentBean">
+        <result property="stuName" column="F_STU_NAME"/>
+        <result property="stuAge" column="F_STU_AGE"/>
+        <result property="stuSex" column="F_STU_SEX"/>
+        <result property="stuNative" column="F_STU_NATIVE"/>
+        <result property="stuTel" column="F_STU_TEL"/>
+        <result property="stuAddr" column="F_STU_ADDR"/>
+    </resultMap>
+
+    <!-- 查询学生信息 -->
+    <select id="queryStudentList" resultMap="studentBean" parameterType="java.util.Map">
+        SELECT *
+        FROM (SELECT ROWNUM ROW_NUM, A.*
+        FROM (SELECT F_STU_NAME,
+        F_STU_AGE,
+        F_STU_SEX,
+        F_STU_NATIVE,
+        F_STU_TEL,
+        F_STU_ADDR
+        FROM DEMO_STUDENT
+        WHERE 1 = 1
+        <if test="stuName != null">
+            AND F_STU_NAME = #{stuName}
+        </if>
+        <if test="stuAge != null">
+            AND F_STU_AGE = #{stuAge}
+        </if>
+        <if test="stuSex != null">
+            AND F_STU_SEX = #{stuSex}
+        </if>
+        <if test="stuNative != null">
+            AND F_STU_NATIVE = #{stuNative}
+        </if>
+        ORDER BY F_STU_NAME) A)
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+    </select>
+
+    <select id="queryStudentListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        SELECT COUNT(*)
+        FROM DEMO_STUDENT
+        WHERE 1 = 1
+        <if test="stuName != null">
+            AND F_STU_NAME = #{stuName}
+        </if>
+        <if test="stuAge != null">
+            AND F_STU_AGE = #{stuAge}
+        </if>
+        <if test="stuSex != null">
+            AND F_STU_SEX = #{stuSex}
+        </if>
+        <if test="stuNative != null">
+            AND F_STU_NATIVE = #{stuNative}
+        </if>
+        ORDER BY F_STU_NAME
+    </select>
+
+    <!-- 根据id查询学生信息 -->
+    <select id="findOneStudent" resultMap="studentBean" parameterType="java.lang.String">
+        SELECT F_STU_NAME,
+               F_STU_AGE,
+               F_STU_SEX,
+               F_STU_NATIVE,
+               F_STU_TEL,
+               F_STU_ADDR
+          FROM DEMO_STUDENT
+         WHERE F_STU_NAME = #{pkid}
+         ORDER BY F_STU_NAME
+    </select>
+
+    <!-- 添加学生信息 -->
+    <insert id="saveStudent" parameterType="com.xwtech.uomp.base.pojo.demo.StudentBean">
+        INSERT INTO DEMO_STUDENT
+          (F_STU_NAME, F_STU_AGE, F_STU_SEX, F_STU_NATIVE, F_STU_TEL, F_STU_ADDR)
+        VALUES
+          (#{stuName}, #{stuAge}, #{stuSex}, #{stuNative}, #{stuTel}, #{stuAddr})
+    </insert>
+
+    <!-- 修改学生信息 -->
+    <update id="updateStudent" parameterType="com.xwtech.uomp.base.pojo.demo.StudentBean">
+        UPDATE DEMO_STUDENT
+           SET F_STU_AGE    = #{stuAge},
+               F_STU_SEX    = #{stuSex},
+               F_STU_NATIVE = #{stuNative},
+               F_STU_TEL    = #{stuTel},
+               F_STU_ADDR   = #{stuAddr}
+         WHERE F_STU_NAME = #{stuName}
+    </update>
+
+    <!-- 删除学生信息 -->
+    <delete id="deleteStudent" parameterType="java.lang.String">
+      DELETE FROM DEMO_STUDENT WHERE F_STU_NAME = #{pkid}
+    </delete>
+</mapper>

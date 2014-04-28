@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+        <property name="driverClass" value="${jdbc.driverClassName}"/>
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <!-- 设置每个分区数 -->
+        <property name="partitionCount" value="${jdbc.partitionCount}"/>
+        <!-- 设置每个分区含有connection最大个数 -->
+        <property name="maxConnectionsPerPartition" value="${jdbc.maxConnectionsPerPartition}"/>
+        <!-- 设置每个分区含有connection最小个数 -->
+        <property name="minConnectionsPerPartition" value="${jdbc.minConnectionsPerPartition}"/>
+        <!-- 设置分区中的connection增长数量 -->
+        <property name="acquireIncrement" value="${jdbc.acquireIncrement}"/>
+        <!-- 设置连接池阀值 -->
+        <property name="poolAvailabilityThreshold" value="${jdbc.poolAvailabilityThreshold}"></property>
+        <!-- 设置获取connection超时的时间 -->
+        <property name="connectionTimeoutInMs" value="${jdbc.connectionTimeout}"></property>
+        <!-- 连接池中未使用的链接最大存活时间 -->
+        <property name="idleMaxAgeInMinutes" value="${jdbc.idleMaxAge}"/>
+        <!-- 检查数据库连接池中空闲连接的间隔时间 -->
+        <property name="idleConnectionTestPeriodInMinutes" value="${jdbc.idleConnectionTestPeriod}"/>
+        <!-- 语句缓存个数，默认是0 -->
+        <property name="statementsCacheSize" value="${jdbc.statementsCacheSize}"/>
+    </bean>
+
+    <!-- 指定处理此数据的类   -->
+    <bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler" abstract="false"
+          lazy-init="true" autowire="default">
+    </bean>
+
+    <!--配置spring的jdbcTemplate-->
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!-- 配置mybatis的sqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:MyBatis-Configuration.xml"></property>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--配置mybatis的sqlSessionTemplate-->
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean>
+
+    <!--配置mybatis的扫描映射器,自动创建映射器-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage"
+                  value="com.xwtech.uomp.base.dao.automated,
+                  com.xwtech.uomp.base.dao.demo,
+                  com.xwtech.uomp.base.dao.pagemanage,
+                  com.xwtech.uomp.base.dao.floor,
+                  com.xwtech.uomp.base.dao.content,
+                  com.xwtech.uomp.base.dao.boss,
+                  com.xwtech.uomp.base.dao.market,
+                  com.xwtech.uomp.base.dao.area,
+                  com.xwtech.uomp.base.dao.org,
+                  com.xwtech.uomp.base.dao.gift,
+                  com.xwtech.uomp.base.dao.business,
+                  com.xwtech.uomp.base.dao.adv,
+                  com.xwtech.uomp.base.dao.order,
+                  com.xwtech.uomp.base.dao.channel,
+                  com.xwtech.uomp.base.dao.target,
+                  com.xwtech.uomp.base.dao.brand,
+                  com.xwtech.uomp.base.dao.verify,
+                  com.xwtech.uomp.base.dao.webinfo,
+                  com.xwtech.uomp.base.dao.console
+                  "/>
+    </bean>
+
+    <!--配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!--拦截器方式的事务控制-->
+    <bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="*">PROPAGATION_REQUIRED,+NoRollbackException</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="proxyTargetClass" value="true"/>
+        <property name="beanNames">
+            <list>
+                <value>*Service</value>
+            </list>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--&lt;!&ndash;配置事物的切点&ndash;&gt;-->
+    <!--<aop:config>-->
+    <!--<aop:pointcut id="serviceMethods" expression="execution(* com.xwtech.uomp.base.service.impl.*Impl..*_Tran*(..))"/>-->
+    <!--<aop:pointcut id="daoMethods" expression="execution(* com.xwtech.uomp.base.dao.customize.*Impl*..*_Tran*(..))"/>-->
+    <!--<aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethods"/>-->
+    <!--<aop:advisor advice-ref="txAdvice" pointcut-ref="daoMethods"/>-->
+    <!--</aop:config>-->
+
+    <!--&lt;!&ndash; Service层事务级别 &ndash;&gt;-->
+    <!--<tx:advice id="txAdvice" transaction-manager="transactionManager">-->
+    <!--<tx:attributes>-->
+    <!--<tx:method name="*Req" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="Exception"/>-->
+    <!--<tx:method name="*Sup" propagation="SUPPORTS" isolation="READ_COMMITTED" rollback-for="Exception"/>-->
+    <!--<tx:method name="*Man" propagation="MANDATORY" isolation="READ_COMMITTED" rollback-for="Exception"/>-->
+    <!--<tx:method name="*ReqNew" propagation="REQUIRES_NEW" isolation="READ_COMMITTED"/>-->
+    <!--<tx:method name="*Nev" propagation="NEVER" isolation="READ_COMMITTED" rollback-for="Exception"/>-->
+    <!--<tx:method name="*Nes" propagation="NESTED" isolation="READ_COMMITTED" rollback-for="Exception"/>-->
+    <!--</tx:attributes>-->
+    <!--</tx:advice>
+     <bean id="marketFirstDao" class="com.xwtech.uomp.base.dao.market.MarketFirstDaoImpl">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>--> 
+</beans>

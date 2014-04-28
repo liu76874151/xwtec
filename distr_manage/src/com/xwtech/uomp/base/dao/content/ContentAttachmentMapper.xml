@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.content.ContentAttachmentMapper" >
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.content.ContentAttachmentBean" >
+    <id column="F_ATTACH_ID" property="attachId" jdbcType="DECIMAL" />
+    <result column="F_DOC_ID" property="docId" jdbcType="DECIMAL" />
+    <result column="F_ATTACH_NAME" property="attachName" jdbcType="VARCHAR" />
+    <result column="F_TYPE" property="type" jdbcType="CHAR" />
+    <result column="F_ATTACH_DIR" property="attachDir" jdbcType="VARCHAR" />
+    <result column="F_ATTACH_URL" property="attachUrl" jdbcType="VARCHAR" />
+    <result column="F_INTERFACE_DIR" property="interfaceDir" jdbcType="VARCHAR" />
+  </resultMap>
+<delete id="deleteAttachByDocId" parameterType="java.lang.String">
+      DELETE FROM T_CONTENT_ATTACHMENT WHERE F_DOC_ID = #{docId}
+    </delete>
+  <insert id="saveContentAttachment" parameterType="com.xwtech.uomp.base.pojo.content.ContentAttachmentBean" >
+    insert into T_CONTENT_ATTACHMENT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="attachId != null" >
+        F_ATTACH_ID,
+      </if>
+      <if test="docId != null" >
+        F_DOC_ID,
+      </if>
+      <if test="attachName != null" >
+        F_ATTACH_NAME,
+      </if>
+      <if test="type != null" >
+        F_TYPE,
+      </if>
+      <if test="attachDir != null" >
+        F_ATTACH_DIR,
+      </if>
+      <if test="attachUrl != null" >
+        F_ATTACH_URL,
+      </if>
+      <if test="interfaceDir != null" >
+        F_INTERFACE_DIR
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="attachId != null" >
+        #{attachId},
+      </if>
+      <if test="docId != null" >
+        #{docId},
+      </if>
+      <if test="attachName != null" >
+        #{attachName},
+      </if>
+      <if test="type != null" >
+        #{type},
+      </if>
+      <if test="attachDir != null" >
+        #{attachDir},
+      </if>
+      <if test="attachUrl != null" >
+        #{attachUrl},
+      </if>
+      <if test="interfaceDir != null" >
+        #{interfaceDir}
+      </if>
+    </trim>
+  </insert>
+ <update id="updateAttachByDocId" parameterType="com.xwtech.uomp.base.pojo.content.ContentAttachmentBean" >
+    update T_CONTENT_ATTACHMENT
+    <set >
+      <if test="docId != null" >
+        F_DOC_ID = #{docId,jdbcType=DECIMAL},
+      </if>
+      <if test="attachName != null" >
+        F_ATTACH_NAME = #{attachName,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        F_TYPE = #{type,jdbcType=CHAR},
+      </if>
+      <if test="attachDir != null and attachDir !='' " >
+        F_ATTACH_DIR = #{attachDir,jdbcType=VARCHAR},
+      </if>
+      <if test="attachUrl != null" >
+        F_ATTACH_URL = #{attachUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="interfaceDir != null  and interfaceDir !='' " >
+        F_INTERFACE_DIR = #{interfaceDir,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where F_ATTACH_ID = #{attachId,jdbcType=DECIMAL}
+  </update>
+
+</mapper>

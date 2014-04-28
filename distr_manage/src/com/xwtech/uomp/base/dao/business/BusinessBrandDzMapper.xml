@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xwtech.uomp.base.dao.business.BusinessBrandDzMapper" >
+  <resultMap id="businessBrandDzBean" type="com.xwtech.uomp.base.pojo.business.BusinessBrandDzBean" >
+    <result column="F_BUSI_NUM" property="busiNum" jdbcType="VARCHAR" />
+    <result column="F_BRAND_NUM" property="brandNum" jdbcType="VARCHAR" />
+    <result column="F_CHANNEL_NUM" property="channelNum" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap type="com.xwtech.uomp.base.pojo.brand.BrandBean" id="brandMap">
+       <result property="brandNum" column="F_BRAND_NUM"/>
+       <result property="brandName" column="F_BRAND_NAME"/>
+       <result property="jbNum" column="F_JB_NUM"/>
+       <result property="jb" column="F_JB"/>
+       <result property="memo" column="F_BZ"/>
+       <result property="bossCode" column="F_BOSS_CODE"/>
+       <result property="mj" column="F_MJ"/>
+   </resultMap>
+  
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.business.BusinessBrandDzBean" >
+    insert into T_BUSI_BRAND_DZ (F_BUSI_NUM, F_BRAND_NUM, F_CHANNEL_NUM
+      )
+    values (#{busiNum,jdbcType=VARCHAR}, #{brandNum,jdbcType=VARCHAR}, #{channelNum,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.xwtech.uomp.base.pojo.business.BusinessBrandDzBean" >
+    insert into T_BUSI_BRAND_DZ
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        F_BUSI_NUM,
+      </if>
+      <if test="brandNum != null" >
+        F_BRAND_NUM,
+      </if>
+      <if test="channelNum != null" >
+        F_CHANNEL_NUM,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="busiNum != null" >
+        #{busiNum,jdbcType=VARCHAR},
+      </if>
+      <if test="brandNum != null" >
+        #{brandNum,jdbcType=VARCHAR},
+      </if>
+      <if test="channelNum != null" >
+        #{channelNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <delete id="deleteByBusiNum" parameterType="java.lang.String">
+  	DELETE FROM T_BUSI_BRAND_DZ WHERE F_BUSI_NUM=#{busiNum}
+  </delete>
+  
+  <select id="queryBrandByBusiNum" parameterType="java.util.Map" resultMap="brandMap">
+  	select da.*
+	  from t_brand_da da
+	 where da.f_brand_num in
+	       (select b.f_brand_num
+	          from t_busi_brand_dz b
+	         where b.f_busi_num = #{busiNum})
+  </select>
+</mapper>

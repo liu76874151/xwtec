@@ -1,0 +1,799 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xwtech.uomp.base.dao.market.ReservationFirstBeanMapper" >
+  <resultMap id="BaseResultMap" type="com.xwtech.uomp.base.pojo.market.ReservationFirstBean" >
+    <result column="MARKET_FIRST_PKID" property="marketFirstPkid" jdbcType="DECIMAL" />
+    <result column="MARKET_FIRST_CODE" property="marketFirstCode" jdbcType="VARCHAR" />
+    <result column="MARKET_FIRST_NAME" property="marketFirstName" jdbcType="VARCHAR" />
+    <result column="VIEW_NAME" property="viewName" jdbcType="VARCHAR" />
+    <result column="IMG_DIR" property="imgDir" jdbcType="VARCHAR" />
+    <result column="FLASH_DIR" property="flashDir" jdbcType="VARCHAR" />
+    <result column="TO_OBJECT" property="toObject" jdbcType="VARCHAR" />
+    <result column="ACTIVITY_COMMENT" property="activityComment" jdbcType="VARCHAR" />
+    <result column="BEGIN_TIME" property="beginTime" jdbcType="CHAR" />
+    <result column="END_TIME" property="endTime" jdbcType="CHAR" />
+    <result column="IS_FLASH_VIEW" property="isFlashView" jdbcType="CHAR" />
+    <result column="IS_LIST_VIEW" property="isListView" jdbcType="CHAR" />
+    <result column="VIEW_TEMPLATE_ID" property="viewTemplateId" jdbcType="DECIMAL" />
+    <result column="STATE" property="state" jdbcType="CHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="CHAR" />
+    <result column="CITY" property="city" jdbcType="DECIMAL" />
+    <result column="VERIFY_STATE" property="verifyState" jdbcType="CHAR" />
+    <result column="CFG_USER_ID" property="cfgUserId" jdbcType="DECIMAL" />
+    <result column="MARKET_FIRST_TYPE" property="marketFirstType" jdbcType="CHAR" />
+    <result column="T_CHANNAL" property="tChannal" jdbcType="DECIMAL" />
+    <result column="TYPE" property="type" jdbcType="CHAR" />
+    <result column="MARKET_ORDER" property="marketOrder" jdbcType="DECIMAL" />
+    <result column="BIG_IMG_DIR" property="bigImgDir" jdbcType="VARCHAR" />
+    <result column="IS_IN_GROUP" property="isInGroup" jdbcType="CHAR" />
+    <result column="IS_IN_BRAND" property="isInBrand" jdbcType="VARCHAR" />
+    <result column="PAYMODE" property="paymode" jdbcType="CHAR" />
+    <result column="YX_IMG_DIR" property="yxImgDir" jdbcType="VARCHAR" />
+    <result column="PRIZE" property="prize" jdbcType="VARCHAR" />
+    <result column="CHANNAL_DATA" property="channalData" jdbcType="VARCHAR" />
+    <result column="BOSS_FIRST_CODE" property="bossFirstCode" jdbcType="VARCHAR" />
+    
+    <result column="PRO_VERIFY_STATE" property="proVerifyState"/>
+    <result column="LOCAL_VERIFY_STATE" property="localVerifyState"/>
+    <result column="TEST_ONLINE_STATE" property="testOnlineState"/>
+    <result column="F_AREA_NAME" property="areaName"/>
+    
+    <result column="WT_PRO_VERIFY_STATE" property="wtProVerifyState" jdbcType="VARCHAR" />
+	<result column="WT_LOCAL_VERIFY_STATE" property="wtLocalVerifyState" jdbcType="VARCHAR" />
+	<result column="WT_VERIFY_STATE" property="wtVerifyState" jdbcType="VARCHAR" />
+	
+	<result column="WT_TEST_ONLINE_STATE" property="wtTestOnlineState" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.xwtech.uomp.base.pojo.market.ReservationFirstBean" extends="BaseResultMap" >
+    <result column="TIPS" property="tips" jdbcType="CLOB" />
+  </resultMap>
+  <sql id="Blob_Column_List" >
+    TIPS
+  </sql>
+  <!-- 逻辑删除预约营销案 -->
+  <update id="deleteReservationFirst" parameterType="java.util.Map">
+     update jsmss_reservation_first
+    <set >
+    STATE='0'
+    </set>
+    where MARKET_FIRST_PKID in 
+      <foreach collection="reservationFirstPkids" item="item" open="(" separator="," close=")" index="index">
+            	#{item}
+       </foreach>
+  </update>
+  
+    <!-- 查询预约一级营销案下状态为1的二级营销案 -->
+  <select id="queryReservationSencodCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+  select count(*) from JSMSS_RESERVATION_SECOND where STATE='1' and MARKET_FIRST_PKID=#{reservationFirstPkid}
+  </select>
+  
+  
+  <select id="queryAllMarketOrder" resultMap="BaseResultMap" parameterType="java.lang.String">
+  select t.MARKET_FIRST_PKID ,t.view_name from jsmss_reservation_first t where t.CITY =#{city}
+  and t.STATE = '1' and to_char(sysdate,'YYYYMMDD')
+ between substr(t.begin_time,0,8) and substr(t.end_time,0,8) order by t.MARKET_ORDER
+  </select>
+     <!-- 查询预约一级营销案信息 -->
+  <select id="queryReservationFirstList" resultMap="BaseResultMap" parameterType="java.util.Map" >
+     SELECT *
+        FROM (SELECT ROWNUM ROW_NUM, A.*
+        FROM (
+     select 
+   J.MARKET_FIRST_PKID as MARKET_FIRST_PKID,  J.MARKET_FIRST_CODE as  MARKET_FIRST_CODE,  J.MARKET_FIRST_NAME as  MARKET_FIRST_NAME,
+   J.VIEW_NAME as  VIEW_NAME,  J.IMG_DIR as  IMG_DIR,  J.FLASH_DIR as  FLASH_DIR,  J.TO_OBJECT as      TO_OBJECT,  
+   J.ACTIVITY_COMMENT as  ACTIVITY_COMMENT,  J.BEGIN_TIME as  BEGIN_TIME,  J.END_TIME as  END_TIME,  
+   J.IS_FLASH_VIEW as  IS_FLASH_VIEW,  J.IS_LIST_VIEW as  IS_LIST_VIEW,  J.VIEW_TEMPLATE_ID as  VIEW_TEMPLATE_ID,  
+   J.STATE as      STATE,  J.CREATE_TIME as  CREATE_TIME,  T.F_AREA_NAME as  CITY,  J.VERIFY_STATE as  VERIFY_STATE,  
+   J.CFG_USER_ID as  CFG_USER_ID,  J.MARKET_FIRST_TYPE as  MARKET_FIRST_TYPE,  J.T_CHANNAL as  T_CHANNAL,
+   J.TYPE as  TYPE,J.MARKET_ORDER as  MARKET_ORDER  ,J.BIG_IMG_DIR as  BIG_IMG_DIR,  J.PRIZE as  PRIZE,  J.IS_IN_BRAND as  IS_IN_BRAND,  
+   J.YX_IMG_DIR as      YX_IMG_DIR,    
+   replace(replace(replace(J.CHANNAL_DATA,'4','网厅'),'5','掌厅'),'6','短厅') as  CHANNAL_DATA,   
+   J.TIPS as  TIPS
+    from JSMSS_RESERVATION_FIRST J,T_AREA_DA T
+    where   J.CITY  like  #{city}||'%'  and J.CITY=t.F_BOSS_CODE and STATE='1'
+    
+      <if test="isListView != null" >
+       AND  IS_LIST_VIEW = #{isListView} 
+      </if>
+      <if test="viewName != null" >
+        AND VIEW_NAME=#{viewName}
+      </if>
+       <if test="beginTime != null" >
+        AND to_date(j.BEGIN_TIME,'yyyy-mm-dd') &gt; to_date(#{beginTime},'yyyy-mm-dd')
+      </if>
+      <if test="endTime != null" >
+       AND to_date(j.END_TIME,'yyyy-mm-dd') &lt; to_date(#{endTime},'yyyy-mm-dd')
+      </if>
+      
+      <if test="type != null" >
+        AND TYPE =#{type}
+      </if>
+      <if test="tChannal != null" >
+       AND T_CHANNAL=#{tChannal}
+      </if>
+      <if test="channalData != null">
+       AND CHANNAL_DATA like '%'||#{channalData}||'%'
+      </if>
+       ORDER BY MARKET_FIRST_PKID) A)
+        WHERE ROW_NUM &gt; #{start}
+        AND ROW_NUM &lt;= #{end}
+  </select>
+      <!-- 查询预约一级营销案信息 数量-->
+   <select id="queryReservationFirstListCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+  SELECT COUNT(*)
+   from JSMSS_RESERVATION_FIRST J,T_AREA_DA T
+    where   J.CITY  like #{city}||'%' and J.CITY=t.F_BOSS_CODE and STATE='1'
+    
+      <if test="isListView != null" >
+       AND  IS_LIST_VIEW = #{isListView} 
+      </if>
+      <if test="viewName != null" >
+        AND VIEW_NAME=#{viewName}
+      </if>
+       <if test="beginTime != null" >
+        AND to_date(j.BEGIN_TIME,'yyyy-mm-dd') &gt; to_date(#{beginTime},'yyyy-mm-dd')
+      </if>
+      <if test="endTime != null" >
+       AND to_date(j.END_TIME,'yyyy-mm-dd') &lt; to_date(#{endTime},'yyyy-mm-dd')
+      </if>
+      <if test="type != null" >
+        AND TYPE =#{type}
+      </if>
+      <if test="tChannal != null" >
+       AND T_CHANNAL=#{tChannal}
+      </if>
+      <if test="channalData != null">
+       AND CHANNAL_DATA like '%'||#{channalData}||'%'
+      </if>
+  </select>
+  
+  <select id="queryMarketForAudit" resultMap="BaseResultMap" parameterType="java.util.Map" >
+  	select * from(
+		select rownum row_num, a.*
+		  from (
+		  	select s.*,t.f_area_name
+		                  from JSMSS_RESERVATION_FIRST s
+		                  left join t_area_da t
+		                  on t.f_boss_code = s.city
+		                 where 1 = 1
+  	<if test="state != null">
+		AND s.state = #{state}
+    </if>
+	<if test="city != null">
+		AND s.city like #{city}||'%'
+	</if>
+	<if test="viewName != null">
+		AND s.view_name like #{viewName}||'%'
+	</if>
+	<if test="proManager != null">
+		<if test="verifyState != null">
+			<if test="channelData == 5">
+				AND s.pro_verify_state = #{verifyState}
+			</if>
+			<if test="channelData == 4">
+				AND s.wt_pro_verify_state = #{verifyState}
+			</if>
+		</if>
+	</if>
+		<if test="cityManager != null">
+			<if test="verifyState != null">
+				<if test="channelData == 5">
+					AND s.local_verify_state = #{verifyState}
+				</if>
+				<if test="channelData == 4">
+					AND s.wt_local_verify_state = #{verifyState}
+				</if>
+			</if>
+	</if>
+	<if test="isListView != null">
+		AND s.is_list_view = #{isListView}
+	</if>
+	<if test="beginTime != null">
+		AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt;
+		to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="endTime != null">
+		AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;=
+		to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="channalData != null">
+		AND s.CHANNAL_DATA like  '%'||#{channalData}||'%'
+	</if>
+		) a
+     ) 
+     WHERE ROW_NUM &gt; #{start}
+     AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <!-- 控制台一级预约营销案审核列表 -->
+  <select id="queryMarketForAuditOnConsole" resultMap="BaseResultMap" parameterType="java.util.Map" >
+  	select * from(
+		select rownum row_num, a.*
+		  from (
+		  	select s.pro_verify_state,s.local_verify_state,s.verify_state,s.MARKET_FIRST_PKID,'['||substr(f_area_name,0,instr(f_area_name,'地')-1)||']'||s.view_name as view_name,
+		  				s.WT_PRO_VERIFY_STATE,s.WT_LOCAL_VERIFY_STATE,s.WT_VERIFY_STATE
+		                  from JSMSS_RESERVATION_FIRST s
+		                  left join t_area_da t
+		                  on t.f_boss_code = s.city
+		                 where 1 = 1
+  	<if test="state != null">
+		AND s.state = #{state}
+    </if>
+	<if test="city != null">
+		AND s.city like #{city}||'%'
+	</if>
+	<if test="viewName != null">
+		AND s.view_name like #{viewName}||'%'
+	</if>
+	<if test="proManager != null">
+		<if test="channalData != null">
+			<choose>
+				<when test="channalData == 5">
+					AND s.pro_verify_state = '0'
+				</when>
+				<when test="channalData == 4">
+					AND s.wt_pro_verify_state = '0'
+				</when>
+			</choose>
+		</if>
+	</if>
+	<if test="cityManager != null">
+		<if test="channalData != null">
+			<choose>
+				<when test="channalData == 5">
+					AND s.local_verify_state = '0'
+				</when>
+				<when test="channalData == 4">
+					AND s.wt_local_verify_state = '0'
+				</when>
+			</choose>
+		</if>
+	</if>
+	<if test="isListView != null">
+		AND s.is_list_view = #{isListView}
+	</if>
+	<if test="beginTime != null">
+		AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt;
+		to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="endTime != null">
+		AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;=
+		to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="channalData != null">
+		AND s.CHANNAL_DATA like  '%'||#{channalData}||'%'
+	</if>
+		) a
+     ) 
+     WHERE ROW_NUM &gt; #{start}
+     AND ROW_NUM &lt;= #{end}
+  </select>
+  
+  <select id="queryCountForAudit"  resultType="java.lang.Integer" parameterType="java.util.Map" >
+  	select count(*) from JSMSS_RESERVATION_FIRST s
+  	where 1=1
+  	<if test="state != null">
+		AND s.state = #{state}
+    </if>
+	<if test="city != null">
+		AND s.city like #{city}||'%'
+	</if>
+	<if test="viewName != null">
+		AND s.view_name like #{viewName}||'%'
+	</if>
+	<if test="proManager != null">
+		<if test="channalData != null">
+			<choose>
+				<when test="channalData == 5">
+					AND s.pro_verify_state = '0'
+				</when>
+				<when test="channalData == 4">
+					AND s.wt_pro_verify_state = '0'
+				</when>
+			</choose>
+		</if>
+	</if>
+	<if test="cityManager != null">
+		<if test="channalData != null">
+			<choose>
+				<when test="channalData == 5">
+					AND s.local_verify_state = '0'
+				</when>
+				<when test="channalData == 4">
+					AND s.wt_local_verify_state = '0'
+				</when>
+			</choose>
+		</if>
+	</if>
+	<if test="isListView != null">
+		AND s.is_list_view = #{isListView}
+	</if>
+	<if test="beginTime != null">
+		AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt;
+		to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="endTime != null">
+		AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;=
+		to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="channalData != null">
+		AND s.CHANNAL_DATA like '%'||#{channalData}||'%'
+	</if>
+  </select>
+  
+  <select id="queryMarketForTest" resultMap="BaseResultMap" parameterType="java.util.Map" >
+  	select * from(
+		select rownum row_num, a.*
+		  from (
+		  	select s.*,t.f_area_name
+		                  from jsmss_reservation_first s
+		                  left join t_area_da t
+		                  on t.f_boss_code = s.city
+		                 where 1 = 1
+  	<if test="state != null">
+		AND s.state = #{state}
+    </if>
+	<if test="city != null">
+		AND s.city like #{city}||'%'
+	</if>
+	<if test="viewName != null">
+		AND s.view_name like #{viewName}||'%'
+	</if>
+	<if test="verifyState != null">
+		<if test="channelData == 5">
+			AND s.pro_verify_state = #{verifyState}
+		</if>
+		<if test="channelData == 4">
+			AND s.wt_pro_verify_state = #{verifyState}
+		</if>
+	</if>
+	<if test="verifyState != null">
+		<if test="channelData == 5">
+			AND s.local_verify_state = #{verifyState}
+		</if>
+		<if test="channelData == 4">
+			AND s.wt_local_verify_state = #{verifyState}
+		</if>
+	</if>
+	<if test="isListView != null">
+		AND s.is_list_view = #{isListView}
+	</if>
+	<if test="beginTime != null">
+		AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt;
+		to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="endTime != null">
+		AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;=
+		to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="channalData != null">
+		AND s.CHANNAL_DATA like '%'||#{channalData}||'%'
+	</if>
+	<if test="type != null">
+		AND s.TYPE = #{type}
+	</if>
+	<if test="testOnlineState != null">
+		AND s.test_online_state = #{testOnlineState}
+	</if>
+		) a
+     ) 
+     WHERE ROW_NUM &gt; #{start}
+     AND ROW_NUM &lt;= #{end}
+  </select>
+
+<select id="queryCountForTest"  resultType="java.lang.Integer" parameterType="java.util.Map" >
+  	select count(*) from jsmss_reservation_first s
+  	where 1=1
+  	<if test="state != null">
+		AND s.state = #{state}
+    </if>
+	<if test="city != null">
+		AND s.city like #{city}||'%'
+	</if>
+	<if test="viewName != null">
+		AND s.view_name like #{viewName}||'%'
+	</if>
+	<if test="proManager != null">
+		<if test="verifyState != null">
+			<if test="channelData == 5">
+				AND s.pro_verify_state = #{verifyState}
+			</if>
+			<if test="channelData == 4">
+				AND s.wt_pro_verify_state = #{verifyState}
+			</if>
+		</if>
+	</if>
+		<if test="cityManager != null">
+			<if test="verifyState != null">
+				<if test="channelData == 5">
+					AND s.local_verify_state = #{verifyState}
+				</if>
+				<if test="channelData == 4">
+					AND s.wt_local_verify_state = #{verifyState}
+				</if>
+			</if>
+	</if>
+	<if test="isListView != null">
+		AND s.is_list_view = #{isListView}
+	</if>
+	<if test="beginTime != null">
+		AND to_date(s.begin_time,'yyyy-mm-dd hh24:mi:ss') &gt;
+		to_date(#{beginTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="endTime != null">
+		AND to_date(s.end_time,'yyyy-mm-dd hh24:mi:ss') &lt;=
+		to_date(#{endTime},'yyyy-mm-dd hh24:mi:ss')
+	</if>
+	<if test="channalData != null">
+		AND s.CHANNAL_DATA like '%'||#{channalData}||'%'
+	</if>
+	<if test="type != null">
+		AND s.TYPE = #{type}
+	</if>
+	<if test="testOnlineState != null">
+		AND s.test_online_state = #{testOnlineState}
+	</if>
+  </select>
+
+  <insert id="saveReservationFirst" parameterType="com.xwtech.uomp.base.pojo.market.ReservationFirstBean" >
+    insert into JSMSS_RESERVATION_FIRST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="marketFirstPkid != null" >
+        MARKET_FIRST_PKID,
+      </if>
+      <if test="marketFirstCode != null" >
+        MARKET_FIRST_CODE,
+      </if>
+      <if test="marketFirstName != null" >
+        MARKET_FIRST_NAME,
+      </if>
+      <if test="viewName != null" >
+        VIEW_NAME,
+      </if>
+      <if test="imgDir != null" >
+        IMG_DIR,
+      </if>
+      <if test="flashDir != null" >
+        FLASH_DIR,
+      </if>
+      <if test="toObject != null" >
+        TO_OBJECT,
+      </if>
+      <if test="activityComment != null" >
+        ACTIVITY_COMMENT,
+      </if>
+      <if test="beginTime != null" >
+        BEGIN_TIME,
+      </if>
+      <if test="endTime != null" >
+        END_TIME,
+      </if>
+      <if test="isFlashView != null" >
+        IS_FLASH_VIEW,
+      </if>
+      <if test="isListView != null" >
+        IS_LIST_VIEW,
+      </if>
+      <if test="viewTemplateId != null" >
+        VIEW_TEMPLATE_ID,
+      </if>
+      <if test="state != null" >
+        STATE,
+      </if>
+    
+        CREATE_TIME,
+    
+      <if test="city != null" >
+        CITY,
+      </if>
+      <if test="verifyState != null" >
+        VERIFY_STATE,
+      </if>
+      <if test="cfgUserId != null" >
+        CFG_USER_ID,
+      </if>
+      <if test="marketFirstType != null" >
+        MARKET_FIRST_TYPE,
+      </if>
+      <if test="tChannal != null" >
+        T_CHANNAL,
+      </if>
+      <if test="type != null" >
+        TYPE,
+      </if>
+      <if test="bigImgDir != null" >
+        BIG_IMG_DIR,
+      </if>
+      <if test="isInGroup != null" >
+        IS_IN_GROUP,
+      </if>
+      <if test="isInBrand != null" >
+        IS_IN_BRAND,
+      </if>
+      <if test="paymode != null" >
+        PAYMODE,
+      </if>
+      <if test="yxImgDir != null" >
+        YX_IMG_DIR,
+      </if>
+      <if test="prize != null" >
+        PRIZE,
+      </if>
+      <if test="bossFirstCode != null" >
+        BOSS_FIRST_CODE,
+      </if>
+      <if test="tips != null" >
+        TIPS,
+      </if>
+      <if test="channalData != null" >
+        CHANNAL_DATA,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="marketFirstPkid != null" >
+        #{marketFirstPkid,jdbcType=DECIMAL},
+      </if>
+      <if test="marketFirstCode != null" >
+        #{marketFirstCode,jdbcType=VARCHAR},
+      </if>
+      <if test="marketFirstName != null" >
+        #{marketFirstName,jdbcType=VARCHAR},
+      </if>
+      <if test="viewName != null" >
+        #{viewName,jdbcType=VARCHAR},
+      </if>
+      <if test="imgDir != null" >
+        #{imgDir,jdbcType=VARCHAR},
+      </if>
+      <if test="flashDir != null" >
+        #{flashDir,jdbcType=VARCHAR},
+      </if>
+      <if test="toObject != null" >
+        #{toObject,jdbcType=VARCHAR},
+      </if>
+      <if test="activityComment != null" >
+        #{activityComment,jdbcType=VARCHAR},
+      </if>
+      <if test="beginTime != null" >
+        #{beginTime,jdbcType=CHAR},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=CHAR},
+      </if>
+      <if test="isFlashView != null" >
+        #{isFlashView,jdbcType=CHAR},
+      </if>
+      <if test="isListView != null" >
+        #{isListView,jdbcType=CHAR},
+      </if>
+      <if test="viewTemplateId != null" >
+        #{viewTemplateId,jdbcType=DECIMAL},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=CHAR},
+      </if>
+        to_char(SYSDATE,'YYYYMMDDHH24MISS'),
+      <if test="city != null" >
+        #{city,jdbcType=DECIMAL},
+      </if>
+      <if test="verifyState != null" >
+        #{verifyState,jdbcType=CHAR},
+      </if>
+      <if test="cfgUserId != null" >
+        #{cfgUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="marketFirstType != null" >
+        #{marketFirstType,jdbcType=CHAR},
+      </if>
+      <if test="tChannal != null" >
+        #{tChannal,jdbcType=DECIMAL},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=CHAR},
+      </if>
+      <if test="bigImgDir != null" >
+        #{bigImgDir,jdbcType=VARCHAR},
+      </if>
+      <if test="isInGroup != null" >
+        #{isInGroup,jdbcType=CHAR},
+      </if>
+      <if test="isInBrand != null" >
+        #{isInBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="paymode != null" >
+        #{paymode,jdbcType=CHAR},
+      </if>
+      <if test="yxImgDir != null" >
+        #{yxImgDir,jdbcType=VARCHAR},
+      </if>
+      <if test="prize != null" >
+        #{prize,jdbcType=VARCHAR},
+      </if>
+      <if test="bossFirstCode != null" >
+        #{bossFirstCode,jdbcType=VARCHAR},
+      </if>
+      <if test="tips != null" >
+        #{tips,jdbcType=CLOB},
+      </if>
+      <if test="channalData != null" >
+      	#{channalData,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <select id="queryByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+      select 
+       MARKET_FIRST_PKID, MARKET_FIRST_CODE, 
+      MARKET_FIRST_NAME, VIEW_NAME, IMG_DIR, 
+      FLASH_DIR, TO_OBJECT, ACTIVITY_COMMENT, 
+      BEGIN_TIME, END_TIME, IS_FLASH_VIEW, 
+      IS_LIST_VIEW, VIEW_TEMPLATE_ID, STATE, 
+      CREATE_TIME, CITY, VERIFY_STATE, 
+      CFG_USER_ID, MARKET_FIRST_TYPE, T_CHANNAL, 
+      TYPE, MARKET_ORDER, BIG_IMG_DIR, 
+      IS_IN_GROUP, IS_IN_BRAND, PAYMODE, 
+      YX_IMG_DIR, PRIZE, BOSS_FIRST_CODE, IMG_DIR,
+      TIPS,channal_data
+    from jsmss_reservation_first
+    where MARKET_FIRST_PKID = #{reservationFirstPkid} and STATE='1'
+  </select>
+ <update id="updateReservationFirst" parameterType="java.util.Map" >
+   update JSMSS_RESERVATION_FIRST
+    <set >
+      <if test="marketFirstCode != null" >
+        MARKET_FIRST_CODE = #{marketFirstCode,jdbcType=VARCHAR},
+      </if>
+      <if test="marketFirstName != null" >
+        MARKET_FIRST_NAME = #{marketFirstName,jdbcType=VARCHAR},
+      </if>
+      <if test="viewName != null" >
+        VIEW_NAME = #{viewName,jdbcType=VARCHAR},
+      </if>
+      <if test="imgDir != null" >
+        IMG_DIR = #{imgDir,jdbcType=VARCHAR},
+      </if>
+      <if test="flashDir != null" >
+        FLASH_DIR = #{flashDir,jdbcType=VARCHAR},
+      </if>
+      <if test="toObject != null" >
+        TO_OBJECT = #{toObject,jdbcType=VARCHAR},
+      </if>
+      <if test="activityComment != null" >
+        ACTIVITY_COMMENT = #{activityComment,jdbcType=VARCHAR},
+      </if>
+      <if test="beginTime != null" >
+        BEGIN_TIME = #{beginTime,jdbcType=CHAR},
+      </if>
+      <if test="endTime != null" >
+        END_TIME = #{endTime,jdbcType=CHAR},
+      </if>
+      <if test="isFlashView != null" >
+        IS_FLASH_VIEW = #{isFlashView,jdbcType=CHAR},
+      </if>
+      <if test="isListView != null" >
+        IS_LIST_VIEW = #{isListView,jdbcType=CHAR},
+      </if>
+      <if test="viewTemplateId != null" >
+        VIEW_TEMPLATE_ID = #{viewTemplateId,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = to_char(SYSDATE,'YYYYMMDDHH24MISS'),
+      </if>
+      <if test="city != null" >
+        CITY = #{city,jdbcType=DECIMAL},
+      </if>
+      <if test="cfgUserId != null" >
+        CFG_USER_ID = #{cfgUserId,jdbcType=DECIMAL},
+      </if>
+      <if test="marketFirstType != null" >
+        MARKET_FIRST_TYPE = #{marketFirstType,jdbcType=CHAR},
+      </if>
+      <if test="type != null" >
+        TYPE = #{type,jdbcType=CHAR},
+      </if>
+      <if test="bigImgDir != null" >
+        BIG_IMG_DIR = #{bigImgDir,jdbcType=VARCHAR},
+      </if>
+      <if test="isInGroup != null" >
+        IS_IN_GROUP = #{isInGroup,jdbcType=CHAR},
+      </if>
+      <if test="isInBrand != null" >
+        IS_IN_BRAND = #{isInBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="paymode != null" >
+        PAYMODE = #{paymode,jdbcType=CHAR},
+      </if>
+         <if test="tChannal != null" >
+        T_CHANNAL = #{tChannal,jdbcType=DECIMAL},
+      </if>
+      <if test="yxImgDir != null" >
+        YX_IMG_DIR = #{yxImgDir,jdbcType=VARCHAR},
+      </if>
+      <if test="prize != null" >
+        PRIZE = #{prize,jdbcType=VARCHAR},
+      </if>
+      <if test="bossFirstCode != null" >
+        BOSS_FIRST_CODE = #{bossFirstCode,jdbcType=VARCHAR},
+      </if>
+      <if test="tips != null" >
+        TIPS = #{tips,jdbcType=CLOB},
+      </if>
+    </set>
+    where MARKET_FIRST_PKID = #{marketFirstPkid}
+  </update>
+  
+  <update id="updateAuditState">
+ 	update jsmss_reservation_first
+ 	<set>
+ 		<if test="localVerifyState != null">
+ 			local_verify_state = #{localVerifyState},
+ 		</if>
+ 		<if test="proVerifyState != null">
+ 			pro_verify_state = #{proVerifyState},
+ 		</if>
+ 		<if test="verifyState != null">
+ 			verify_state = #{verifyState},
+ 		</if>
+ 		<if test="wtLocalVerifyState != null">
+ 			wt_local_verify_state = #{wtLocalVerifyState}
+ 		</if>
+ 		<if test="wtProVerifyState != null">
+ 			wt_pro_verify_state = #{wtProVerifyState}
+ 		</if>
+ 		<if test="wtVerifyState != null">
+ 			wt_verify_state = #{wtVerifyState}
+ 		</if>
+ 	</set>
+ 	where MARKET_FIRST_PKID = #{marketFirstPkid}
+ </update>
+  
+  <update id="updateTestState">
+ 	update jsmss_reservation_first
+ 	<set>
+ 		<if test="testOnlineState != null">
+	 		test_online_state = #{testOnlineState},
+ 		</if>
+ 		<if test="verifyState != null">
+ 			verify_state = #{verifyState},
+ 		</if>
+ 		<if test="wtTestOnlineState != null">
+ 			wt_test_online_state = #{wtTestOnlineState},
+ 		</if>
+ 		<if test="wtVerifyState != null">
+ 			wt_verify_state = #{wtVerifyState},
+ 		</if>
+ 	</set>
+ 	where MARKET_FIRST_PKID = #{marketFirstPkid}
+ </update>
+  
+  <!--   
+    <if test="tips != null" >
+       TIPS TIPS = #{tips},
+      </if>
+  
+  <insert id="insert" parameterType="com.xwtech.uomp.base.pojo.market.ReservationFirstBean" >
+    insert into JSMSS_RESERVATION_FIRST (MARKET_FIRST_PKID, MARKET_FIRST_CODE, 
+      MARKET_FIRST_NAME, VIEW_NAME, IMG_DIR, 
+      FLASH_DIR, TO_OBJECT, ACTIVITY_COMMENT, 
+      BEGIN_TIME, END_TIME, IS_FLASH_VIEW, 
+      IS_LIST_VIEW, VIEW_TEMPLATE_ID, STATE, 
+      CREATE_TIME, CITY, VERIFY_STATE, 
+      CFG_USER_ID, MARKET_FIRST_TYPE, T_CHANNAL, 
+      TYPE, MARKET_ORDER, BIG_IMG_DIR, 
+      IS_IN_GROUP, IS_IN_BRAND, PAYMODE, 
+      YX_IMG_DIR, PRIZE, BOSS_FIRST_CODE, 
+      TIPS)
+    values (#{marketFirstPkid,jdbcType=DECIMAL}, #{marketFirstCode,jdbcType=VARCHAR}, 
+      #{marketFirstName,jdbcType=VARCHAR}, #{viewName,jdbcType=VARCHAR}, #{imgDir,jdbcType=VARCHAR}, 
+      #{flashDir,jdbcType=VARCHAR}, #{toObject,jdbcType=VARCHAR}, #{activityComment,jdbcType=VARCHAR}, 
+      #{beginTime,jdbcType=CHAR}, #{endTime,jdbcType=CHAR}, #{isFlashView,jdbcType=CHAR}, 
+      #{isListView,jdbcType=CHAR}, #{viewTemplateId,jdbcType=DECIMAL}, #{state,jdbcType=CHAR}, 
+      #{createTime,jdbcType=CHAR}, #{city,jdbcType=DECIMAL}, #{verifyState,jdbcType=CHAR}, 
+      #{cfgUserId,jdbcType=DECIMAL}, #{marketFirstType,jdbcType=CHAR}, #{tChannal,jdbcType=DECIMAL}, 
+      #{type,jdbcType=CHAR}, #{marketOrder,jdbcType=DECIMAL}, #{bigImgDir,jdbcType=VARCHAR}, 
+      #{isInGroup,jdbcType=CHAR}, #{isInBrand,jdbcType=VARCHAR}, #{paymode,jdbcType=CHAR}, 
+      #{yxImgDir,jdbcType=VARCHAR}, #{prize,jdbcType=VARCHAR}, #{bossFirstCode,jdbcType=VARCHAR}, 
+      #{tips,jdbcType=CLOB})
+  </insert> -->
+</mapper>
